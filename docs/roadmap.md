@@ -6,7 +6,7 @@
 - [x] Day04 FastAPI
 - [x] Day05 Docker
 - [x] Day06 GitHub
-- [ ] Day07 Review
+- [x] Day07 Review
 - [ ] Day08 RAG
 
 ---

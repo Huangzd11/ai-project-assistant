@@ -17,10 +17,18 @@
 
 ## 练习
 
-1. 编写不同 system prompt，观察回答风格变化
-2. 尝试 few-shot 示例，让模型按固定格式输出
-3. 对比不同 temperature 对创造性的影响
+运行 [`examples/prompt_demo.py`](../examples/prompt_demo.py)，体验以下三个实验：
+
+1. **System Prompt**：同一问题，不同角色设定，观察回答风格变化
+2. **Few-shot**：通过示例约束输出为 JSON 格式
+3. **Temperature**：对比 `0.2` 与 `1.0` 的回答创造性差异
+
+```powershell
+pip install -r requirements.txt
+copy .env.example .env    # 填写云端 API Key
+python examples/prompt_demo.py
+```
 
 ## 状态
 
-待补充实战代码，相关内容见后续 Day02 起的示例。
+已完成。Day02 的 `chat_demo.py` 进一步演示了 messages 多轮对话实战。

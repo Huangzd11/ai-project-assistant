@@ -19,7 +19,7 @@ ai-project-assistant/
 |------|------|------|
 | 根目录 | 当前 MVP 服务代码 | 保持精简，复杂逻辑下沉 `src/` |
 | `docs/` | 全部文档 | 每日工作写入 `DayXX.md`，设计文档独立维护 |
-| `examples/` | 学习示例 | 可独立运行，不依赖未发布模块 |
+| `examples/` | 学习示例 | 按 Day 命名：`prompt_demo`、`chat_demo`、`ollama_demo` |
 | `src/` | 扩展模块 | 新功能优先在此按子包组织 |
 
 ---

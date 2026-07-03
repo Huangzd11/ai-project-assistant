@@ -8,7 +8,7 @@
 
 ## 项目简介
 
-本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已完成 Day01 ~ Day06，涵盖：
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已完成 Day01 ~ Day07，涵盖：
 
 - LLM 基础与 Prompt 设计
 - OpenAI 兼容 API 调用（通义千问 / Ollama）
@@ -16,6 +16,7 @@
 - FastAPI HTTP 服务封装
 - Docker 容器化部署
 - GitHub 托管与项目开发规范
+- Day01 ~ Day06 回顾与查漏补缺
 
 适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
 
@@ -39,6 +40,12 @@
 
 ## 当前功能
 
+### Prompt 练习（Day01）
+
+- System Prompt、Few-shot、Temperature 对比实验
+
+运行：`python examples/prompt_demo.py`
+
 ### 命令行对话（Day02）
 
 - 从 `.env` 读取 API Key、Base URL、模型名
@@ -51,6 +58,8 @@
 
 - 通过 `http://127.0.0.1:11434/v1` 连接本地 Ollama
 - OpenAI SDK 零改动接入本地模型
+
+运行：`python examples/ollama_demo.py`
 
 ### HTTP API 服务（Day04）
 
@@ -79,6 +88,14 @@
 
 详见 [docs/Day06.md](docs/Day06.md)。
 
+### 阶段回顾（Day07）
+
+- 回顾 Day01 ~ Day06 知识体系
+- 补齐示例脚本与 `.dockerignore`
+- 确认 Day08 RAG 前置条件
+
+详见 [docs/Day07.md](docs/Day07.md)。
+
 ---
 
 ## 学习进度
@@ -91,7 +108,7 @@
 - [x] Day04 FastAPI
 - [x] Day05 Docker
 - [x] Day06 GitHub
-- [ ] Day07 Review
+- [x] Day07 Review
 - [ ] Day08 RAG
 
 ---
@@ -107,6 +124,7 @@ ai-project-assistant/
 ├── models.py               # 请求/响应模型
 ├── requirements.txt
 ├── Dockerfile
+├── .dockerignore
 ├── .env.example            # 环境变量模板
 ├── .gitignore
 ├── README.md
@@ -117,10 +135,12 @@ ai-project-assistant/
 │   ├── solution-design.md  # AI 方案设计
 │   ├── development-standards.md  # 开发规范
 │   ├── roadmap.md          # 学习路线
-│   ├── Day01.md ~ Day06.md # 每日工作日志
+│   ├── Day01.md ~ Day07.md # 每日工作日志
 │
 ├── examples/
-│   └── chat_demo.py        # 命令行连续对话示例
+│   ├── prompt_demo.py      # Day01 Prompt 练习
+│   ├── chat_demo.py        # Day02 命令行连续对话
+│   └── ollama_demo.py      # Day03 Ollama 流式调用
 │
 └── src/                    # 后续模块扩展
 ```
@@ -201,7 +221,7 @@ docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 
 | [docs/solution-design.md](docs/solution-design.md) | AI 方案设计（技术选型与演进路线） |
 | [docs/api.md](docs/api.md) | HTTP 接口详细说明 |
 | [docs/roadmap.md](docs/roadmap.md) | 学习路线与后续规划 |
-| [docs/Day01.md](docs/Day01.md) ~ [Day06.md](docs/Day06.md) | 每日工作日志 |
+| [docs/Day01.md](docs/Day01.md) ~ [Day07.md](docs/Day07.md) | 每日工作日志 |
 
 ---
 

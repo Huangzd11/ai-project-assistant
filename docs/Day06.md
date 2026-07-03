@@ -64,4 +64,4 @@ git push -u origin main
 
 ## 下一步
 
-Day07 Review — 回顾 Day01 ~ Day06，查漏补缺。
+Day08 RAG — 文档切片、向量检索、知识库问答。

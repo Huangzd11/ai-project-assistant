@@ -8,6 +8,8 @@
 
 ## 核心代码
 
+示例见 [`examples/ollama_demo.py`](../examples/ollama_demo.py)。
+
 ```python
 from openai import OpenAI
 
@@ -37,7 +39,7 @@ for chunk in stream:
 ```powershell
 ollama pull qwen3:4b
 ollama serve
-# 将上方核心代码保存为脚本后运行
+python examples/ollama_demo.py
 ```
 
 > 本地 `qwen3:4b` 首次推理可能较慢，属正常现象。可在 prompt 末尾加 `/no_think` 减少等待时间。

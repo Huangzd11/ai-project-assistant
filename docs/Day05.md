@@ -28,7 +28,7 @@ CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 |------|------|
 | `FROM` | 基于 Python 3.13 精简镜像 |
 | `WORKDIR` | 容器内工作目录设为 `/app` |
-| `COPY` | 将项目文件复制进镜像 |
+| `COPY` | 将项目文件复制进镜像（`.dockerignore` 排除 docs/examples 等） |
 | `RUN` | 安装 Python 依赖 |
 | `EXPOSE` | 声明服务监听 8000 端口 |
 | `CMD` | 启动 Uvicorn，绑定 `0.0.0.0` 以接受外部请求 |
