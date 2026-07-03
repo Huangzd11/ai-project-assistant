@@ -11,3 +11,9 @@ class ChatResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str
+
+
+class ModelInfo(BaseModel):
+    provider: str
+    model: str
+    base_url: str
