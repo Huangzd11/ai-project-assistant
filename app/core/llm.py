@@ -1,6 +1,6 @@
 from openai import OpenAI
 
-from config import (
+from app.core.config import (
     MODEL_NAME,
     OPENAI_API_KEY,
     OPENAI_BASE_URL,

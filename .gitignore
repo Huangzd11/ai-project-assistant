@@ -18,3 +18,9 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+
+# 运行时数据（保留目录结构）
+uploads/*
+!uploads/.gitkeep
+data/*
+!data/.gitkeep

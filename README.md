@@ -70,7 +70,7 @@
 | `/models` | GET | 当前模型配置 |
 | `/chat` | POST | AI 聊天 |
 
-运行：`uvicorn app:app --reload --host 127.0.0.1 --port 8000`  
+运行：`uvicorn app.main:app --reload --host 127.0.0.1 --port 8000`  
 交互文档：http://127.0.0.1:8000/docs
 
 ### Docker 部署（Day05）
@@ -118,39 +118,35 @@
 ```
 ai-project-assistant/
 │
-├── app.py                  # FastAPI 入口
-├── llm.py                  # LLM 调用封装
-├── config.py               # 环境变量配置
-├── models.py               # 请求/响应模型
+├── app/
+│   ├── api/
+│   │   ├── chat.py         # 聊天与模型信息接口
+│   │   ├── upload.py       # PDF 上传接口
+│   │   └── health.py       # 健康检查
+│   ├── core/
+│   │   ├── config.py       # 环境配置
+│   │   ├── llm.py          # LLM 调用封装
+│   │   └── logger.py       # 日志
+│   ├── rag/                # RAG 模块（Day08+）
+│   ├── models/             # Pydantic 模型
+│   └── main.py             # FastAPI 入口
+│
+├── uploads/                # 上传文件目录
+├── data/                   # 数据存储目录
+├── tests/                  # 测试
+├── docs/
+├── examples/               # 学习示例脚本
 ├── requirements.txt
 ├── Dockerfile
-├── .dockerignore
-├── .env.example            # 环境变量模板
-├── .gitignore
-├── README.md
-│
-├── docs/
-│   ├── architecture.png    # 架构结构图
-│   ├── api.md              # 接口文档
-│   ├── solution-design.md  # AI 方案设计
-│   ├── development-standards.md  # 开发规范
-│   ├── roadmap.md          # 学习路线
-│   ├── Day01.md ~ Day07.md # 每日工作日志
-│
-├── examples/
-│   ├── prompt_demo.py      # Day01 Prompt 练习
-│   ├── chat_demo.py        # Day02 命令行连续对话
-│   └── ollama_demo.py      # Day03 Ollama 流式调用
-│
-└── src/                    # 后续模块扩展
+└── README.md
 ```
 
-| 文件 | 职责 |
+| 模块 | 职责 |
 |------|------|
-| `config.py` | 读取 API Key、模型名、超时等配置 |
-| `models.py` | 定义 `ChatRequest`、`ChatResponse` 等 Pydantic 模型 |
-| `llm.py` | 封装 OpenAI 客户端与 `chat()` 函数 |
-| `app.py` | 注册 HTTP 路由 |
+| `app/api/` | HTTP 路由层 |
+| `app/core/` | 配置、LLM、日志等核心能力 |
+| `app/models/` | 请求/响应数据契约 |
+| `app/rag/` | 检索增强生成（Sprint 2 扩展） |
 
 ---
 
@@ -182,7 +178,7 @@ python examples/chat_demo.py
 ```powershell
 ollama pull qwen3:4b
 ollama serve
-uvicorn app:app --reload --host 127.0.0.1 --port 8000
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
 ### 4. Docker 部署
