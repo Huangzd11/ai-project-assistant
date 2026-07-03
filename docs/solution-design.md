@@ -253,6 +253,7 @@ Phase 5          前端 + 评测 + 生产化（监控、CI/CD）
 
 - [api.md](api.md) — HTTP 接口说明
 - [roadmap.md](roadmap.md) — 学习进度与待办
+- [CODEMAP.md](CODEMAP.md) — 代码地图（按 Day 索引）
 - [development-standards.md](development-standards.md) — 项目开发规范
 - [Day01.md](Day01.md) ~ [Day07.md](Day07.md) — 每日工作日志
 

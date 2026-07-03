@@ -1,3 +1,10 @@
+# Day08 — 文件工具（PDF 上传配套）
+#
+# 功能：目录创建、文件大小人类可读格式化
+# 逻辑：
+#   format_file_size — 字节 → "8MB" / "512KB" / "100B"
+#   ensure_dir       — 若目录不存在则创建（如 uploads/）
+
 from pathlib import Path
 
 

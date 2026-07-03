@@ -131,7 +131,7 @@ fix: handle Ollama connection timeout
 python examples/chat_demo.py
 
 # API 服务
-uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload
 
 # Docker
 docker build -t ai-chat:v1 . && docker run -p 8000:8000 ai-chat:v1

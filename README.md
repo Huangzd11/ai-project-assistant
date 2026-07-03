@@ -8,15 +8,16 @@
 
 ## 项目简介
 
-本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已完成 Day01 ~ Day07，涵盖：
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 2（v0.2.x）**，完成 Day01 ~ Day08：
 
-- LLM 基础与 Prompt 设计
-- OpenAI 兼容 API 调用（通义千问 / Ollama）
-- 命令行多轮对话与流式输出
-- FastAPI HTTP 服务封装
-- Docker 容器化部署
-- GitHub 托管与项目开发规范
-- Day01 ~ Day06 回顾与查漏补缺
+- LLM 基础与 Prompt 设计（Day01）
+- OpenAI 兼容 API 多轮对话（Day02）
+- 本地 Ollama 调用（Day03）
+- FastAPI HTTP 服务（Day04）
+- Docker 容器化（Day05）
+- GitHub 托管与开发规范（Day06）
+- 阶段回顾与查漏补缺（Day07）
+- 项目重构 + PDF 上传（Day08）
 
 适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
 
@@ -85,7 +86,7 @@
 | `/chat` | POST | AI 聊天 |
 | `/upload` | POST | PDF 上传（Day08） |
 
-运行：`uvicorn app.main:app --reload --host 127.0.0.1 --port 8000`  
+运行：`python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000`  
 交互文档：http://127.0.0.1:8000/docs
 
 ### Docker 部署（Day05）
@@ -131,38 +132,57 @@
 
 ## 项目结构
 
+完整代码地图见 **[docs/CODEMAP.md](docs/CODEMAP.md)**（含每个文件的 Day 来源与逻辑说明）。
+
 ```
 ai-project-assistant/
 │
-├── app/
+├── app/                              # Day04 创建 · Day08 重构
+│   ├── main.py                       # FastAPI 入口
 │   ├── api/
-│   │   ├── chat.py         # 聊天与模型信息接口
-│   │   ├── upload.py       # PDF 上传接口
-│   │   └── health.py       # 健康检查
+│   │   ├── health.py                 # Day04 — / 、/health
+│   │   ├── chat.py                   # Day04 — /chat 、/models
+│   │   └── upload.py                 # Day08 — /upload（PDF）
 │   ├── core/
-│   │   ├── config.py       # 环境配置
-│   │   ├── llm.py          # LLM 调用封装
-│   │   └── logger.py       # 日志
-│   ├── rag/                # RAG 模块（Day08+）
-│   ├── models/             # Pydantic 模型
-│   └── main.py             # FastAPI 入口
+│   │   ├── config.py                 # Day02/04/08 — 环境配置
+│   │   ├── llm.py                    # Day02/04 — LLM 调用
+│   │   ├── logger.py                 # Day08 — 日志
+│   │   └── files.py                  # Day08 — 文件工具
+│   ├── models/
+│   │   └── schemas.py                # Day04/08 — Pydantic 模型
+│   └── rag/                          # Day09+ — RAG 预留
 │
-├── uploads/                # 上传文件目录
-├── data/                   # 数据存储目录
-├── tests/                  # 测试
-├── docs/
-├── examples/               # 学习示例脚本
-├── requirements.txt
-├── Dockerfile
+├── examples/                         # Day01~03 学习示例
+│   ├── prompt_demo.py                # Day01
+│   ├── chat_demo.py                  # Day02
+│   └── ollama_demo.py                # Day03
+│
+├── uploads/                          # Day08 — PDF 存储
+├── data/                             # 向量库等（预留）
+├── tests/                            # Day14 测试（预留）
+│
+├── docs/                             # 文档与工作日志
+│   ├── CODEMAP.md                    # 代码地图（按 Day 索引）
+│   ├── Day01.md ~ Day08.md
+│   ├── api.md / roadmap.md
+│   ├── solution-design.md
+│   ├── development-standards.md
+│   └── architecture.png
+│
+├── requirements.txt                  # 依赖（按 Day 注释）
+├── Dockerfile                        # Day05 容器化
+├── .dockerignore                     # Day07
+├── .env.example
 └── README.md
 ```
 
-| 模块 | 职责 |
-|------|------|
-| `app/api/` | HTTP 路由层 |
-| `app/core/` | 配置、LLM、日志等核心能力 |
-| `app/models/` | 请求/响应数据契约 |
-| `app/rag/` | 检索增强生成（Sprint 2 扩展） |
+| 层级 | 目录 | 职责 |
+|------|------|------|
+| 接口层 | `app/api/` | HTTP 路由，不含业务细节 |
+| 核心层 | `app/core/` | 配置、LLM、日志、文件工具 |
+| 契约层 | `app/models/` | 请求/响应 Pydantic 模型 |
+| RAG 层 | `app/rag/` | 文档解析→切分→向量→检索（Day09+） |
+| 示例层 | `examples/` | 独立学习脚本，按 Day 组织 |
 
 ---
 
@@ -194,7 +214,7 @@ python examples/chat_demo.py
 ```powershell
 ollama pull qwen3:4b
 ollama serve
-uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
 **上传 PDF：** 打开 http://127.0.0.1:8000/docs ，使用 `POST /upload` 选择文件。
@@ -232,6 +252,7 @@ docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 
 
 | 文档 | 说明 |
 |------|------|
+| [docs/CODEMAP.md](docs/CODEMAP.md) | 代码地图（按 Day 索引每个文件） |
 | [docs/development-standards.md](docs/development-standards.md) | AI 项目开发规范 |
 | [docs/solution-design.md](docs/solution-design.md) | AI 方案设计（技术选型与演进路线） |
 | [docs/api.md](docs/api.md) | HTTP 接口详细说明 |

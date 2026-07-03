@@ -1,3 +1,12 @@
+# Day02 — 命令行连续对话（OpenAI 兼容 API + 流式输出）
+# 运行：python examples/chat_demo.py
+#
+# 功能：终端多轮对话，逐字流式打印 AI 回答
+# 逻辑：
+#   1. 从 .env 加载 API Key / Base URL / 模型名
+#   2. 维护 messages 列表（system + 历史 user/assistant）
+#   3. 每轮：用户输入 → stream 请求 → 拼接 chunk → 追加到 messages
+
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
@@ -16,6 +25,7 @@ if not api_key:
 
 client = OpenAI(api_key=api_key, base_url=base_url)
 
+# Day01/Day02 — messages 是对话核心：system 定角色，user/assistant 维持上下文
 messages = [
     {
         "role": "system",
@@ -31,6 +41,7 @@ while True:
         "content": question
     })
 
+    # Day02 — stream=True 实现逐字输出
     stream = client.chat.completions.create(
         model=model,
         messages=messages,
@@ -45,6 +56,7 @@ while True:
             full_answer += content
     print()
 
+    # 保存完整回答，下一轮模型才能记住上下文
     messages.append({
         "role": "assistant",
         "content": full_answer

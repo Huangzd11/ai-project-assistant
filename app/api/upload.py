@@ -1,3 +1,13 @@
+# Day08 — PDF 上传接口（Sprint 2 · v0.2.0-alpha）
+#
+# 功能：浏览器选择 PDF → 上传 → 保存到 uploads/ → 返回文件名和大小
+# 逻辑：
+#   1. 校验文件扩展名与 content-type 必须为 PDF
+#   2. 读取上传二进制内容，写入 UPLOAD_DIR 目录
+#   3. 格式化文件大小（如 8MB），记录日志并返回 JSON
+#
+# 接口：POST /upload（multipart/form-data，字段名 file）
+
 from pathlib import Path
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
@@ -12,7 +22,7 @@ router = APIRouter(prefix="/upload", tags=["upload"])
 
 @router.post("", response_model=UploadResponse)
 async def upload_pdf(file: UploadFile = File(..., description="PDF 文件")):
-    """上传 PDF 文件，保存至 uploads/ 目录。"""
+    # 取纯文件名，防止路径穿越攻击
     filename = Path(file.filename or "").name
     if not filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="仅支持 PDF 文件")
