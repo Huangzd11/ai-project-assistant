@@ -1,5 +1,7 @@
 # Roadmap
 
+## Sprint 1（v0.1.x）— 基础链路
+
 - [x] Day01 LLM Basic
 - [x] Day02 OpenAI API
 - [x] Day03 Ollama
@@ -7,11 +9,20 @@
 - [x] Day05 Docker
 - [x] Day06 GitHub
 - [x] Day07 Review
-- [ ] Day08 RAG
+
+## Sprint 2（v0.2.x）— Enterprise RAG
+
+- [x] Day08 Upload + Refactor — `feat(upload)` — v0.2.0-alpha
+- [ ] Day09 PDF Loader — `feat(pdf-loader)` — v0.2.0-alpha2
+- [ ] Day10 Chunker — `feat(chunker)` — v0.2.0-beta
+- [ ] Day11 Embedding — `feat(embedding)` — v0.2.0-beta2
+- [ ] Day12 ChromaDB — `feat(vector-db)` — v0.2.0-rc
+- [ ] Day13 RAG Pipeline — `feat(rag)` — v0.2.0
+- [ ] Day14 Test & Release — `release(v0.2.0)`
 
 ---
 
-## 后续方向（Day09+）
+## 后续方向（Day15+）
 
 | 方向 | 计划 |
 |------|------|

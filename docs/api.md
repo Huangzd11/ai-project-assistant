@@ -68,6 +68,36 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/chat `
 
 ---
 
+## POST `/upload`
+
+上传 PDF 文件至 `uploads/` 目录。
+
+**请求：** `multipart/form-data`，字段名 `file`
+
+**响应：**
+
+```json
+{
+  "filename": "linux.pdf",
+  "size": "8MB"
+}
+```
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `filename` | string | 保存的文件名 |
+| `size` | string | 人类可读大小（如 `8MB`、`512KB`） |
+
+**浏览器测试：** 访问 http://127.0.0.1:8000/docs ，在 `POST /upload` 中选择 PDF 文件上传。
+
+**PowerShell 测试：**
+
+```powershell
+curl.exe -X POST http://127.0.0.1:8000/upload -F "file=@C:\path\to\linux.pdf"
+```
+
+---
+
 ## 环境变量
 
 | 变量名 | 默认值 | 说明 |
@@ -78,3 +108,4 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/chat `
 | `PROVIDER` | `ollama` | 提供方标识 |
 | `SYSTEM_PROMPT` | `你是一名AI技术项目经理.` | 系统提示词 |
 | `REQUEST_TIMEOUT` | `600` | 请求超时（秒） |
+| `UPLOAD_DIR` | `uploads` | PDF 上传保存目录 |

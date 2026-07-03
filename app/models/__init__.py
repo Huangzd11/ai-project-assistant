@@ -3,6 +3,7 @@ from app.models.schemas import (
     ChatResponse,
     HealthResponse,
     ModelInfo,
+    UploadResponse,
 )
 
 __all__ = [
@@ -10,4 +11,5 @@ __all__ = [
     "ChatResponse",
     "HealthResponse",
     "ModelInfo",
+    "UploadResponse",
 ]

@@ -17,3 +17,8 @@ class ModelInfo(BaseModel):
     provider: str
     model: str
     base_url: str
+
+
+class UploadResponse(BaseModel):
+    filename: str
+    size: str

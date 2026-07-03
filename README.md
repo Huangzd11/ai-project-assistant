@@ -61,6 +61,20 @@
 
 运行：`python examples/ollama_demo.py`
 
+### 企业知识库 — PDF 上传（Day08 · v0.2.0-alpha）
+
+| 接口 | 方法 | 说明 |
+|------|------|------|
+| `/upload` | POST | 上传 PDF，保存至 `uploads/` |
+
+```json
+{ "filename": "linux.pdf", "size": "8MB" }
+```
+
+在 http://127.0.0.1:8000/docs 中测试上传。
+
+详见 [docs/Day08.md](docs/Day08.md)。
+
 ### HTTP API 服务（Day04）
 
 | 接口 | 方法 | 说明 |
@@ -69,6 +83,7 @@
 | `/health` | GET | 健康检查 |
 | `/models` | GET | 当前模型配置 |
 | `/chat` | POST | AI 聊天 |
+| `/upload` | POST | PDF 上传（Day08） |
 
 运行：`uvicorn app.main:app --reload --host 127.0.0.1 --port 8000`  
 交互文档：http://127.0.0.1:8000/docs
@@ -109,7 +124,8 @@
 - [x] Day05 Docker
 - [x] Day06 GitHub
 - [x] Day07 Review
-- [ ] Day08 RAG
+- [x] Day08 Upload + Refactor
+- [ ] Day09 PDF Loader
 
 ---
 
@@ -181,6 +197,8 @@ ollama serve
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
+**上传 PDF：** 打开 http://127.0.0.1:8000/docs ，使用 `POST /upload` 选择文件。
+
 ### 4. Docker 部署
 
 ```powershell
@@ -206,6 +224,7 @@ docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 
 | `PROVIDER` | `ollama` | 提供方标识 |
 | `SYSTEM_PROMPT` | `你是一名AI技术项目经理.` | 系统提示词 |
 | `REQUEST_TIMEOUT` | `600` | 请求超时（秒） |
+| `UPLOAD_DIR` | `uploads` | PDF 上传保存目录 |
 
 ---
 
@@ -217,7 +236,7 @@ docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 
 | [docs/solution-design.md](docs/solution-design.md) | AI 方案设计（技术选型与演进路线） |
 | [docs/api.md](docs/api.md) | HTTP 接口详细说明 |
 | [docs/roadmap.md](docs/roadmap.md) | 学习路线与后续规划 |
-| [docs/Day01.md](docs/Day01.md) ~ [Day07.md](docs/Day07.md) | 每日工作日志 |
+| [docs/Day01.md](docs/Day01.md) ~ [Day08.md](docs/Day08.md) | 每日工作日志 |
 
 ---
 

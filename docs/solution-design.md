@@ -33,6 +33,8 @@
 
 ### 2.1 请求链路（结构图）
 
+**聊天链路：**
+
 ```
                     Browser
                        │
@@ -43,6 +45,21 @@
                      Ollama
                        │
                       Qwen3
+```
+
+**文档上传链路（v0.2.0-alpha）：**
+
+```
+                    Browser
+                       │  选择 PDF
+                       ▼
+                 POST /upload
+                       │
+                       ▼
+                   uploads/
+                       │
+                       ▼
+              { filename, size }
 ```
 
 ![架构图](architecture.png)
