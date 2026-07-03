@@ -1,13 +1,22 @@
-# 后续规划
+# Roadmap
 
-## 学习路线（Day06+）
+- [x] Day01 LLM Basic
+- [x] Day02 OpenAI API
+- [x] Day03 Ollama
+- [x] Day04 FastAPI
+- [x] Day05 Docker
+- [x] Day06 GitHub
+- [ ] Day07 Review
+- [ ] Day08 RAG
+
+---
+
+## 后续方向（Day09+）
 
 | 方向 | 计划 |
 |------|------|
-| Day01 | 补充 LLM 基础概念与 Prompt 练习 |
 | 流式 API | 新增 `/chat/stream`，SSE 逐字返回 |
 | 多轮对话 | 引入 `session_id`，服务端维护对话历史 |
-| RAG | 文档切片、向量检索、知识库问答 |
 | Agent | 工具调用、任务编排 |
 | 前端 | 简单 Web 聊天界面 |
 | 评测 | Prompt 效果对比与指标统计 |

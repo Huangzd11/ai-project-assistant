@@ -1,8 +1,100 @@
 # AI Project Assistant
 
-30 天 AI 技术项目经理学习项目。
+30 天 AI 技术项目经理实战学习项目。从 LLM 基础概念出发，逐步掌握云端 API 调用、本地模型部署、Web API 封装与容器化部署等核心技能。
 
 仓库地址：[https://github.com/Huangzd11/ai-project-assistant](https://github.com/Huangzd11/ai-project-assistant)
+
+---
+
+## 项目简介
+
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已完成 Day01 ~ Day06，涵盖：
+
+- LLM 基础与 Prompt 设计
+- OpenAI 兼容 API 调用（通义千问 / Ollama）
+- 命令行多轮对话与流式输出
+- FastAPI HTTP 服务封装
+- Docker 容器化部署
+- GitHub 托管与项目开发规范
+
+适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
+
+---
+
+## 技术栈
+
+| 类别 | 技术 | 说明 |
+|------|------|------|
+| 语言 | Python 3.10+ | 全部实战代码 |
+| LLM 客户端 | OpenAI Python SDK | 统一调用云端 / 本地兼容接口 |
+| 云端模型 | 通义千问（DashScope） | Day02 默认方案 |
+| 本地模型 | Ollama + qwen3:4b | Day03、Day04 默认方案 |
+| 配置管理 | python-dotenv | 环境变量加载 |
+| Web 框架 | FastAPI | HTTP API 服务 |
+| ASGI 服务器 | Uvicorn | 运行 FastAPI |
+| 数据校验 | Pydantic | 请求 / 响应模型 |
+| 容器化 | Docker | 镜像构建与部署 |
+
+---
+
+## 当前功能
+
+### 命令行对话（Day02）
+
+- 从 `.env` 读取 API Key、Base URL、模型名
+- 维护 `messages` 列表实现多轮对话
+- 流式逐字输出（`stream=True`）
+
+运行：`python examples/chat_demo.py`
+
+### 本地 Ollama 调用（Day03）
+
+- 通过 `http://127.0.0.1:11434/v1` 连接本地 Ollama
+- OpenAI SDK 零改动接入本地模型
+
+### HTTP API 服务（Day04）
+
+| 接口 | 方法 | 说明 |
+|------|------|------|
+| `/` | GET | 服务欢迎 |
+| `/health` | GET | 健康检查 |
+| `/models` | GET | 当前模型配置 |
+| `/chat` | POST | AI 聊天 |
+
+运行：`uvicorn app:app --reload --host 127.0.0.1 --port 8000`  
+交互文档：http://127.0.0.1:8000/docs
+
+### Docker 部署（Day05）
+
+- 基于 `Dockerfile` 一键构建镜像
+- 支持容器访问宿主机 Ollama
+
+详见 [docs/Day05.md](docs/Day05.md)。
+
+### GitHub 与项目规范（Day06）
+
+- 代码托管于 [GitHub](https://github.com/Huangzd11/ai-project-assistant)
+- 完善 README、方案设计、架构图等文档体系
+- 建立 [开发规范](docs/development-standards.md)
+
+详见 [docs/Day06.md](docs/Day06.md)。
+
+---
+
+## 学习进度
+
+完整路线见 [docs/roadmap.md](docs/roadmap.md)。
+
+- [x] Day01 LLM Basic
+- [x] Day02 OpenAI API
+- [x] Day03 Ollama
+- [x] Day04 FastAPI
+- [x] Day05 Docker
+- [x] Day06 GitHub
+- [ ] Day07 Review
+- [ ] Day08 RAG
+
+---
 
 ## 项目结构
 
@@ -15,18 +107,17 @@ ai-project-assistant/
 ├── models.py               # 请求/响应模型
 ├── requirements.txt
 ├── Dockerfile
+├── .env.example            # 环境变量模板
 ├── .gitignore
 ├── README.md
 │
 ├── docs/
-│   ├── architecture.png    # 架构图（待补充）
+│   ├── architecture.png    # 架构结构图
 │   ├── api.md              # 接口文档
-│   ├── roadmap.md          # 后续规划
-│   ├── Day01.md            # 工作日志
-│   ├── Day02.md
-│   ├── Day03.md
-│   ├── Day04.md
-│   └── Day05.md
+│   ├── solution-design.md  # AI 方案设计
+│   ├── development-standards.md  # 开发规范
+│   ├── roadmap.md          # 学习路线
+│   ├── Day01.md ~ Day06.md # 每日工作日志
 │
 ├── examples/
 │   └── chat_demo.py        # 命令行连续对话示例
@@ -34,44 +125,89 @@ ai-project-assistant/
 └── src/                    # 后续模块扩展
 ```
 
+| 文件 | 职责 |
+|------|------|
+| `config.py` | 读取 API Key、模型名、超时等配置 |
+| `models.py` | 定义 `ChatRequest`、`ChatResponse` 等 Pydantic 模型 |
+| `llm.py` | 封装 OpenAI 客户端与 `chat()` 函数 |
+| `app.py` | 注册 HTTP 路由 |
+
+---
+
 ## 快速开始
 
+### 1. 安装依赖
+
 ```powershell
-# 安装依赖
 pip install -r requirements.txt
 copy .env.example .env    # 按需填写 API Key
+```
 
-# 命令行对话（Day02）
+### 2. 命令行对话（云端 API）
+
+在 [阿里云百炼](https://bailian.console.aliyun.com/) 获取 API Key，写入 `.env`：
+
+```
+OPENAI_API_KEY=你的密钥
+OPENAI_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+MODEL_NAME=qwen-plus
+```
+
+```powershell
 python examples/chat_demo.py
+```
 
-# HTTP API 服务（Day04）
+### 3. HTTP API 服务（本地 Ollama）
+
+```powershell
+ollama pull qwen3:4b
+ollama serve
 uvicorn app:app --reload --host 127.0.0.1 --port 8000
 ```
 
-## 文档
-
-| 文档 | 说明 |
-|------|------|
-| [docs/api.md](docs/api.md) | HTTP 接口说明 |
-| [docs/roadmap.md](docs/roadmap.md) | 学习路线与工程化规划 |
-| [docs/Day01.md](docs/Day01.md) ~ [Day05.md](docs/Day05.md) | 每日工作日志 |
-
-## Docker（Day05）
+### 4. Docker 部署
 
 ```powershell
 docker build -t ai-chat:v1 .
 docker run -p 8000:8000 ai-chat:v1
 ```
 
-详见 [docs/Day05.md](docs/Day05.md)。
+容器访问宿主机 Ollama：
 
-## 技术栈
+```powershell
+docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 ai-chat:v1
+```
 
-| 类别 | 技术 |
+---
+
+## 环境变量
+
+| 变量名 | 默认值 | 说明 |
+|--------|--------|------|
+| `OPENAI_API_KEY` | `ollama` | API 密钥 |
+| `OPENAI_BASE_URL` | `http://127.0.0.1:11434/v1` | 兼容 API 地址 |
+| `MODEL_NAME` | `qwen3:4b` | 模型名称 |
+| `PROVIDER` | `ollama` | 提供方标识 |
+| `SYSTEM_PROMPT` | `你是一名AI技术项目经理.` | 系统提示词 |
+| `REQUEST_TIMEOUT` | `600` | 请求超时（秒） |
+
+---
+
+## 文档
+
+| 文档 | 说明 |
 |------|------|
-| 语言 | Python 3.10+ |
-| LLM 客户端 | OpenAI Python SDK |
-| 云端模型 | 通义千问（DashScope） |
-| 本地模型 | Ollama + qwen3:4b |
-| Web 框架 | FastAPI + Uvicorn |
-| 容器化 | Docker |
+| [docs/development-standards.md](docs/development-standards.md) | AI 项目开发规范 |
+| [docs/solution-design.md](docs/solution-design.md) | AI 方案设计（技术选型与演进路线） |
+| [docs/api.md](docs/api.md) | HTTP 接口详细说明 |
+| [docs/roadmap.md](docs/roadmap.md) | 学习路线与后续规划 |
+| [docs/Day01.md](docs/Day01.md) ~ [Day06.md](docs/Day06.md) | 每日工作日志 |
+
+---
+
+## 相关链接
+
+- [FastAPI 文档](https://fastapi.tiangolo.com/)
+- [Ollama 文档](https://github.com/ollama/ollama)
+- [OpenAI Python SDK](https://github.com/openai/openai-python)
+- [阿里云百炼](https://bailian.console.aliyun.com/)
