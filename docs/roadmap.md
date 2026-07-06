@@ -14,7 +14,7 @@
 
 - [x] Day08 Upload + Refactor — `feat(upload)` — v0.2.0-alpha
 - [x] Day09 PDF Loader — `feat(pdf-loader)` — v0.2.0-alpha2
-- [ ] Day10 Chunker — `feat(chunker)` — v0.2.0-beta
+- [x] Day10 Chunker — `feat(chunker)` — v0.2.0-beta
 - [ ] Day11 Embedding — `feat(embedding)` — v0.2.0-beta2
 - [ ] Day12 ChromaDB — `feat(vector-db)` — v0.2.0-rc
 - [ ] Day13 RAG Pipeline — `feat(rag)` — v0.2.0

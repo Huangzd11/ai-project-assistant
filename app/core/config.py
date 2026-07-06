@@ -26,3 +26,8 @@ UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")
 
 # Day09 — PDF 解析 JSON 输出目录
 PARSED_DIR = os.getenv("PARSED_DIR", "data/parsed")
+
+# Day10 — 文本块拆分（按页）
+CHUNKS_DIR = os.getenv("CHUNKS_DIR", "data/chunks")   # 文本块保存目录
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "500"))   # 文本块大小
+CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "50"))   # 文本块重叠大小

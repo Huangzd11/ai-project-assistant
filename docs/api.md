@@ -121,6 +121,37 @@ python -c "from app.rag.pdf_loader import parse_pdf; print(parse_pdf('uploads/li
 
 ---
 
+## Chunk 切分（Day10 · 模块调用）
+
+解析后的 JSON 可通过 `app/rag/chunker.py` 切分为 Chunk（当前非 HTTP 接口，Day13 纳入流水线）。
+
+```powershell
+python -c "from app.rag.chunker import chunk_pdf; print(chunk_pdf('data/parsed/linux.json'))"
+```
+
+**输出文件：** `data/chunks/linux.json`
+
+```json
+{
+  "source": "linux.pdf",
+  "chunk_size": 500,
+  "chunk_overlap": 50,
+  "total_chunks": 12,
+  "chunks": [
+    { "chunk_id": 1, "page": 1, "content": "..." },
+    { "chunk_id": 2, "page": 1, "content": "..." }
+  ]
+}
+```
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `chunk_id` | int | 全局递增块编号 |
+| `page` | int | 来源页码（便于溯源） |
+| `content` | string | 块文本内容 |
+
+---
+
 ## 环境变量
 
 | 变量名 | 默认值 | 说明 |
@@ -133,3 +164,6 @@ python -c "from app.rag.pdf_loader import parse_pdf; print(parse_pdf('uploads/li
 | `REQUEST_TIMEOUT` | `600` | 请求超时（秒） |
 | `UPLOAD_DIR` | `uploads` | PDF 上传保存目录 |
 | `PARSED_DIR` | `data/parsed` | PDF 解析 JSON 输出目录 |
+| `CHUNKS_DIR` | `data/chunks` | Chunk JSON 输出目录 |
+| `CHUNK_SIZE` | `500` | 文本块大小（字符） |
+| `CHUNK_OVERLAP` | `50` | 块间重叠字符数 |

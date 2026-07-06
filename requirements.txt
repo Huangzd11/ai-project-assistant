@@ -13,3 +13,6 @@ python-multipart
 
 # Day09 — PDF 解析（PyMuPDF）
 pymupdf
+
+# Day10 — 文本切分
+langchain-text-splitters

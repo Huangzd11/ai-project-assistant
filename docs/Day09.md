@@ -15,11 +15,13 @@
 
 ### 核心模块
 
-| 函数 | 职责 |
-|------|------|
-| `load_pdf_pages()` | fitz 打开 PDF，逐页 `get_text()` |
+
+| 函数                   | 职责                           |
+| -------------------- | ---------------------------- |
+| `load_pdf_pages()`   | fitz 打开 PDF，逐页 `get_text()`  |
 | `save_parsed_json()` | 写入 `data/parsed/{name}.json` |
-| `parse_pdf()` | 门面函数，串联 A → B |
+| `parse_pdf()`        | 门面函数，串联 A → B                |
+
 
 ### 实测验证
 
@@ -43,6 +45,8 @@ python -c "from app.rag.pdf_loader import parse_pdf; print(parse_pdf('uploads/te
 
 ---
 
+
+
 ## 在 Sprint 2 中的位置
 
 ```
@@ -53,11 +57,15 @@ Day10  Chunker       →     文本切分（下一步）
 
 ---
 
+
+
 ## 技术选型：PyMuPDF
 
 选用 PyMuPDF（`import fitz`），按页 `get_text()` 速度快，满足 RAG 纯文本提取需求。
 
 ---
+
+
 
 ## 处理流程
 
@@ -67,30 +75,40 @@ uploads/xxx.pdf → fitz.open → 每页 get_text() → data/parsed/xxx.json
 
 ---
 
+
+
 ## 目录与配置
 
-| 路径 | 说明 |
-|------|------|
-| `app/rag/pdf_loader.py` | 解析核心逻辑 |
-| `uploads/` | 原始 PDF（Day08） |
-| `data/parsed/` | 解析 JSON（Day09） |
-| `PARSED_DIR` | 环境变量，默认 `data/parsed` |
+
+| 路径                      | 说明                    |
+| ----------------------- | --------------------- |
+| `app/rag/pdf_loader.py` | 解析核心逻辑                |
+| `uploads/`              | 原始 PDF（Day08）         |
+| `data/parsed/`          | 解析 JSON（Day09）        |
+| `PARSED_DIR`            | 环境变量，默认 `data/parsed` |
+
 
 ---
+
+
 
 ## 实现清单
 
-| # | 任务 | 状态 |
-|---|------|------|
-| 1 | `requirements.txt` 添加 pymupdf | ✅ |
-| 2 | `data/parsed/.gitkeep` | ✅ |
-| 3 | `load_pdf_pages` | ✅ |
-| 4 | `save_parsed_json` | ✅ |
-| 5 | `parse_pdf` | ✅ |
-| 6 | `PARSED_DIR` 配置 | ✅ |
-| 7 | Day08 → Day09 联调 | ✅ |
+
+| #   | 任务                            | 状态  |
+| --- | ----------------------------- | --- |
+| 1   | `requirements.txt` 添加 pymupdf | ✅   |
+| 2   | `data/parsed/.gitkeep`        | ✅   |
+| 3   | `load_pdf_pages`              | ✅   |
+| 4   | `save_parsed_json`            | ✅   |
+| 5   | `parse_pdf`                   | ✅   |
+| 6   | `PARSED_DIR` 配置               | ✅   |
+| 7   | Day08 → Day09 联调              | ✅   |
+
 
 ---
+
+
 
 ## 测试命令
 
@@ -103,14 +121,18 @@ python -c "from app.rag.pdf_loader import parse_pdf; print(parse_pdf('uploads/te
 
 ---
 
+
+
 ## 每日收尾
 
 - [x] 更新 README、CODEMAP、roadmap、solution-design
 - [x] `.gitignore` 忽略 `data/parsed/*.json`
-- [ ] Git Commit：`feat(pdf-loader): extract per-page text with PyMuPDF`
-- [ ] Tag：`v0.2.0-alpha2`
+- [x] Git Commit：`feat(pdf-loader): extract per-page text with PyMuPDF`
+- [x] Tag：`v0.2.0-alpha2`
 
 ---
+
+
 
 ## 收获
 
@@ -120,6 +142,8 @@ python -c "from app.rag.pdf_loader import parse_pdf; print(parse_pdf('uploads/te
 
 ---
 
+
+
 ## 下一步
 
-Day10 — Chunk 切分（`feat(chunker)`，v0.2.0-beta）
+Day10 — Chunk 切分（`feat(chunker)`，v0.2.0-beta）✅ 已完成，见 [Day10.md](Day10.md)。

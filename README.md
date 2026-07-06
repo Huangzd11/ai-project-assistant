@@ -8,7 +8,7 @@
 
 ## 项目简介
 
-本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 2（v0.2.x）**，完成 Day01 ~ Day09：
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 2（v0.2.x）**，完成 Day01 ~ Day10：
 
 - LLM 基础与 Prompt 设计（Day01）
 - OpenAI 兼容 API 多轮对话（Day02）
@@ -19,6 +19,7 @@
 - 阶段回顾与查漏补缺（Day07）
 - 项目重构 + PDF 上传（Day08）
 - PDF 按页解析为 JSON（Day09）
+- LangChain 文本 Chunk 切分（Day10）
 
 适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
 
@@ -38,6 +39,7 @@
 | 数据校验 | Pydantic | 请求 / 响应模型 |
 | 容器化 | Docker | 镜像构建与部署 |
 | PDF 解析 | PyMuPDF | Day09 按页提取文本 |
+| 文本切分 | LangChain Text Splitters | Day10 Chunk 切分 |
 
 ---
 
@@ -89,6 +91,18 @@ python -c "from app.rag.pdf_loader import parse_pdf; print(parse_pdf('uploads/te
 
 详见 [docs/Day09.md](docs/Day09.md)。
 
+### Chunk 切分（Day10 · v0.2.0-beta）
+
+- LangChain `RecursiveCharacterTextSplitter` 按页切分
+- 可配置 `chunk_size` / `chunk_overlap`
+- 输出 `data/chunks/{name}.json`（`chunk_id`、`page`、`content`）
+
+```powershell
+python -c "from app.rag.chunker import chunk_pdf; print(chunk_pdf('data/parsed/test.json'))"
+```
+
+详见 [docs/Day10.md](docs/Day10.md)。
+
 ### HTTP API 服务（Day04）
 
 | 接口 | 方法 | 说明 |
@@ -138,8 +152,10 @@ python -c "from app.rag.pdf_loader import parse_pdf; print(parse_pdf('uploads/te
 - [x] Day05 Docker
 - [x] Day06 GitHub
 - [x] Day07 Review
+- [x] Day08 Upload + Refactor
 - [x] Day09 PDF Loader
-- [ ] Day10 Chunker
+- [x] Day10 Chunker
+- [ ] Day11 Embedding
 
 ---
 
@@ -164,7 +180,8 @@ ai-project-assistant/
 │   ├── models/
 │   │   └── schemas.py                # Day04/08 — Pydantic 模型
 │   └── rag/                          # Day09+ RAG
-│       └── pdf_loader.py             # Day09 — PDF 解析
+│       ├── pdf_loader.py             # Day09 — PDF 解析
+│       └── chunker.py                # Day10 — Chunk 切分
 │
 ├── examples/                         # Day01~03 学习示例
 │   ├── prompt_demo.py                # Day01
@@ -173,12 +190,13 @@ ai-project-assistant/
 │
 ├── uploads/                          # Day08 — 原始 PDF
 ├── data/
-│   └── parsed/                       # Day09 — 解析 JSON
+│   ├── parsed/                       # Day09 — 解析 JSON
+│   └── chunks/                       # Day10 — Chunk JSON
 ├── tests/                            # Day14 测试（预留）
 │
 ├── docs/                             # 文档与工作日志
 │   ├── CODEMAP.md                    # 代码地图（按 Day 索引）
-│   ├── Day01.md ~ Day09.md
+│   ├── Day01.md ~ Day10.md
 │   ├── api.md / roadmap.md
 │   ├── solution-design.md
 │   ├── development-standards.md
@@ -238,10 +256,15 @@ python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 ```powershell
 python -c "from app.rag.pdf_loader import parse_pdf; print(parse_pdf('uploads/test.pdf'))"
-# 输出：data\parsed\test.json
 ```
 
-### 5. Docker 部署
+### 5. Chunk 切分（Day10）
+
+```powershell
+python -c "from app.rag.chunker import chunk_pdf; print(chunk_pdf('data/parsed/test.json'))"
+```
+
+### 6. Docker 部署
 
 ```powershell
 docker build -t ai-chat:v1 .
@@ -268,6 +291,9 @@ docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 
 | `REQUEST_TIMEOUT` | `600` | 请求超时（秒） |
 | `UPLOAD_DIR` | `uploads` | PDF 上传保存目录 |
 | `PARSED_DIR` | `data/parsed` | PDF 解析 JSON 输出目录 |
+| `CHUNKS_DIR` | `data/chunks` | Chunk JSON 输出目录 |
+| `CHUNK_SIZE` | `500` | 文本块大小（字符） |
+| `CHUNK_OVERLAP` | `50` | 块间重叠字符数 |
 
 ---
 
@@ -280,7 +306,7 @@ docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 
 | [docs/solution-design.md](docs/solution-design.md) | AI 方案设计（技术选型与演进路线） |
 | [docs/api.md](docs/api.md) | HTTP 接口详细说明 |
 | [docs/roadmap.md](docs/roadmap.md) | 学习路线与后续规划 |
-| [docs/Day01.md](docs/Day01.md) ~ [Day09.md](docs/Day09.md) | 每日工作日志 |
+| [docs/Day01.md](docs/Day01.md) ~ [Day10.md](docs/Day10.md) | 每日工作日志 |
 
 ---
 
