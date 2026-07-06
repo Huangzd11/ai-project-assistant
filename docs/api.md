@@ -231,6 +231,61 @@ python -c "from app.rag.vector_store import search; import json; print(json.dump
 
 ---
 
+## POST `/rag`
+
+知识库 RAG 问答（Day13）：检索 Top-K → 拼接 Prompt → LLM 生成带引用的回答。
+
+**请求：**
+
+```json
+{ "question": "如何开启 telnet？" }
+```
+
+**响应：**
+
+```json
+{
+  "question": "如何开启 telnet？",
+  "answer": "根据《test.pdf》第1页：ASR1803开启telnetd……",
+  "sources": [
+    {
+      "source": "test.pdf",
+      "page": 1,
+      "chunk": 1,
+      "score": 0.72
+    }
+  ]
+}
+```
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `question` | string | 用户问题 |
+| `answer` | string | LLM 生成的回答（含引用句式） |
+| `sources` | array | 引用来源列表 |
+| `sources[].source` | string | 文档名 |
+| `sources[].page` | int | 页码 |
+| `sources[].chunk` | int | chunk 编号 |
+| `sources[].score` | float | 检索相似度 |
+
+**PowerShell 测试：**
+
+```powershell
+Invoke-RestMethod -Uri http://127.0.0.1:8000/rag `
+  -Method Post -ContentType "application/json" `
+  -Body '{"question":"如何开启 telnet？"}'
+```
+
+**模块调用（无 HTTP）：**
+
+```powershell
+python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.dumps(rag_answer('telnet'), ensure_ascii=False, indent=2))"
+```
+
+> 前置条件：知识库已通过 `index_chunks()` 入库；LLM 服务（Ollama 或通义）可用。
+
+---
+
 ## 环境变量
 
 | 变量名 | 默认值 | 说明 |
@@ -253,3 +308,4 @@ python -c "from app.rag.vector_store import search; import json; print(json.dump
 | `CHROMA_DIR` | `data/chroma` | Chroma 持久化目录 |
 | `CHROMA_COLLECTION` | `knowledge` | Collection 名称 |
 | `SEARCH_TOP_K` | `5` | 检索返回条数 |
+| `RAG_SYSTEM_PROMPT` | （见 config.py） | RAG 专用 system 提示词 |

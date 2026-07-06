@@ -8,7 +8,7 @@
 
 ## 项目简介
 
-本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 2（v0.2.x）**，完成 Day01 ~ Day12：
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 2（v0.2.x）**，完成 Day01 ~ Day13：
 
 - LLM 基础与 Prompt 设计（Day01）
 - OpenAI 兼容 API 多轮对话（Day02）
@@ -21,7 +21,8 @@
 - PDF 按页解析为 JSON（Day09）
 - LangChain 文本 Chunk 切分（Day10）
 - 文本 Embedding 向量化（Day11）
-- Chroma 向量入库与 Top-K 检索（Day12，无 LLM）
+- Chroma 向量入库与 Top-K 检索（Day12）
+- RAG 知识库问答（Day13，检索 + LLM + 来源溯源）
 
 适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
 
@@ -142,6 +143,23 @@ python -c "from app.rag.vector_store import search; print(search('telnet')['resu
 
 详见 [docs/Day12.md](docs/Day12.md)。
 
+### RAG 知识库问答（Day13 · v0.2.0）
+
+- 完整链路：Question → Search → Prompt → LLM → Answer
+- `POST /rag` 返回答案与 `sources`（文档名 + 页码）
+- `POST /chat` 保持纯 LLM 对话不变
+
+```powershell
+# 模块调用
+python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.dumps(rag_answer('如何开启 telnet'), ensure_ascii=False, indent=2))"
+```
+
+```json
+{ "question": "...", "answer": "根据《test.pdf》第1页：……", "sources": [{ "source": "test.pdf", "page": 1, "score": 0.72 }] }
+```
+
+详见 [docs/Day13.md](docs/Day13.md)。
+
 ### HTTP API 服务（Day04）
 
 
@@ -152,6 +170,7 @@ python -c "from app.rag.vector_store import search; print(search('telnet')['resu
 | `/models` | GET  | 当前模型配置        |
 | `/chat`   | POST | AI 聊天         |
 | `/upload` | POST | PDF 上传（Day08） |
+| `/rag` | POST | 知识库 RAG 问答（Day13） |
 
 
 运行：`python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000`  
@@ -200,7 +219,8 @@ python -c "from app.rag.vector_store import search; print(search('telnet')['resu
 - [x] Day10 Chunker
 - [x] Day11 Embedding
 - [x] Day12 ChromaDB
-- [ ] Day13 RAG Pipeline
+- [x] Day13 RAG Pipeline
+- [ ] Day14 Test & Release
 
 ---
 
@@ -218,7 +238,8 @@ ai-project-assistant/
 │   ├── api/
 │   │   ├── health.py                 # Day04 — / 、/health
 │   │   ├── chat.py                   # Day04 — /chat 、/models
-│   │   └── upload.py                 # Day08 — /upload（PDF）
+│   │   ├── upload.py                 # Day08 — /upload
+│   │   └── rag.py                    # Day13 — /rag（PDF）
 │   ├── core/
 │   │   ├── config.py                 # Day02/04/08 — 环境配置
 │   │   ├── llm.py                    # Day02/04 — LLM 调用
@@ -230,7 +251,8 @@ ai-project-assistant/
 │       ├── pdf_loader.py             # Day09 — PDF 解析
 │       ├── chunker.py                # Day10 — Chunk 切分
 │       ├── embedder.py               # Day11 — Embedding 向量化
-│       └── vector_store.py           # Day12 — Chroma 入库 + 检索
+│       ├── vector_store.py           # Day12 — Chroma 入库 + 检索
+│       └── rag_pipeline.py           # Day13 — RAG 问答
 │
 ├── examples/                         # Day01~03 学习示例
 │   ├── prompt_demo.py                # Day01
@@ -247,7 +269,7 @@ ai-project-assistant/
 │
 ├── docs/                             # 文档与工作日志
 │   ├── CODEMAP.md                    # 代码地图（按 Day 索引）
-│   ├── Day01.md ~ Day12.md
+│   ├── Day01.md ~ Day13.md
 │   ├── api.md / roadmap.md
 │   ├── solution-design.md
 │   ├── development-standards.md
@@ -346,7 +368,13 @@ python -c "from app.rag.vector_store import search; print(search('telnet')['resu
 
 
 
-### 8. Docker 部署
+### 8. RAG 知识库问答（Day13）
+
+```powershell
+python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.dumps(rag_answer('telnet'), ensure_ascii=False, indent=2))"
+```
+
+### 9. Docker 部署
 
 ```powershell
 docker build -t ai-chat:v1 .
@@ -386,6 +414,7 @@ docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 
 | `CHROMA_DIR`          | `data/chroma`               | Chroma 持久化目录          |
 | `CHROMA_COLLECTION`   | `knowledge`                 | Collection 名称         |
 | `SEARCH_TOP_K`        | `5`                         | 检索返回条数                |
+| `RAG_SYSTEM_PROMPT`   | （见 config.py）               | RAG 专用 system 提示词     |
 
 
 ---
@@ -402,7 +431,7 @@ docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 
 | [docs/solution-design.md](docs/solution-design.md)             | AI 方案设计（技术选型与演进路线） |
 | [docs/api.md](docs/api.md)                                     | HTTP 接口详细说明        |
 | [docs/roadmap.md](docs/roadmap.md)                             | 学习路线与后续规划          |
-| [docs/Day01.md](docs/Day01.md) ~ [Day12.md](docs/Day12.md)     | 每日工作日志             |
+| [docs/Day01.md](docs/Day01.md) ~ [Day13.md](docs/Day13.md)     | 每日工作日志             |
 
 
 ---

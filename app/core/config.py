@@ -42,3 +42,11 @@ EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "512"))
 CHROMA_DIR = os.getenv("CHROMA_DIR", "data/chroma")
 CHROMA_COLLECTION_NAME = os.getenv("CHROMA_COLLECTION", "knowledge")
 SEARCH_TOP_K = int(os.getenv("SEARCH_TOP_K", "5"))
+
+# Day13 — RAG 问答
+RAG_SYSTEM_PROMPT = os.getenv(
+    "RAG_SYSTEM_PROMPT",
+    "你是一名企业知识库助手。请仅根据用户提供的「参考资料」回答问题。"
+    "若资料不足以回答，请明确说「根据现有资料无法回答」。"
+    "回答时请注明引用来源，格式：根据《文档名》第X页：……",
+)

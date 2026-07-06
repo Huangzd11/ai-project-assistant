@@ -15,7 +15,8 @@ ai-project-assistant/
 │   ├── api/                          # Day04 拆分 · Day08 扩展
 │   │   ├── health.py                 # Day04 — GET / 、/health
 │   │   ├── chat.py                   # Day04 — GET /models 、POST /chat
-│   │   └── upload.py                 # Day08 — POST /upload（PDF 上传）
+│   │   ├── upload.py                 # Day08 — POST /upload（PDF 上传）
+│   │   └── rag.py                    # Day13 — POST /rag
 │   │
 │   ├── core/                         # Day04 核心层 · Day08 扩展
 │   │   ├── config.py                 # Day02/04/08 — 环境变量配置
@@ -32,7 +33,8 @@ ai-project-assistant/
 │       ├── pdf_loader.py             # Day09 — PDF 按页解析 → JSON
 │       ├── chunker.py                # Day10 — LangChain Chunk 切分
 │       ├── embedder.py               # Day11 — Embedding 向量化
-│       └── vector_store.py           # Day12 — Chroma 入库 + 检索
+│       ├── vector_store.py           # Day12 — Chroma 入库 + 检索
+│       └── rag_pipeline.py           # Day13 — RAG 问答
 │
 ├── examples/                         # Day01~03 学习示例（独立脚本）
 │   ├── prompt_demo.py                # Day01 — Prompt 练习
@@ -47,8 +49,8 @@ ai-project-assistant/
 │   └── chroma/                       # Day12 — Chroma 持久化
 ├── tests/                            # Day14 — 自动化测试（预留）
 │
-├── docs/                             # Day06~12 — 项目文档
-│   ├── Day01.md ~ Day12.md           # 每日工作日志
+├── docs/                             # Day06~13 — 项目文档
+│   ├── Day01.md ~ Day13.md           # 每日工作日志
 │   ├── api.md                        # HTTP 接口说明
 │   ├── roadmap.md                    # 学习路线
 │   ├── solution-design.md            # AI 方案设计
@@ -88,6 +90,8 @@ ai-project-assistant/
 | **Day10** | `app/rag/chunker.py` | Chunk 切分 | LangChain RecursiveCharacterTextSplitter → chunks JSON |
 | **Day11** | `app/rag/embedder.py` | Embedding | bge-small / DashScope → vectors JSON |
 | **Day12** | `app/rag/vector_store.py` | 向量检索 | Chroma Insert + Top-K Search（无 LLM） |
+| **Day13** | `app/rag/rag_pipeline.py` | RAG 问答 | search → prompt → llm → answer + sources |
+| **Day13** | `app/api/rag.py` | HTTP API | POST /rag |
 
 ---
 
@@ -112,6 +116,10 @@ data/chunks/xxx.json → app/rag/embedder.embed_chunks() → data/vectors/xxx.js
 # 入库 + 检索（Day12）
 data/chunks + data/vectors → app/rag/vector_store.index_chunks() → data/chroma/
 Question → app/rag/vector_store.search() → Top5 结果
+
+# RAG 问答（Day13）
+Question → app/rag/rag_pipeline.rag_answer() → { answer, sources }
+Browser → POST /rag → app/api/rag.py → rag_pipeline
 ```
 
 ---
@@ -141,4 +149,7 @@ python -c "from app.rag.embedder import embed_chunks; print(embed_chunks('data/c
 
 # Chroma 入库 + 检索（Day12）
 python -c "from app.rag.vector_store import index_chunks, search; print(index_chunks('data/chunks/test.json')); print(search('telnet')['results'][0])"
+
+# RAG 问答（Day13）
+python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.dumps(rag_answer('telnet'), ensure_ascii=False, indent=2))"
 ```

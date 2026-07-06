@@ -45,6 +45,7 @@ ai-project-assistant/
 | 切分层 | `app/rag/chunker.py` | 按页 Chunk → JSON（Day10） |
 | 向量层 | `app/rag/embedder.py` | Chunk → Embedding JSON（Day11） |
 | 存储层 | `app/rag/vector_store.py` | Chroma 入库 + Top-K 检索（Day12） |
+| 编排层 | `app/rag/rag_pipeline.py` | RAG 问答（Day13） |
 | 接口层 | `app/api/*.py` | FastAPI 路由 |
 
 **原则**：上层依赖下层，推理层不反向依赖接口层。
@@ -147,8 +148,8 @@ python examples/chat_demo.py
 # API 服务
 python -m uvicorn app.main:app --reload
 
-# PDF 解析 → Chunk → Embedding → Chroma（Day09~12）
-python -c "from app.rag.pdf_loader import parse_pdf; from app.rag.chunker import chunk_pdf; from app.rag.embedder import embed_chunks; from app.rag.vector_store import index_chunks, search; p=parse_pdf('uploads/test.pdf'); c=chunk_pdf(p); embed_chunks(c); print(index_chunks(c)); print(search('telnet')['results'][0])"
+# PDF 解析 → Chunk → Embedding → Chroma → RAG（Day09~13）
+python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.dumps(rag_answer('telnet'), ensure_ascii=False, indent=2))"
 
 # Docker
 docker build -t ai-chat:v1 . && docker run -p 8000:8000 ai-chat:v1

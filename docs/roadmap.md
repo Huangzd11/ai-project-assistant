@@ -17,7 +17,7 @@
 - [x] Day10 Chunker — `feat(chunker)` — v0.2.0-beta
 - [x] Day11 Embedding — `feat(embedding)` — v0.2.0-beta2
 - [x] Day12 ChromaDB — `feat(vector-db)` — v0.2.0-rc
-- [ ] Day13 RAG Pipeline — `feat(rag)` — v0.2.0
+- [x] Day13 RAG Pipeline — `feat(rag)` — v0.2.0
 - [ ] Day14 Test & Release — `release(v0.2.0)`
 
 ---

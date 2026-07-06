@@ -1,0 +1,30 @@
+{
+  "query": "如何开启 telnet",
+  "top_k": 5,
+  "results": [
+    {
+      "rank": 1,
+      "score": 0.7198,
+      "chunk": 2,
+      "page": 2,
+      "source": "test.pdf",
+      "content": "工具选择telnet终端：\n2、ASR1803开启dropbear ssh远程："
+    },
+    {
+      "rank": 2,
+      "score": 0.7188,
+      "chunk": 1,
+      "page": 1,
+      "source": "test.pdf",
+      "content": "【知识文档】【第三方工具】使用telnet或ssh远程终端\n1、ASR1803开启telnetd\nmake menuconfig 之后把下面这两个打开：\n或者手动修改配置文件的：\nCONFIG_BUSYBOX_CONFIG_TELNETD\nCONFIG_BUSYBOX_FEATURE_TELNETD_STANDALONE\ncp ./.config  ./config/defconfig_asr1803p401\n然后build_fw\n然后拉下telnetd\ntelnetd -l /bin/ash #无需密码，直接登录"
+    },
+    {
+      "rank": 3,
+      "score": 0.3428,
+      "chunk": 3,
+      "page": 3,
+      "source": "test.pdf",
+      "content": "vi /etc/init.d/dropbear"
+    }
+  ]
+}

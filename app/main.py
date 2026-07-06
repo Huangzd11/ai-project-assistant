@@ -7,10 +7,11 @@
 
 from fastapi import FastAPI
 
-from app.api import chat, health, upload
+from app.api import chat, health, rag, upload
 
-app = FastAPI(title="AI Project Assistant", version="0.2.0-alpha")
+app = FastAPI(title="AI Project Assistant", version="0.2.0")
 
 app.include_router(health.router)
 app.include_router(chat.router)
 app.include_router(upload.router)
+app.include_router(rag.router)

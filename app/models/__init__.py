@@ -3,6 +3,9 @@ from app.models.schemas import (
     ChatResponse,
     HealthResponse,
     ModelInfo,
+    RagRequest,
+    RagResponse,
+    RagSource,
     UploadResponse,
 )
 
@@ -11,5 +14,8 @@ __all__ = [
     "ChatResponse",
     "HealthResponse",
     "ModelInfo",
+    "RagRequest",
+    "RagResponse",
+    "RagSource",
     "UploadResponse",
 ]

@@ -33,3 +33,23 @@ class ModelInfo(BaseModel):
 class UploadResponse(BaseModel):
     filename: str
     size: str
+
+
+# @brief: RAG 来源条目（Day13）
+class RagSource(BaseModel):
+    source: str
+    page: int
+    chunk: int
+    score: float
+
+
+# @brief: POST /rag 请求体（Day13）
+class RagRequest(BaseModel):
+    question: str = Field(..., min_length=1, description="用户问题")
+
+
+# @brief: POST /rag 响应体（Day13）
+class RagResponse(BaseModel):
+    question: str
+    answer: str
+    sources: list[RagSource]
