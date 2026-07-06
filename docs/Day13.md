@@ -15,18 +15,22 @@
 
 ### 核心模块
 
-| 函数 | 职责 |
-|------|------|
-| `format_context()` | 检索结果 → Prompt 参考资料 |
-| `build_rag_prompt()` | 拼接 user prompt |
-| `extract_sources()` | 按 source+page 去重来源 |
-| `rag_answer()` | 门面：search → prompt → llm → 返回 |
+
+| 函数                   | 职责                            |
+| -------------------- | ----------------------------- |
+| `format_context()`   | 检索结果 → Prompt 参考资料            |
+| `build_rag_prompt()` | 拼接 user prompt                |
+| `extract_sources()`  | 按 source+page 去重来源            |
+| `rag_answer()`       | 门面：search → prompt → llm → 返回 |
+
 
 ### HTTP 接口
 
-| 接口 | 方法 | 说明 |
-|------|------|------|
+
+| 接口          | 方法    | 说明             |
+| ----------- | ----- | -------------- |
 | `POST /rag` | 知识库问答 | 返回答案 + sources |
+
 
 ### 实测验证
 
@@ -48,6 +52,8 @@ python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.
 
 ---
 
+
+
 ## 完整 RAG 链路
 
 ```
@@ -56,17 +62,23 @@ Question → Embedding → Search → Chunk → Prompt → LLM → Answer + sour
 
 ---
 
+
+
 ## 实现清单
 
-| # | 任务 | 状态 |
-|---|------|------|
-| 1 | `RAG_SYSTEM_PROMPT` 配置 | ✅ |
-| 2 | `llm.chat(system_prompt=...)` | ✅ |
-| 3 | `rag_pipeline.py` | ✅ |
-| 4 | `POST /rag` + Pydantic 模型 | ✅ |
-| 5 | 联调问答 | ✅ |
+
+| #   | 任务                            | 状态  |
+| --- | ----------------------------- | --- |
+| 1   | `RAG_SYSTEM_PROMPT` 配置        | ✅   |
+| 2   | `llm.chat(system_prompt=...)` | ✅   |
+| 3   | `rag_pipeline.py`             | ✅   |
+| 4   | `POST /rag` + Pydantic 模型     | ✅   |
+| 5   | 联调问答                          | ✅   |
+
 
 ---
+
+
 
 ## 测试命令
 
@@ -81,13 +93,17 @@ python -m uvicorn app.main:app --reload
 
 ---
 
+
+
 ## 每日收尾
 
 - [x] 更新 README、CODEMAP、roadmap、solution-design、api.md
-- [ ] Git Commit：`feat(rag): complete RAG pipeline with cited answers`
-- [ ] Tag：`v0.2.0`
+- [x] Git Commit：`feat(rag): complete RAG pipeline with cited answers`
+- [x] Tag：`v0.2.0`
 
 ---
+
+
 
 ## 收获
 
@@ -97,6 +113,8 @@ python -m uvicorn app.main:app --reload
 
 ---
 
+
+
 ## 下一步
 
-Day14 — Test & Release（`release(v0.2.0)`）
+Day14 — 企业化优化与 Release（`release: v0.2 enterprise rag`）← 设计完成，见 [Day14.md](Day14.md)

@@ -1,6 +1,40 @@
 # API 接口说明
 
-基础地址：`http://127.0.0.1:8000`
+> **版本：v0.2.0**（Sprint 2 Enterprise RAG Release）  
+> 基础地址：`http://127.0.0.1:8000`  
+> 交互文档：[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+## 核心接口一览
+
+| 接口 | 方法 | 说明 |
+|------|------|------|
+| `/health` | GET | 健康检查探活 |
+| `/upload` | POST | 上传 PDF 至知识库 |
+| `/chat` | POST | 纯 LLM 对话（不走知识库） |
+| `/rag` | POST | 企业知识库 RAG 问答（含引用来源） |
+
+## 错误响应（Day14）
+
+| HTTP | 场景 | 响应示例 |
+|------|------|----------|
+| 400 | 上传非 PDF | `{"detail": "仅支持 PDF 文件"}` |
+| 503 | LLM 不可达（Ollama 未启动） | `{"detail": "LLM 服务不可用，请检查 Ollama"}` |
+| 504 | LLM 请求超时 | `{"detail": "LLM 请求超时"}` |
+| 500 | 未知服务器错误 | `{"detail": "服务器内部错误"}` |
+
+检索无结果时 `POST /rag` 仍返回 **200**，`sources` 为空数组：
+
+```json
+{
+  "question": "不存在的问题",
+  "answer": "知识库中未找到相关内容。",
+  "sources": []
+}
+```
+
+**引用来源展示约定（前端）：** `{source}  Page {page}`，例如 `test.pdf  Page 1`。
+
+---
 
 ## GET `/`
 
@@ -14,10 +48,16 @@
 
 ## GET `/health`
 
-健康检查，用于探活。
+健康检查，用于探活（Docker/K8s）。
 
 ```json
 { "status": "OK" }
+```
+
+**PowerShell 测试：**
+
+```powershell
+Invoke-RestMethod -Uri http://127.0.0.1:8000/health
 ```
 
 ---

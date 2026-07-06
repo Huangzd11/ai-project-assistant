@@ -8,7 +8,7 @@
 
 ## 项目简介
 
-本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 2（v0.2.x）**，完成 Day01 ~ Day13：
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已完成 **Sprint 2（v0.2.0 Enterprise RAG）**，完成 Day01 ~ Day14：
 
 - LLM 基础与 Prompt 设计（Day01）
 - OpenAI 兼容 API 多轮对话（Day02）
@@ -23,8 +23,58 @@
 - 文本 Embedding 向量化（Day11）
 - Chroma 向量入库与 Top-K 检索（Day12）
 - RAG 知识库问答（Day13，检索 + LLM + 来源溯源）
+- 企业化优化与 Release（Day14，日志 / 异常 / Swagger / Docker）
 
 适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
+
+---
+
+## v0.2.0 Release — 企业 RAG 快速体验
+
+**四步跑通知识库问答：**
+
+```powershell
+# 1. 启动服务（需 Ollama）
+ollama serve
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+
+# 2. 上传 PDF（Swagger 或 curl）
+curl.exe -X POST http://127.0.0.1:8000/upload -F "file=@uploads/test.pdf"
+
+# 3. 入库（解析 → 切分 → 向量 → Chroma，按模块执行）
+python -c "from app.rag.pdf_loader import parse_pdf; parse_pdf('uploads/test.pdf')"
+python -c "from app.rag.chunker import chunk_pdf; chunk_pdf('data/parsed/test.json')"
+python -c "from app.rag.embedder import embed_chunks; embed_chunks('data/chunks/test.json')"
+python -c "from app.rag.vector_store import index_chunks; print(index_chunks('data/chunks/test.json'))"
+
+# 4. RAG 问答
+Invoke-RestMethod -Uri http://127.0.0.1:8000/rag -Method Post -ContentType "application/json" -Body '{"question":"如何开启 telnet？"}'
+```
+
+**核心 API：**
+
+| 接口 | 方法 | 说明 |
+|------|------|------|
+| `/health` | GET | 健康检查 |
+| `/upload` | POST | 上传 PDF |
+| `/chat` | POST | 纯 LLM 对话 |
+| `/rag` | POST | 知识库问答 + sources |
+
+**性能说明：** 首次 `/rag` 较慢（Embedding 模型冷启动 + LLM 生成）。可换 `qwen3:1.5b` 加速 LLM 部分；生产环境建议关闭 `--reload`。
+
+**Docker 部署（v0.2.0）：**
+
+```powershell
+docker build -t ai-assistant:v0.2.0 .
+docker run -p 8000:8000 `
+  -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 `
+  -e MODEL_NAME=qwen3:1.5b `
+  -v ${PWD}/data:/app/data `
+  -v ${PWD}/uploads:/app/uploads `
+  ai-assistant:v0.2.0
+```
+
+Git Tag：`v0.2.0`
 
 ---
 
@@ -160,6 +210,16 @@ python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.
 
 详见 [docs/Day13.md](docs/Day13.md)。
 
+### 企业化优化（Day14 · v0.2.0）
+
+- 请求日志中间件（路径 / 耗时 / 状态码）
+- LLM 异常友好响应（503 / 504）
+- RAG 分段耗时日志 + 引用来源记录
+- Swagger 完善：`/health` `/upload` `/chat` `/rag`
+- Docker 构建验证
+
+详见 [docs/Day14.md](docs/Day14.md)。
+
 ### HTTP API 服务（Day04）
 
 
@@ -220,7 +280,7 @@ python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.
 - [x] Day11 Embedding
 - [x] Day12 ChromaDB
 - [x] Day13 RAG Pipeline
-- [ ] Day14 Test & Release
+- [x] Day14 Enterprise Release
 
 ---
 
@@ -243,7 +303,9 @@ ai-project-assistant/
 │   ├── core/
 │   │   ├── config.py                 # Day02/04/08 — 环境配置
 │   │   ├── llm.py                    # Day02/04 — LLM 调用
-│   │   ├── logger.py                 # Day08 — 日志
+│   │   ├── logger.py                 # Day08/14 — 日志
+│   │   ├── middleware.py             # Day14 — 请求日志中间件
+│   │   ├── exceptions.py             # Day14 — 统一异常
 │   │   └── files.py                  # Day08 — 文件工具
 │   ├── models/
 │   │   └── schemas.py                # Day04/08 — Pydantic 模型
@@ -269,7 +331,7 @@ ai-project-assistant/
 │
 ├── docs/                             # 文档与工作日志
 │   ├── CODEMAP.md                    # 代码地图（按 Day 索引）
-│   ├── Day01.md ~ Day13.md
+│   ├── Day01.md ~ Day14.md
 │   ├── api.md / roadmap.md
 │   ├── solution-design.md
 │   ├── development-standards.md
@@ -374,18 +436,21 @@ python -c "from app.rag.vector_store import search; print(search('telnet')['resu
 python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.dumps(rag_answer('telnet'), ensure_ascii=False, indent=2))"
 ```
 
-### 9. Docker 部署
+### 9. Docker 部署（v0.2.0）
 
 ```powershell
-docker build -t ai-chat:v1 .
-docker run -p 8000:8000 ai-chat:v1
+docker build -t ai-assistant:v0.2.0 .
+docker run -p 8000:8000 `
+  -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 `
+  -e MODEL_NAME=qwen3:1.5b `
+  -v ${PWD}/data:/app/data `
+  -v ${PWD}/uploads:/app/uploads `
+  ai-assistant:v0.2.0
+
+curl http://127.0.0.1:8000/health
 ```
 
-容器访问宿主机 Ollama：
-
-```powershell
-docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 ai-chat:v1
-```
+> 镜像内不含 Ollama；Embedding 模型首次请求会从 HuggingFace 下载。
 
 ---
 
@@ -431,7 +496,7 @@ docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 
 | [docs/solution-design.md](docs/solution-design.md)             | AI 方案设计（技术选型与演进路线） |
 | [docs/api.md](docs/api.md)                                     | HTTP 接口详细说明        |
 | [docs/roadmap.md](docs/roadmap.md)                             | 学习路线与后续规划          |
-| [docs/Day01.md](docs/Day01.md) ~ [Day13.md](docs/Day13.md)     | 每日工作日志             |
+| [docs/Day01.md](docs/Day01.md) ~ [Day14.md](docs/Day14.md)     | 每日工作日志             |
 
 
 ---

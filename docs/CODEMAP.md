@@ -10,7 +10,7 @@
 ai-project-assistant/
 │
 ├── app/                              # Day04 创建 · Day08 重构
-│   ├── main.py                       # Day04/08 — FastAPI 入口，挂载路由
+│   ├── main.py                       # Day04/08/14 — FastAPI 入口，中间件与异常
 │   │
 │   ├── api/                          # Day04 拆分 · Day08 扩展
 │   │   ├── health.py                 # Day04 — GET / 、/health
@@ -18,10 +18,12 @@ ai-project-assistant/
 │   │   ├── upload.py                 # Day08 — POST /upload（PDF 上传）
 │   │   └── rag.py                    # Day13 — POST /rag
 │   │
-│   ├── core/                         # Day04 核心层 · Day08 扩展
+│   ├── core/                         # Day04 核心层 · Day08/14 扩展
 │   │   ├── config.py                 # Day02/04/08 — 环境变量配置
-│   │   ├── llm.py                    # Day02/04 — LLM chat() 封装
-│   │   ├── logger.py                 # Day08 — 日志
+│   │   ├── llm.py                    # Day02/04/14 — LLM chat() 封装
+│   │   ├── logger.py                 # Day08/14 — 日志
+│   │   ├── middleware.py             # Day14 — 请求日志中间件
+│   │   ├── exceptions.py             # Day14 — 统一异常
 │   │   └── files.py                  # Day08 — 文件大小格式化、目录创建
 │   │
 │   ├── models/                       # Day04 数据契约 · Day08 扩展
@@ -50,7 +52,7 @@ ai-project-assistant/
 ├── tests/                            # Day14 — 自动化测试（预留）
 │
 ├── docs/                             # Day06~13 — 项目文档
-│   ├── Day01.md ~ Day13.md           # 每日工作日志
+│   ├── Day01.md ~ Day14.md           # 每日工作日志
 │   ├── api.md                        # HTTP 接口说明
 │   ├── roadmap.md                    # 学习路线
 │   ├── solution-design.md            # AI 方案设计
@@ -92,6 +94,9 @@ ai-project-assistant/
 | **Day12** | `app/rag/vector_store.py` | 向量检索 | Chroma Insert + Top-K Search（无 LLM） |
 | **Day13** | `app/rag/rag_pipeline.py` | RAG 问答 | search → prompt → llm → answer + sources |
 | **Day13** | `app/api/rag.py` | HTTP API | POST /rag |
+| **Day14** | `app/core/middleware.py` | 请求日志 | 记录 method/path/duration/status |
+| **Day14** | `app/core/exceptions.py` | 统一异常 | LLM 503/504 友好响应 |
+| **Day14** | `app/main.py` | 网关层 | 中间件 + 全局异常 + OpenAPI |
 
 ---
 

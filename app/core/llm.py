@@ -1,6 +1,7 @@
 # Day02 — OpenAI SDK 调用 LLM（messages 结构）
 # Day04 — 封装为 chat() 函数，供 FastAPI 调用
 # Day13 — 支持可选 system_prompt（RAG 专用）
+# Day14 — LLM 异常映射为友好错误
 #
 # 功能：统一 LLM 推理入口
 # 逻辑：
@@ -10,7 +11,7 @@
 #
 # 说明：切换 OPENAI_BASE_URL 即可在 Ollama / 通义千问之间迁移
 
-from openai import OpenAI
+from openai import APIConnectionError, APITimeoutError, OpenAI, OpenAIError
 
 from app.core.config import (
     MODEL_NAME,
@@ -19,6 +20,8 @@ from app.core.config import (
     REQUEST_TIMEOUT,
     SYSTEM_PROMPT,
 )
+from app.core.exceptions import LLMTimeoutError, LLMUnavailableError
+from app.core.logger import logger
 
 client = OpenAI(
     api_key=OPENAI_API_KEY,
@@ -33,11 +36,24 @@ client = OpenAI(
 # @return: 模型回答文本
 def chat(message: str, system_prompt: str | None = None) -> str:
     prompt = system_prompt or SYSTEM_PROMPT
-    response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[
-            {"role": "system", "content": prompt},
-            {"role": "user", "content": message},
-        ],
-    )
-    return response.choices[0].message.content or ""
+    try:
+        response = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": message},
+            ],
+        )
+        content = response.choices[0].message.content or ""
+        if not content:
+            logger.warning("LLM returned empty content  model=%s", MODEL_NAME)
+        return content
+    except APITimeoutError as exc:
+        logger.error("LLM timeout  model=%s  error=%s", MODEL_NAME, exc)
+        raise LLMTimeoutError() from exc
+    except APIConnectionError as exc:
+        logger.error("LLM connection failed  model=%s  error=%s", MODEL_NAME, exc)
+        raise LLMUnavailableError() from exc
+    except OpenAIError as exc:
+        logger.error("LLM error  model=%s  error=%s", MODEL_NAME, exc)
+        raise LLMUnavailableError() from exc

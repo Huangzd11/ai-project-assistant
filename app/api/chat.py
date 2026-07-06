@@ -1,4 +1,5 @@
 # Day04 — HTTP 聊天接口
+# Day14 — Swagger 描述完善
 #
 # 功能：暴露 /chat 与 /models 两个端点
 # 逻辑：
@@ -18,7 +19,7 @@ router = APIRouter(tags=["chat"])
 
 # @brief: 返回当前 LLM 提供方、模型名、API 地址
 # @return: ModelInfo
-@router.get("/models", response_model=ModelInfo)
+@router.get("/models", response_model=ModelInfo, summary="查询模型配置")
 def models():
     return ModelInfo(
         provider=PROVIDER,
@@ -30,7 +31,12 @@ def models():
 # @brief: 单轮对话，用户 message → LLM → answer
 # @param: req: ChatRequest（message 字段）
 # @return: ChatResponse
-@router.post("/chat", response_model=ChatResponse)
+@router.post(
+    "/chat",
+    response_model=ChatResponse,
+    summary="AI 聊天",
+    description="纯 LLM 单轮对话，不走知识库检索。需要 Ollama 或云端 API 可用。",
+)
 def chat_endpoint(req: ChatRequest):
     answer = chat(req.message)
     return ChatResponse(answer=answer)

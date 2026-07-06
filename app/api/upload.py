@@ -1,4 +1,5 @@
 # Day08 — PDF 上传接口（Sprint 2 · v0.2.0-alpha）
+# Day14 — Swagger 描述完善
 #
 # 功能：浏览器选择 PDF → 上传 → 保存到 uploads/ → 返回文件名和大小
 # 逻辑：
@@ -23,7 +24,12 @@ router = APIRouter(prefix="/upload", tags=["upload"])
 # @brief: 上传 PDF 并保存至 uploads/
 # @param: file: multipart 上传文件
 # @return: UploadResponse（filename、size）
-@router.post("", response_model=UploadResponse)
+@router.post(
+    "",
+    response_model=UploadResponse,
+    summary="上传 PDF",
+    description="上传 PDF 文件至知识库 uploads/ 目录。仅支持 .pdf 格式，非 PDF 返回 400。",
+)
 async def upload_pdf(file: UploadFile = File(..., description="PDF 文件")):
     filename = Path(file.filename or "").name
     if not filename.lower().endswith(".pdf"):

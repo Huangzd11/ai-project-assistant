@@ -1,4 +1,5 @@
 # Day13 — RAG Pipeline（检索增强生成）
+# Day14 — 分段耗时日志、无结果 WARNING
 #
 # 功能：Question → Search → Prompt → LLM → Answer + sources
 # 逻辑：
@@ -9,8 +10,11 @@
 #
 # 详见 docs/Day13.md
 
-from app.core.config import RAG_SYSTEM_PROMPT, SEARCH_TOP_K
+import time
+
+from app.core.config import MODEL_NAME, RAG_SYSTEM_PROMPT, SEARCH_TOP_K
 from app.core.llm import chat
+from app.core.logger import logger
 from app.rag.vector_store import search
 
 
@@ -53,15 +57,31 @@ def extract_sources(chunks: list[dict]) -> list[dict]:
     return sorted(best.values(), key=lambda x: x["score"], reverse=True)
 
 
+def _format_duration(seconds: float) -> str:
+    if seconds >= 1:
+        return f"{seconds:.1f}s"
+    return f"{seconds * 1000:.0f}ms"
+
+
 # @brief: RAG 问答门面，检索 → Prompt → LLM → 带来源的回答
 # @param: question: 用户问题
 # @param: top_k: 检索条数，默认 SEARCH_TOP_K
 # @return: { question, answer, sources }
 def rag_answer(question: str, top_k: int = SEARCH_TOP_K) -> dict:
+    total_start = time.perf_counter()
+
+    search_start = time.perf_counter()
     retrieval = search(question, top_k=top_k)
     chunks = retrieval["results"]
+    search_elapsed = time.perf_counter() - search_start
+    logger.info(
+        "rag search  duration=%s  hits=%d",
+        _format_duration(search_elapsed),
+        len(chunks),
+    )
 
     if not chunks:
+        logger.warning("rag no results  question=%s", question)
         return {
             "question": question,
             "answer": "知识库中未找到相关内容。",
@@ -69,9 +89,28 @@ def rag_answer(question: str, top_k: int = SEARCH_TOP_K) -> dict:
         }
 
     prompt = build_rag_prompt(question, chunks)
+
+    llm_start = time.perf_counter()
     answer = chat(prompt, system_prompt=RAG_SYSTEM_PROMPT)
+    llm_elapsed = time.perf_counter() - llm_start
+    logger.info(
+        "rag llm  duration=%s  model=%s",
+        _format_duration(llm_elapsed),
+        MODEL_NAME,
+    )
+
+    sources = extract_sources(chunks)
+    total_elapsed = time.perf_counter() - total_start
+    cites = ", ".join(f"{s['source']} p{s['page']}" for s in sources)
+    logger.info(
+        "rag total  duration=%s  sources=%d  cites=[%s]",
+        _format_duration(total_elapsed),
+        len(sources),
+        cites,
+    )
+
     return {
         "question": question,
         "answer": answer,
-        "sources": extract_sources(chunks),
+        "sources": sources,
     }
