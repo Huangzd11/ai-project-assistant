@@ -16,3 +16,6 @@ pymupdf
 
 # Day10 — 文本切分
 langchain-text-splitters
+
+# Day11 — 本地 Embedding（EMBEDDING_PROVIDER=local 时安装）
+sentence-transformers

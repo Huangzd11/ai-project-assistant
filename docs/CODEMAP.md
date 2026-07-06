@@ -30,7 +30,8 @@ ai-project-assistant/
 │   └── rag/                          # Day09+ RAG 流水线
 │       ├── __init__.py
 │       ├── pdf_loader.py             # Day09 — PDF 按页解析 → JSON
-│       └── chunker.py                # Day10 — LangChain Chunk 切分
+│       ├── chunker.py                # Day10 — LangChain Chunk 切分
+│       └── embedder.py               # Day11 — Embedding 向量化
 │
 ├── examples/                         # Day01~03 学习示例（独立脚本）
 │   ├── prompt_demo.py                # Day01 — Prompt 练习
@@ -40,11 +41,12 @@ ai-project-assistant/
 ├── uploads/                          # Day08 — 原始 PDF
 ├── data/
 │   ├── parsed/                       # Day09 — 解析 JSON 输出
-│   └── chunks/                       # Day10 — Chunk JSON 输出
+│   ├── chunks/                       # Day10 — Chunk JSON 输出
+│   └── vectors/                      # Day11 — Vector JSON 输出
 ├── tests/                            # Day14 — 自动化测试（预留）
 │
-├── docs/                             # Day06~10 — 项目文档
-│   ├── Day01.md ~ Day10.md           # 每日工作日志
+├── docs/                             # Day06~11 — 项目文档
+│   ├── Day01.md ~ Day11.md           # 每日工作日志
 │   ├── api.md                        # HTTP 接口说明
 │   ├── roadmap.md                    # 学习路线
 │   ├── solution-design.md            # AI 方案设计
@@ -82,6 +84,7 @@ ai-project-assistant/
 | **Day08** | `app/core/logger.py` | 日志 | 统一格式记录上传事件 |
 | **Day09** | `app/rag/pdf_loader.py` | PDF 解析 | fitz 逐页 get_text → JSON |
 | **Day10** | `app/rag/chunker.py` | Chunk 切分 | LangChain RecursiveCharacterTextSplitter → chunks JSON |
+| **Day11** | `app/rag/embedder.py` | Embedding | bge-small / DashScope → vectors JSON |
 
 ---
 
@@ -99,6 +102,9 @@ uploads/xxx.pdf → app/rag/pdf_loader.parse_pdf() → data/parsed/xxx.json
 
 # 切分（Day10）
 data/parsed/xxx.json → app/rag/chunker.chunk_pdf() → data/chunks/xxx.json
+
+# 向量化（Day11）
+data/chunks/xxx.json → app/rag/embedder.embed_chunks() → data/vectors/xxx.json
 ```
 
 ---
@@ -122,4 +128,7 @@ python -c "from app.rag.pdf_loader import parse_pdf; print(parse_pdf('uploads/te
 
 # Chunk 切分（Day10）
 python -c "from app.rag.chunker import chunk_pdf; print(chunk_pdf('data/parsed/test.json'))"
+
+# Embedding 向量化（Day11）
+python -c "from app.rag.embedder import embed_chunks; print(embed_chunks('data/chunks/test.json'))"
 ```

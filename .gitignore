@@ -26,3 +26,5 @@ data/parsed/*.json
 !data/parsed/.gitkeep
 data/chunks/*.json
 !data/chunks/.gitkeep
+data/vectors/*.json
+!data/vectors/.gitkeep

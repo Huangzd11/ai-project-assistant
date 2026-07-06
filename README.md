@@ -8,7 +8,7 @@
 
 ## 项目简介
 
-本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 2（v0.2.x）**，完成 Day01 ~ Day10：
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 2（v0.2.x）**，完成 Day01 ~ Day11：
 
 - LLM 基础与 Prompt 设计（Day01）
 - OpenAI 兼容 API 多轮对话（Day02）
@@ -20,6 +20,7 @@
 - 项目重构 + PDF 上传（Day08）
 - PDF 按页解析为 JSON（Day09）
 - LangChain 文本 Chunk 切分（Day10）
+- 文本 Embedding 向量化（Day11）
 
 适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
 
@@ -40,6 +41,7 @@
 | 容器化 | Docker | 镜像构建与部署 |
 | PDF 解析 | PyMuPDF | Day09 按页提取文本 |
 | 文本切分 | LangChain Text Splitters | Day10 Chunk 切分 |
+| 向量化 | sentence-transformers / DashScope | Day11 Embedding |
 
 ---
 
@@ -103,6 +105,18 @@ python -c "from app.rag.chunker import chunk_pdf; print(chunk_pdf('data/parsed/t
 
 详见 [docs/Day10.md](docs/Day10.md)。
 
+### Embedding 向量化（Day11 · v0.2.0-beta2）
+
+- 本地 `BAAI/bge-small-zh-v1.5` 或云端通义 `text-embedding-v3`
+- 通过 `EMBEDDING_PROVIDER` 切换 `local` / `dashscope`
+- 输出 `data/vectors/{name}.json`（`chunk`、`page`、`embedding`）
+
+```powershell
+python -c "from app.rag.embedder import embed_chunks; print(embed_chunks('data/chunks/test.json'))"
+```
+
+详见 [docs/Day11.md](docs/Day11.md)。
+
 ### HTTP API 服务（Day04）
 
 | 接口 | 方法 | 说明 |
@@ -155,7 +169,8 @@ python -c "from app.rag.chunker import chunk_pdf; print(chunk_pdf('data/parsed/t
 - [x] Day08 Upload + Refactor
 - [x] Day09 PDF Loader
 - [x] Day10 Chunker
-- [ ] Day11 Embedding
+- [x] Day11 Embedding
+- [ ] Day12 ChromaDB
 
 ---
 
@@ -181,7 +196,8 @@ ai-project-assistant/
 │   │   └── schemas.py                # Day04/08 — Pydantic 模型
 │   └── rag/                          # Day09+ RAG
 │       ├── pdf_loader.py             # Day09 — PDF 解析
-│       └── chunker.py                # Day10 — Chunk 切分
+│       ├── chunker.py                # Day10 — Chunk 切分
+│       └── embedder.py               # Day11 — Embedding 向量化
 │
 ├── examples/                         # Day01~03 学习示例
 │   ├── prompt_demo.py                # Day01
@@ -191,12 +207,13 @@ ai-project-assistant/
 ├── uploads/                          # Day08 — 原始 PDF
 ├── data/
 │   ├── parsed/                       # Day09 — 解析 JSON
-│   └── chunks/                       # Day10 — Chunk JSON
+│   ├── chunks/                       # Day10 — Chunk JSON
+│   └── vectors/                      # Day11 — Vector JSON
 ├── tests/                            # Day14 测试（预留）
 │
 ├── docs/                             # 文档与工作日志
 │   ├── CODEMAP.md                    # 代码地图（按 Day 索引）
-│   ├── Day01.md ~ Day10.md
+│   ├── Day01.md ~ Day11.md
 │   ├── api.md / roadmap.md
 │   ├── solution-design.md
 │   ├── development-standards.md
@@ -264,7 +281,13 @@ python -c "from app.rag.pdf_loader import parse_pdf; print(parse_pdf('uploads/te
 python -c "from app.rag.chunker import chunk_pdf; print(chunk_pdf('data/parsed/test.json'))"
 ```
 
-### 6. Docker 部署
+### 6. Embedding 向量化（Day11）
+
+```powershell
+python -c "from app.rag.embedder import embed_chunks; print(embed_chunks('data/chunks/test.json'))"
+```
+
+### 7. Docker 部署
 
 ```powershell
 docker build -t ai-chat:v1 .
@@ -294,6 +317,10 @@ docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 
 | `CHUNKS_DIR` | `data/chunks` | Chunk JSON 输出目录 |
 | `CHUNK_SIZE` | `500` | 文本块大小（字符） |
 | `CHUNK_OVERLAP` | `50` | 块间重叠字符数 |
+| `VECTORS_DIR` | `data/vectors` | 向量 JSON 输出目录 |
+| `EMBEDDING_PROVIDER` | `local` | `local` 或 `dashscope` |
+| `EMBEDDING_MODEL` | `BAAI/bge-small-zh-v1.5` | Embedding 模型名 |
+| `EMBEDDING_DIMENSION` | `512` | 云端向量维度 |
 
 ---
 
@@ -306,7 +333,7 @@ docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 
 | [docs/solution-design.md](docs/solution-design.md) | AI 方案设计（技术选型与演进路线） |
 | [docs/api.md](docs/api.md) | HTTP 接口详细说明 |
 | [docs/roadmap.md](docs/roadmap.md) | 学习路线与后续规划 |
-| [docs/Day01.md](docs/Day01.md) ~ [Day10.md](docs/Day10.md) | 每日工作日志 |
+| [docs/Day01.md](docs/Day01.md) ~ [Day11.md](docs/Day11.md) | 每日工作日志 |
 
 ---
 

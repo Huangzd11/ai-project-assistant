@@ -15,19 +15,25 @@
 
 ### 核心模块
 
-| 函数 | 职责 |
-|------|------|
-| `split_page_text()` | 单页文本 → `RecursiveCharacterTextSplitter` 切块 |
-| `chunk_document()` | 遍历 pages，分配全局 `chunk_id` |
-| `save_chunks_json()` | 写入 `data/chunks/{name}.json` |
-| `chunk_pdf()` | 门面函数：读 parsed → 切分 → 写盘 |
+
+| 函数                   | 职责                                         |
+| -------------------- | ------------------------------------------ |
+| `split_page_text()`  | 单页文本 → `RecursiveCharacterTextSplitter` 切块 |
+| `chunk_document()`   | 遍历 pages，分配全局 `chunk_id`                   |
+| `save_chunks_json()` | 写入 `data/chunks/{name}.json`               |
+| `chunk_pdf()`        | 门面函数：读 parsed → 切分 → 写盘                    |
+
 
 ### 关键参数
 
-| 参数 | 默认值 | 说明 |
-|------|--------|------|
-| `CHUNK_SIZE` | `500` | 每块目标最大字符数 |
-| `CHUNK_OVERLAP` | `50` | 相邻块重叠字符数，避免切分点断句 |
+
+| 参数              | 默认值   | 说明               |
+| --------------- | ----- | ---------------- |
+| `CHUNK_SIZE`    | `500` | 每块目标最大字符数        |
+| `CHUNK_OVERLAP` | `50`  | 相邻块重叠字符数，避免切分点断句 |
+
+
+
 
 ### 实测验证
 
@@ -54,6 +60,8 @@ python -c "from app.rag.chunker import chunk_pdf; print(chunk_pdf('data/parsed/t
 
 ---
 
+
+
 ## 在 Sprint 2 中的位置
 
 ```
@@ -65,6 +73,8 @@ Day11  Embedding                 ← 下一步
 
 ---
 
+
+
 ## 处理流程
 
 ```
@@ -73,30 +83,40 @@ data/parsed/test.json → 每页 content → LangChain Splitter → data/chunks/
 
 ---
 
+
+
 ## 目录与配置
 
-| 路径 | 说明 |
-|------|------|
-| `app/rag/chunker.py` | 切分核心逻辑 |
-| `data/parsed/` | Day09 输入 |
-| `data/chunks/` | Day10 输出 |
-| `CHUNKS_DIR` | 默认 `data/chunks` |
+
+| 路径                   | 说明               |
+| -------------------- | ---------------- |
+| `app/rag/chunker.py` | 切分核心逻辑           |
+| `data/parsed/`       | Day09 输入         |
+| `data/chunks/`       | Day10 输出         |
+| `CHUNKS_DIR`         | 默认 `data/chunks` |
+
 
 ---
+
+
 
 ## 实现清单
 
-| # | 任务 | 状态 |
-|---|------|------|
-| 1 | `langchain-text-splitters` | ✅ |
-| 2 | `data/chunks/.gitkeep` | ✅ |
-| 3 | `CHUNK_SIZE` / `CHUNK_OVERLAP` / `CHUNKS_DIR` | ✅ |
-| 4 | `split_page_text` | ✅ |
-| 5 | `chunk_document` | ✅ |
-| 6 | `chunk_pdf` | ✅ |
-| 7 | Day09 → Day10 联调 | ✅ |
+
+| #   | 任务                                            | 状态  |
+| --- | --------------------------------------------- | --- |
+| 1   | `langchain-text-splitters`                    | ✅   |
+| 2   | `data/chunks/.gitkeep`                        | ✅   |
+| 3   | `CHUNK_SIZE` / `CHUNK_OVERLAP` / `CHUNKS_DIR` | ✅   |
+| 4   | `split_page_text`                             | ✅   |
+| 5   | `chunk_document`                              | ✅   |
+| 6   | `chunk_pdf`                                   | ✅   |
+| 7   | Day09 → Day10 联调                              | ✅   |
+
 
 ---
+
+
 
 ## 测试命令
 
@@ -107,14 +127,18 @@ python -c "from app.rag.chunker import chunk_pdf; print(chunk_pdf('data/parsed/t
 
 ---
 
+
+
 ## 每日收尾
 
 - [x] 更新 README、CODEMAP、roadmap、solution-design、api.md
 - [x] `.gitignore` 忽略 `data/chunks/*.json`
-- [ ] Git Commit：`feat(chunker): split pages with LangChain Text Splitter`
-- [ ] Tag：`v0.2.0-beta`
+- [x] Git Commit：`feat(chunker): split pages with LangChain Text Splitter`
+- [x] Tag：`v0.2.0-beta`
 
 ---
+
+
 
 ## 收获
 
@@ -124,6 +148,8 @@ python -c "from app.rag.chunker import chunk_pdf; print(chunk_pdf('data/parsed/t
 
 ---
 
+
+
 ## 下一步
 
-Day11 — Embedding（`feat(embedding)`，v0.2.0-beta2）
+Day11 — Embedding（`feat(embedding)`，v0.2.0-beta2）✅ 已完成，见 [Day11.md](Day11.md)。

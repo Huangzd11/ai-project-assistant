@@ -152,6 +152,45 @@ python -c "from app.rag.chunker import chunk_pdf; print(chunk_pdf('data/parsed/l
 
 ---
 
+## Embedding 向量化（Day11 · 模块调用）
+
+Chunk JSON 可通过 `app/rag/embedder.py` 转为向量（当前非 HTTP 接口，Day13 纳入流水线）。
+
+```powershell
+python -c "from app.rag.embedder import embed_chunks; print(embed_chunks('data/chunks/linux.json'))"
+```
+
+**输出文件：** `data/vectors/linux.json`
+
+```json
+{
+  "source": "linux.pdf",
+  "provider": "local",
+  "model": "BAAI/bge-small-zh-v1.5",
+  "dimension": 512,
+  "total_vectors": 12,
+  "vectors": [
+    { "chunk": 1, "page": 1, "embedding": [0.22, -0.11, ...] },
+    { "chunk": 2, "page": 1, "embedding": [...] }
+  ]
+}
+```
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `chunk` | int | 对应 chunks JSON 的 `chunk_id` |
+| `page` | int | 来源页码 |
+| `embedding` | float[] | 向量（本地 bge-small 为 512 维） |
+
+**Provider 切换：**
+
+| `EMBEDDING_PROVIDER` | 模型示例 | 依赖 |
+|----------------------|----------|------|
+| `local`（默认） | `BAAI/bge-small-zh-v1.5` | `sentence-transformers` |
+| `dashscope` | `text-embedding-v3` | 百炼 API Key |
+
+---
+
 ## 环境变量
 
 | 变量名 | 默认值 | 说明 |
@@ -167,3 +206,7 @@ python -c "from app.rag.chunker import chunk_pdf; print(chunk_pdf('data/parsed/l
 | `CHUNKS_DIR` | `data/chunks` | Chunk JSON 输出目录 |
 | `CHUNK_SIZE` | `500` | 文本块大小（字符） |
 | `CHUNK_OVERLAP` | `50` | 块间重叠字符数 |
+| `VECTORS_DIR` | `data/vectors` | 向量 JSON 输出目录 |
+| `EMBEDDING_PROVIDER` | `local` | `local` 或 `dashscope` |
+| `EMBEDDING_MODEL` | `BAAI/bge-small-zh-v1.5` | Embedding 模型名 |
+| `EMBEDDING_DIMENSION` | `512` | 云端向量维度 |

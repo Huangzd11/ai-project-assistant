@@ -31,3 +31,9 @@ PARSED_DIR = os.getenv("PARSED_DIR", "data/parsed")
 CHUNKS_DIR = os.getenv("CHUNKS_DIR", "data/chunks")   # 文本块保存目录
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "500"))   # 文本块大小
 CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "50"))   # 文本块重叠大小
+
+# Day11 — Embedding 向量化
+VECTORS_DIR = os.getenv("VECTORS_DIR", "data/vectors")
+EMBEDDING_PROVIDER = os.getenv("EMBEDDING_PROVIDER", "local")  # local | dashscope
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-zh-v1.5")  # BAAI/bge-small-zh-v1.5 | text-embedding-3-small
+EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "512"))  # 向量维度
