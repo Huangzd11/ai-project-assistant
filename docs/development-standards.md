@@ -8,30 +8,35 @@
 
 ```
 ai-project-assistant/
-├── app.py / llm.py / config.py / models.py   # 核心服务代码
+├── app/               # 服务代码（api / core / models / rag）
+├── uploads/           # 原始 PDF（Day08）
+├── data/parsed/       # 解析 JSON（Day09）
+├── docs/              # 文档与工作日志
+├── examples/          # Day01~03 学习脚本
+├── tests/             # Day14 测试
 ├── requirements.txt / Dockerfile / .env.example
-├── docs/          # 文档（API、方案设计、工作日志、路线图）
-├── examples/      # 可独立运行的示例脚本
-└── src/           # 后续复杂模块扩展（RAG、Agent 等）
 ```
 
 | 目录 | 用途 | 规则 |
 |------|------|------|
-| 根目录 | 当前 MVP 服务代码 | 保持精简，复杂逻辑下沉 `src/` |
-| `docs/` | 全部文档 | 每日工作写入 `DayXX.md`，设计文档独立维护 |
-| `examples/` | 学习示例 | 按 Day 命名：`prompt_demo`、`chat_demo`、`ollama_demo` |
-| `src/` | 扩展模块 | 新功能优先在此按子包组织 |
+| `app/api/` | HTTP 路由 | 不含 PDF 解析等业务细节 |
+| `app/rag/` | RAG 流水线 | Day09 解析，Day10+ 切分/向量 |
+| `uploads/` | 原始 PDF | 仅上传产物，不入库大文件 |
+| `data/parsed/` | 解析 JSON | `.gitignore` 忽略 `*.json` |
+| `docs/` | 全部文档 | 每日工作写入 `DayXX.md` |
+| `examples/` | 学习示例 | 按 Day 命名，可独立运行 |
 
 ---
 
 ## 2. 代码分层
 
-| 层 | 文件 | 职责 |
+| 层 | 路径 | 职责 |
 |----|------|------|
-| 配置层 | `config.py` | 仅读取环境变量，不含业务逻辑 |
-| 契约层 | `models.py` | Pydantic 请求/响应模型 |
-| 推理层 | `llm.py` | LLM 调用封装，不感知 HTTP |
-| 接口层 | `app.py` | FastAPI 路由，不含推理细节 |
+| 配置层 | `app/core/config.py` | 仅读取环境变量 |
+| 契约层 | `app/models/schemas.py` | Pydantic 请求/响应 |
+| 推理层 | `app/core/llm.py` | LLM 调用，不感知 HTTP |
+| 解析层 | `app/rag/pdf_loader.py` | PDF → JSON（Day09） |
+| 接口层 | `app/api/*.py` | FastAPI 路由 |
 
 **原则**：上层依赖下层，推理层不反向依赖接口层。
 

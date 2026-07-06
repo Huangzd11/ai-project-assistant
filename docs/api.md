@@ -98,6 +98,29 @@ curl.exe -X POST http://127.0.0.1:8000/upload -F "file=@C:\path\to\linux.pdf"
 
 ---
 
+## PDF 解析（Day09 · 模块调用）
+
+上传后的 PDF 可通过 `app/rag/pdf_loader.py` 解析为 JSON（当前非 HTTP 接口，Day13 纳入流水线）。
+
+```powershell
+python -c "from app.rag.pdf_loader import parse_pdf; print(parse_pdf('uploads/linux.pdf'))"
+```
+
+**输出文件：** `data/parsed/linux.json`
+
+```json
+{
+  "source": "linux.pdf",
+  "total_pages": 4,
+  "pages": [
+    { "page": 1, "content": "..." },
+    { "page": 2, "content": "..." }
+  ]
+}
+```
+
+---
+
 ## 环境变量
 
 | 变量名 | 默认值 | 说明 |
@@ -109,3 +132,4 @@ curl.exe -X POST http://127.0.0.1:8000/upload -F "file=@C:\path\to\linux.pdf"
 | `SYSTEM_PROMPT` | `你是一名AI技术项目经理.` | 系统提示词 |
 | `REQUEST_TIMEOUT` | `600` | 请求超时（秒） |
 | `UPLOAD_DIR` | `uploads` | PDF 上传保存目录 |
+| `PARSED_DIR` | `data/parsed` | PDF 解析 JSON 输出目录 |

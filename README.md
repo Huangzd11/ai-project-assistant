@@ -8,7 +8,7 @@
 
 ## 项目简介
 
-本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 2（v0.2.x）**，完成 Day01 ~ Day08：
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 2（v0.2.x）**，完成 Day01 ~ Day09：
 
 - LLM 基础与 Prompt 设计（Day01）
 - OpenAI 兼容 API 多轮对话（Day02）
@@ -18,6 +18,7 @@
 - GitHub 托管与开发规范（Day06）
 - 阶段回顾与查漏补缺（Day07）
 - 项目重构 + PDF 上传（Day08）
+- PDF 按页解析为 JSON（Day09）
 
 适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
 
@@ -36,6 +37,7 @@
 | ASGI 服务器 | Uvicorn | 运行 FastAPI |
 | 数据校验 | Pydantic | 请求 / 响应模型 |
 | 容器化 | Docker | 镜像构建与部署 |
+| PDF 解析 | PyMuPDF | Day09 按页提取文本 |
 
 ---
 
@@ -75,6 +77,17 @@
 在 http://127.0.0.1:8000/docs 中测试上传。
 
 详见 [docs/Day08.md](docs/Day08.md)。
+
+### PDF 解析（Day09 · v0.2.0-alpha2）
+
+- PyMuPDF 按页提取 PDF 纯文本
+- 输出 `data/parsed/{name}.json`（`source`、`total_pages`、`pages`）
+
+```powershell
+python -c "from app.rag.pdf_loader import parse_pdf; print(parse_pdf('uploads/test.pdf'))"
+```
+
+详见 [docs/Day09.md](docs/Day09.md)。
 
 ### HTTP API 服务（Day04）
 
@@ -125,8 +138,8 @@
 - [x] Day05 Docker
 - [x] Day06 GitHub
 - [x] Day07 Review
-- [x] Day08 Upload + Refactor
-- [ ] Day09 PDF Loader
+- [x] Day09 PDF Loader
+- [ ] Day10 Chunker
 
 ---
 
@@ -150,20 +163,22 @@ ai-project-assistant/
 │   │   └── files.py                  # Day08 — 文件工具
 │   ├── models/
 │   │   └── schemas.py                # Day04/08 — Pydantic 模型
-│   └── rag/                          # Day09+ — RAG 预留
+│   └── rag/                          # Day09+ RAG
+│       └── pdf_loader.py             # Day09 — PDF 解析
 │
 ├── examples/                         # Day01~03 学习示例
 │   ├── prompt_demo.py                # Day01
 │   ├── chat_demo.py                  # Day02
 │   └── ollama_demo.py                # Day03
 │
-├── uploads/                          # Day08 — PDF 存储
-├── data/                             # 向量库等（预留）
+├── uploads/                          # Day08 — 原始 PDF
+├── data/
+│   └── parsed/                       # Day09 — 解析 JSON
 ├── tests/                            # Day14 测试（预留）
 │
 ├── docs/                             # 文档与工作日志
 │   ├── CODEMAP.md                    # 代码地图（按 Day 索引）
-│   ├── Day01.md ~ Day08.md
+│   ├── Day01.md ~ Day09.md
 │   ├── api.md / roadmap.md
 │   ├── solution-design.md
 │   ├── development-standards.md
@@ -219,7 +234,14 @@ python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 **上传 PDF：** 打开 http://127.0.0.1:8000/docs ，使用 `POST /upload` 选择文件。
 
-### 4. Docker 部署
+### 4. PDF 解析（Day09）
+
+```powershell
+python -c "from app.rag.pdf_loader import parse_pdf; print(parse_pdf('uploads/test.pdf'))"
+# 输出：data\parsed\test.json
+```
+
+### 5. Docker 部署
 
 ```powershell
 docker build -t ai-chat:v1 .
@@ -245,6 +267,7 @@ docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 
 | `SYSTEM_PROMPT` | `你是一名AI技术项目经理.` | 系统提示词 |
 | `REQUEST_TIMEOUT` | `600` | 请求超时（秒） |
 | `UPLOAD_DIR` | `uploads` | PDF 上传保存目录 |
+| `PARSED_DIR` | `data/parsed` | PDF 解析 JSON 输出目录 |
 
 ---
 
@@ -257,7 +280,7 @@ docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 
 | [docs/solution-design.md](docs/solution-design.md) | AI 方案设计（技术选型与演进路线） |
 | [docs/api.md](docs/api.md) | HTTP 接口详细说明 |
 | [docs/roadmap.md](docs/roadmap.md) | 学习路线与后续规划 |
-| [docs/Day01.md](docs/Day01.md) ~ [Day08.md](docs/Day08.md) | 每日工作日志 |
+| [docs/Day01.md](docs/Day01.md) ~ [Day09.md](docs/Day09.md) | 每日工作日志 |
 
 ---
 

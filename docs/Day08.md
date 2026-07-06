@@ -66,4 +66,4 @@ python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 ## 下一步
 
-Day09 — PDF 解析（`feat(pdf-loader)`，v0.2.0-alpha2）
+Day09 — PDF 解析（`feat(pdf-loader)`，v0.2.0-alpha2）✅ 已完成，见 [Day09.md](Day09.md)。

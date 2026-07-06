@@ -23,3 +23,6 @@ REQUEST_TIMEOUT = float(os.getenv("REQUEST_TIMEOUT", "600"))
 
 # Day08 — PDF 上传保存目录
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")
+
+# Day09 — PDF 解析 JSON 输出目录
+PARSED_DIR = os.getenv("PARSED_DIR", "data/parsed")

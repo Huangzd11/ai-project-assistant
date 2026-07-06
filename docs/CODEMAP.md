@@ -27,20 +27,22 @@ ai-project-assistant/
 │   │   ├── schemas.py                # Pydantic 请求/响应模型
 │   │   └── __init__.py               # 统一导出
 │   │
-│   └── rag/                          # Day09+ 预留
-│       └── __init__.py               # RAG 流水线（解析/切分/向量/检索）
+│   └── rag/                          # Day09+ RAG 流水线
+│       ├── __init__.py
+│       └── pdf_loader.py             # Day09 — PDF 按页解析 → JSON
 │
 ├── examples/                         # Day01~03 学习示例（独立脚本）
 │   ├── prompt_demo.py                # Day01 — Prompt 练习
 │   ├── chat_demo.py                  # Day02 — 命令行多轮对话
 │   └── ollama_demo.py                # Day03 — Ollama 流式调用
 │
-├── uploads/                          # Day08 — PDF 上传存储目录
-├── data/                             # Day12+ — 向量库等数据（预留）
+├── uploads/                          # Day08 — 原始 PDF
+├── data/
+│   └── parsed/                       # Day09 — 解析 JSON 输出
 ├── tests/                            # Day14 — 自动化测试（预留）
 │
-├── docs/                             # Day06~08 — 项目文档
-│   ├── Day01.md ~ Day08.md           # 每日工作日志
+├── docs/                             # Day06~09 — 项目文档
+│   ├── Day01.md ~ Day09.md           # 每日工作日志
 │   ├── api.md                        # HTTP 接口说明
 │   ├── roadmap.md                    # 学习路线
 │   ├── solution-design.md            # AI 方案设计
@@ -76,7 +78,8 @@ ai-project-assistant/
 | **Day08** | `app/api/upload.py` | PDF 上传 | 校验 → 写盘 → 返回 filename/size |
 | **Day08** | `app/core/files.py` | 文件工具 | 大小格式化、目录创建 |
 | **Day08** | `app/core/logger.py` | 日志 | 统一格式记录上传事件 |
-| **Day09+** | `app/rag/` | RAG 流水线 | 待实现 |
+| **Day09** | `app/rag/pdf_loader.py` | PDF 解析 | fitz 逐页 get_text → JSON |
+| **Day10+** | `app/rag/` | Chunk/向量等 | 待实现 |
 
 ---
 
@@ -88,6 +91,9 @@ Browser → POST /chat → app/api/chat.py → app/core/llm.py → Ollama/Qwen
 
 # 上传（Day08）
 Browser → POST /upload → app/api/upload.py → uploads/
+
+# 解析（Day09）
+uploads/xxx.pdf → app/rag/pdf_loader.parse_pdf() → data/parsed/xxx.json
 ```
 
 ---
@@ -105,4 +111,7 @@ python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 python examples/prompt_demo.py    # Day01
 python examples/chat_demo.py      # Day02
 python examples/ollama_demo.py    # Day03
+
+# PDF 解析（Day09）
+python -c "from app.rag.pdf_loader import parse_pdf; print(parse_pdf('uploads/test.pdf'))"
 ```

@@ -10,3 +10,6 @@ python-dotenv
 
 # Day08 — 文件上传（multipart/form-data）
 python-multipart
+
+# Day09 — PDF 解析（PyMuPDF）
+pymupdf

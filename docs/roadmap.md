@@ -13,7 +13,7 @@
 ## Sprint 2（v0.2.x）— Enterprise RAG
 
 - [x] Day08 Upload + Refactor — `feat(upload)` — v0.2.0-alpha
-- [ ] Day09 PDF Loader — `feat(pdf-loader)` — v0.2.0-alpha2
+- [x] Day09 PDF Loader — `feat(pdf-loader)` — v0.2.0-alpha2
 - [ ] Day10 Chunker — `feat(chunker)` — v0.2.0-beta
 - [ ] Day11 Embedding — `feat(embedding)` — v0.2.0-beta2
 - [ ] Day12 ChromaDB — `feat(vector-db)` — v0.2.0-rc
