@@ -6,6 +6,9 @@
 import logging
 
 
+# @brief: 初始化并返回项目 Logger
+# @param: name: Logger 名称
+# @return: logging.Logger 实例
 def setup_logger(name: str = "ai-project-assistant") -> logging.Logger:
     logging.basicConfig(
         level=logging.INFO,

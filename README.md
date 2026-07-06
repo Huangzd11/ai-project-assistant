@@ -8,7 +8,7 @@
 
 ## 项目简介
 
-本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 2（v0.2.x）**，完成 Day01 ~ Day11：
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 2（v0.2.x）**，完成 Day01 ~ Day12：
 
 - LLM 基础与 Prompt 设计（Day01）
 - OpenAI 兼容 API 多轮对话（Day02）
@@ -21,31 +21,41 @@
 - PDF 按页解析为 JSON（Day09）
 - LangChain 文本 Chunk 切分（Day10）
 - 文本 Embedding 向量化（Day11）
+- Chroma 向量入库与 Top-K 检索（Day12，无 LLM）
 
 适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
 
 ---
 
+
+
 ## 技术栈
 
-| 类别 | 技术 | 说明 |
-|------|------|------|
-| 语言 | Python 3.10+ | 全部实战代码 |
-| LLM 客户端 | OpenAI Python SDK | 统一调用云端 / 本地兼容接口 |
-| 云端模型 | 通义千问（DashScope） | Day02 默认方案 |
-| 本地模型 | Ollama + qwen3:4b | Day03、Day04 默认方案 |
-| 配置管理 | python-dotenv | 环境变量加载 |
-| Web 框架 | FastAPI | HTTP API 服务 |
-| ASGI 服务器 | Uvicorn | 运行 FastAPI |
-| 数据校验 | Pydantic | 请求 / 响应模型 |
-| 容器化 | Docker | 镜像构建与部署 |
-| PDF 解析 | PyMuPDF | Day09 按页提取文本 |
-| 文本切分 | LangChain Text Splitters | Day10 Chunk 切分 |
-| 向量化 | sentence-transformers / DashScope | Day11 Embedding |
+
+| 类别       | 技术                                | 说明                |
+| -------- | --------------------------------- | ----------------- |
+| 语言       | Python 3.10+                      | 全部实战代码            |
+| LLM 客户端  | OpenAI Python SDK                 | 统一调用云端 / 本地兼容接口   |
+| 云端模型     | 通义千问（DashScope）                   | Day02 默认方案        |
+| 本地模型     | Ollama + qwen3:4b                 | Day03、Day04 默认方案  |
+| 配置管理     | python-dotenv                     | 环境变量加载            |
+| Web 框架   | FastAPI                           | HTTP API 服务       |
+| ASGI 服务器 | Uvicorn                           | 运行 FastAPI        |
+| 数据校验     | Pydantic                          | 请求 / 响应模型         |
+| 容器化      | Docker                            | 镜像构建与部署           |
+| PDF 解析   | PyMuPDF                           | Day09 按页提取文本      |
+| 文本切分     | LangChain Text Splitters          | Day10 Chunk 切分    |
+| 向量化      | sentence-transformers / DashScope | Day11 Embedding   |
+| 向量库      | ChromaDB                          | Day12 持久化 + 相似度检索 |
+
 
 ---
 
+
+
 ## 当前功能
+
+
 
 ### Prompt 练习（Day01）
 
@@ -70,15 +80,17 @@
 
 ### 企业知识库 — PDF 上传（Day08 · v0.2.0-alpha）
 
-| 接口 | 方法 | 说明 |
-|------|------|------|
+
+| 接口        | 方法   | 说明                    |
+| --------- | ---- | --------------------- |
 | `/upload` | POST | 上传 PDF，保存至 `uploads/` |
+
 
 ```json
 { "filename": "linux.pdf", "size": "8MB" }
 ```
 
-在 http://127.0.0.1:8000/docs 中测试上传。
+在 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) 中测试上传。
 
 详见 [docs/Day08.md](docs/Day08.md)。
 
@@ -117,18 +129,33 @@ python -c "from app.rag.embedder import embed_chunks; print(embed_chunks('data/c
 
 详见 [docs/Day11.md](docs/Day11.md)。
 
+### 向量检索（Day12 · v0.2.0-rc）
+
+- Chroma 持久化存储，cosine 相似度检索
+- **纯检索**：Question → Embedding → Top5（不接 LLM）
+- 入库合并 `chunks` + `vectors`，检索返回原文 + 分数
+
+```powershell
+python -c "from app.rag.vector_store import index_chunks; print(index_chunks('data/chunks/test.json'))"
+python -c "from app.rag.vector_store import search; print(search('telnet')['results'][0])"
+```
+
+详见 [docs/Day12.md](docs/Day12.md)。
+
 ### HTTP API 服务（Day04）
 
-| 接口 | 方法 | 说明 |
-|------|------|------|
-| `/` | GET | 服务欢迎 |
-| `/health` | GET | 健康检查 |
-| `/models` | GET | 当前模型配置 |
-| `/chat` | POST | AI 聊天 |
+
+| 接口        | 方法   | 说明            |
+| --------- | ---- | ------------- |
+| `/`       | GET  | 服务欢迎          |
+| `/health` | GET  | 健康检查          |
+| `/models` | GET  | 当前模型配置        |
+| `/chat`   | POST | AI 聊天         |
 | `/upload` | POST | PDF 上传（Day08） |
 
+
 运行：`python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000`  
-交互文档：http://127.0.0.1:8000/docs
+交互文档：[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ### Docker 部署（Day05）
 
@@ -155,6 +182,8 @@ python -c "from app.rag.embedder import embed_chunks; print(embed_chunks('data/c
 
 ---
 
+
+
 ## 学习进度
 
 完整路线见 [docs/roadmap.md](docs/roadmap.md)。
@@ -170,9 +199,12 @@ python -c "from app.rag.embedder import embed_chunks; print(embed_chunks('data/c
 - [x] Day09 PDF Loader
 - [x] Day10 Chunker
 - [x] Day11 Embedding
-- [ ] Day12 ChromaDB
+- [x] Day12 ChromaDB
+- [ ] Day13 RAG Pipeline
 
 ---
+
+
 
 ## 项目结构
 
@@ -197,7 +229,8 @@ ai-project-assistant/
 │   └── rag/                          # Day09+ RAG
 │       ├── pdf_loader.py             # Day09 — PDF 解析
 │       ├── chunker.py                # Day10 — Chunk 切分
-│       └── embedder.py               # Day11 — Embedding 向量化
+│       ├── embedder.py               # Day11 — Embedding 向量化
+│       └── vector_store.py           # Day12 — Chroma 入库 + 检索
 │
 ├── examples/                         # Day01~03 学习示例
 │   ├── prompt_demo.py                # Day01
@@ -208,12 +241,13 @@ ai-project-assistant/
 ├── data/
 │   ├── parsed/                       # Day09 — 解析 JSON
 │   ├── chunks/                       # Day10 — Chunk JSON
-│   └── vectors/                      # Day11 — Vector JSON
+│   ├── vectors/                      # Day11 — Vector JSON
+│   └── chroma/                       # Day12 — Chroma 持久化
 ├── tests/                            # Day14 测试（预留）
 │
 ├── docs/                             # 文档与工作日志
 │   ├── CODEMAP.md                    # 代码地图（按 Day 索引）
-│   ├── Day01.md ~ Day11.md
+│   ├── Day01.md ~ Day12.md
 │   ├── api.md / roadmap.md
 │   ├── solution-design.md
 │   ├── development-standards.md
@@ -226,17 +260,23 @@ ai-project-assistant/
 └── README.md
 ```
 
-| 层级 | 目录 | 职责 |
-|------|------|------|
-| 接口层 | `app/api/` | HTTP 路由，不含业务细节 |
-| 核心层 | `app/core/` | 配置、LLM、日志、文件工具 |
-| 契约层 | `app/models/` | 请求/响应 Pydantic 模型 |
-| RAG 层 | `app/rag/` | 文档解析→切分→向量→检索（Day09+） |
-| 示例层 | `examples/` | 独立学习脚本，按 Day 组织 |
+
+| 层级    | 目录            | 职责                    |
+| ----- | ------------- | --------------------- |
+| 接口层   | `app/api/`    | HTTP 路由，不含业务细节        |
+| 核心层   | `app/core/`   | 配置、LLM、日志、文件工具        |
+| 契约层   | `app/models/` | 请求/响应 Pydantic 模型     |
+| RAG 层 | `app/rag/`    | 文档解析→切分→向量→检索（Day09+） |
+| 示例层   | `examples/`   | 独立学习脚本，按 Day 组织       |
+
 
 ---
 
+
+
 ## 快速开始
+
+
 
 ### 1. 安装依赖
 
@@ -244,6 +284,8 @@ ai-project-assistant/
 pip install -r requirements.txt
 copy .env.example .env    # 按需填写 API Key
 ```
+
+
 
 ### 2. 命令行对话（云端 API）
 
@@ -259,6 +301,8 @@ MODEL_NAME=qwen-plus
 python examples/chat_demo.py
 ```
 
+
+
 ### 3. HTTP API 服务（本地 Ollama）
 
 ```powershell
@@ -267,7 +311,7 @@ ollama serve
 python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-**上传 PDF：** 打开 http://127.0.0.1:8000/docs ，使用 `POST /upload` 选择文件。
+**上传 PDF：** 打开 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) ，使用 `POST /upload` 选择文件。
 
 ### 4. PDF 解析（Day09）
 
@@ -275,11 +319,15 @@ python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 python -c "from app.rag.pdf_loader import parse_pdf; print(parse_pdf('uploads/test.pdf'))"
 ```
 
+
+
 ### 5. Chunk 切分（Day10）
 
 ```powershell
 python -c "from app.rag.chunker import chunk_pdf; print(chunk_pdf('data/parsed/test.json'))"
 ```
+
+
 
 ### 6. Embedding 向量化（Day11）
 
@@ -287,7 +335,18 @@ python -c "from app.rag.chunker import chunk_pdf; print(chunk_pdf('data/parsed/t
 python -c "from app.rag.embedder import embed_chunks; print(embed_chunks('data/chunks/test.json'))"
 ```
 
-### 7. Docker 部署
+
+
+### 7. 向量入库与检索（Day12）
+
+```powershell
+python -c "from app.rag.vector_store import index_chunks; print(index_chunks('data/chunks/test.json'))"
+python -c "from app.rag.vector_store import search; print(search('telnet')['results'][0])"
+```
+
+
+
+### 8. Docker 部署
 
 ```powershell
 docker build -t ai-chat:v1 .
@@ -302,40 +361,53 @@ docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 
 
 ---
 
+
+
 ## 环境变量
 
-| 变量名 | 默认值 | 说明 |
-|--------|--------|------|
-| `OPENAI_API_KEY` | `ollama` | API 密钥 |
-| `OPENAI_BASE_URL` | `http://127.0.0.1:11434/v1` | 兼容 API 地址 |
-| `MODEL_NAME` | `qwen3:4b` | 模型名称 |
-| `PROVIDER` | `ollama` | 提供方标识 |
-| `SYSTEM_PROMPT` | `你是一名AI技术项目经理.` | 系统提示词 |
-| `REQUEST_TIMEOUT` | `600` | 请求超时（秒） |
-| `UPLOAD_DIR` | `uploads` | PDF 上传保存目录 |
-| `PARSED_DIR` | `data/parsed` | PDF 解析 JSON 输出目录 |
-| `CHUNKS_DIR` | `data/chunks` | Chunk JSON 输出目录 |
-| `CHUNK_SIZE` | `500` | 文本块大小（字符） |
-| `CHUNK_OVERLAP` | `50` | 块间重叠字符数 |
-| `VECTORS_DIR` | `data/vectors` | 向量 JSON 输出目录 |
-| `EMBEDDING_PROVIDER` | `local` | `local` 或 `dashscope` |
-| `EMBEDDING_MODEL` | `BAAI/bge-small-zh-v1.5` | Embedding 模型名 |
-| `EMBEDDING_DIMENSION` | `512` | 云端向量维度 |
+
+| 变量名                   | 默认值                         | 说明                    |
+| --------------------- | --------------------------- | --------------------- |
+| `OPENAI_API_KEY`      | `ollama`                    | API 密钥                |
+| `OPENAI_BASE_URL`     | `http://127.0.0.1:11434/v1` | 兼容 API 地址             |
+| `MODEL_NAME`          | `qwen3:4b`                  | 模型名称                  |
+| `PROVIDER`            | `ollama`                    | 提供方标识                 |
+| `SYSTEM_PROMPT`       | `你是一名AI技术项目经理.`             | 系统提示词                 |
+| `REQUEST_TIMEOUT`     | `600`                       | 请求超时（秒）               |
+| `UPLOAD_DIR`          | `uploads`                   | PDF 上传保存目录            |
+| `PARSED_DIR`          | `data/parsed`               | PDF 解析 JSON 输出目录      |
+| `CHUNKS_DIR`          | `data/chunks`               | Chunk JSON 输出目录       |
+| `CHUNK_SIZE`          | `500`                       | 文本块大小（字符）             |
+| `CHUNK_OVERLAP`       | `50`                        | 块间重叠字符数               |
+| `VECTORS_DIR`         | `data/vectors`              | 向量 JSON 输出目录          |
+| `EMBEDDING_PROVIDER`  | `local`                     | `local` 或 `dashscope` |
+| `EMBEDDING_MODEL`     | `BAAI/bge-small-zh-v1.5`    | Embedding 模型名         |
+| `EMBEDDING_DIMENSION` | `512`                       | 云端向量维度                |
+| `CHROMA_DIR`          | `data/chroma`               | Chroma 持久化目录          |
+| `CHROMA_COLLECTION`   | `knowledge`                 | Collection 名称         |
+| `SEARCH_TOP_K`        | `5`                         | 检索返回条数                |
+
 
 ---
+
+
 
 ## 文档
 
-| 文档 | 说明 |
-|------|------|
-| [docs/CODEMAP.md](docs/CODEMAP.md) | 代码地图（按 Day 索引每个文件） |
-| [docs/development-standards.md](docs/development-standards.md) | AI 项目开发规范 |
-| [docs/solution-design.md](docs/solution-design.md) | AI 方案设计（技术选型与演进路线） |
-| [docs/api.md](docs/api.md) | HTTP 接口详细说明 |
-| [docs/roadmap.md](docs/roadmap.md) | 学习路线与后续规划 |
-| [docs/Day01.md](docs/Day01.md) ~ [Day11.md](docs/Day11.md) | 每日工作日志 |
+
+| 文档                                                             | 说明                 |
+| -------------------------------------------------------------- | ------------------ |
+| [docs/CODEMAP.md](docs/CODEMAP.md)                             | 代码地图（按 Day 索引每个文件） |
+| [docs/development-standards.md](docs/development-standards.md) | AI 项目开发规范          |
+| [docs/solution-design.md](docs/solution-design.md)             | AI 方案设计（技术选型与演进路线） |
+| [docs/api.md](docs/api.md)                                     | HTTP 接口详细说明        |
+| [docs/roadmap.md](docs/roadmap.md)                             | 学习路线与后续规划          |
+| [docs/Day01.md](docs/Day01.md) ~ [Day12.md](docs/Day12.md)     | 每日工作日志             |
+
 
 ---
+
+
 
 ## 相关链接
 
@@ -343,3 +415,4 @@ docker run -p 8000:8000 -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 
 - [Ollama 文档](https://github.com/ollama/ollama)
 - [OpenAI Python SDK](https://github.com/openai/openai-python)
 - [阿里云百炼](https://bailian.console.aliyun.com/)
+

@@ -28,12 +28,17 @@ UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")
 PARSED_DIR = os.getenv("PARSED_DIR", "data/parsed")
 
 # Day10 — 文本块拆分（按页）
-CHUNKS_DIR = os.getenv("CHUNKS_DIR", "data/chunks")   # 文本块保存目录
-CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "500"))   # 文本块大小
-CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "50"))   # 文本块重叠大小
+CHUNKS_DIR = os.getenv("CHUNKS_DIR", "data/chunks")
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "500"))
+CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "50"))
 
 # Day11 — Embedding 向量化
 VECTORS_DIR = os.getenv("VECTORS_DIR", "data/vectors")
-EMBEDDING_PROVIDER = os.getenv("EMBEDDING_PROVIDER", "local")  # local | dashscope
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-zh-v1.5")  # BAAI/bge-small-zh-v1.5 | text-embedding-3-small
-EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "512"))  # 向量维度
+EMBEDDING_PROVIDER = os.getenv("EMBEDDING_PROVIDER", "local")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-zh-v1.5")
+EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "512"))
+
+# Day12 — Chroma 向量库
+CHROMA_DIR = os.getenv("CHROMA_DIR", "data/chroma")
+CHROMA_COLLECTION_NAME = os.getenv("CHROMA_COLLECTION", "knowledge")
+SEARCH_TOP_K = int(os.getenv("SEARCH_TOP_K", "5"))

@@ -26,8 +26,10 @@ client = OpenAI(
 )
 
 
+# @brief: 单轮对话，传入用户消息，返回模型回答
+# @param: message: 用户输入文本
+# @return: 模型回答文本
 def chat(message: str) -> str:
-    """单轮对话：传入用户消息，返回模型回答。"""
     response = client.chat.completions.create(
         model=MODEL_NAME,
         messages=[

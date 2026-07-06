@@ -15,29 +15,41 @@
 
 ### 核心模块
 
-| 函数 | 职责 |
-|------|------|
-| `_get_local_model()` | 懒加载 `SentenceTransformer`，避免重复初始化 |
-| `embed_text()` | 单条文本 → `list[float]`（`local` / `dashscope`） |
-| `embed_chunks_list()` | 遍历 chunks，生成 `{chunk, page, embedding}` |
-| `save_vectors_json()` | 写入 `data/vectors/{name}.json` |
-| `embed_chunks()` | 门面：读 chunks JSON → 向量化 → 写盘 |
+
+| 函数                    | 职责                                          |
+| --------------------- | ------------------------------------------- |
+| `_get_local_model()`  | 懒加载 `SentenceTransformer`，避免重复初始化           |
+| `embed_text()`        | 单条文本 → `list[float]`（`local` / `dashscope`） |
+| `embed_chunks_list()` | 遍历 chunks，生成 `{chunk, page, embedding}`     |
+| `save_vectors_json()` | 写入 `data/vectors/{name}.json`               |
+| `embed_chunks()`      | 门面：读 chunks JSON → 向量化 → 写盘                 |
+
+
+
 
 ### 方案选型
 
-| 方案 | 模型 | 切换方式 |
-|------|------|----------|
-| **本地**（默认） | `BAAI/bge-small-zh-v1.5` | `EMBEDDING_PROVIDER=local` |
-| **云端** | 通义 `text-embedding-v3` | `EMBEDDING_PROVIDER=dashscope` |
+
+| 方案         | 模型                       | 切换方式                           |
+| ---------- | ------------------------ | ------------------------------ |
+| **本地**（默认） | `BAAI/bge-small-zh-v1.5` | `EMBEDDING_PROVIDER=local`     |
+| **云端**     | 通义 `text-embedding-v3`   | `EMBEDDING_PROVIDER=dashscope` |
+
+
+
 
 ### 关键参数
 
-| 参数 | 默认值 | 说明 |
-|------|--------|------|
-| `VECTORS_DIR` | `data/vectors` | 向量 JSON 输出目录 |
-| `EMBEDDING_PROVIDER` | `local` | `local` 或 `dashscope` |
-| `EMBEDDING_MODEL` | `BAAI/bge-small-zh-v1.5` | 本地模型；云端改为 `text-embedding-v3` |
-| `EMBEDDING_DIMENSION` | `512` | 云端可选维度（本地由模型决定） |
+
+| 参数                    | 默认值                      | 说明                            |
+| --------------------- | ------------------------ | ----------------------------- |
+| `VECTORS_DIR`         | `data/vectors`           | 向量 JSON 输出目录                  |
+| `EMBEDDING_PROVIDER`  | `local`                  | `local` 或 `dashscope`         |
+| `EMBEDDING_MODEL`     | `BAAI/bge-small-zh-v1.5` | 本地模型；云端改为 `text-embedding-v3` |
+| `EMBEDDING_DIMENSION` | `512`                    | 云端可选维度（本地由模型决定）               |
+
+
+
 
 ### 实测验证
 
@@ -65,6 +77,8 @@ python -c "from app.rag.embedder import embed_chunks; print(embed_chunks('data/c
 
 ---
 
+
+
 ## 在 Sprint 2 中的位置
 
 ```
@@ -83,6 +97,8 @@ Chunk（文本块）→ Embedding 模型 → Vector（浮点数组）
 
 ---
 
+
+
 ## 处理流程
 
 ```
@@ -95,28 +111,38 @@ data/chunks/test.json
 
 ---
 
+
+
 ## 目录与配置
 
-| 路径 | 说明 |
-|------|------|
+
+| 路径                    | 说明             |
+| --------------------- | -------------- |
 | `app/rag/embedder.py` | Embedding 核心逻辑 |
-| `data/chunks/` | Day10 输入 |
-| `data/vectors/` | Day11 输出 |
+| `data/chunks/`        | Day10 输入       |
+| `data/vectors/`       | Day11 输出       |
+
 
 ---
+
+
 
 ## 实现清单
 
-| # | 任务 | 状态 |
-|---|------|------|
-| 1 | `sentence-transformers` 依赖 | ✅ |
-| 2 | `data/vectors/.gitkeep` | ✅ |
-| 3 | `config.py` Embedding 配置 | ✅ |
-| 4 | `embed_text()` local + dashscope | ✅ |
-| 5 | `embed_chunks_list` / `save_vectors_json` / `embed_chunks` | ✅ |
-| 6 | Day10 → Day11 联调 | ✅ |
+
+| #   | 任务                                                         | 状态  |
+| --- | ---------------------------------------------------------- | --- |
+| 1   | `sentence-transformers` 依赖                                 | ✅   |
+| 2   | `data/vectors/.gitkeep`                                    | ✅   |
+| 3   | `config.py` Embedding 配置                                   | ✅   |
+| 4   | `embed_text()` local + dashscope                           | ✅   |
+| 5   | `embed_chunks_list` / `save_vectors_json` / `embed_chunks` | ✅   |
+| 6   | Day10 → Day11 联调                                           | ✅   |
+
 
 ---
+
+
 
 ## 测试命令
 
@@ -135,14 +161,18 @@ python -c "from app.rag.pdf_loader import parse_pdf; from app.rag.chunker import
 
 ---
 
+
+
 ## 每日收尾
 
 - [x] 更新 README、CODEMAP、roadmap、solution-design、api.md
 - [x] `.gitignore` 忽略 `data/vectors/*.json`
-- [ ] Git Commit：`feat(embedding): vectorize chunks with bge-small or DashScope`
-- [ ] Tag：`v0.2.0-beta2`
+- [x] Git Commit：`feat(embedding): vectorize chunks with bge-small or DashScope`
+- [x] Tag：`v0.2.0-beta2`
 
 ---
+
+
 
 ## 收获
 
@@ -152,6 +182,8 @@ python -c "from app.rag.pdf_loader import parse_pdf; from app.rag.chunker import
 
 ---
 
+
+
 ## 下一步
 
-Day12 — ChromaDB（`feat(vector-db)`，v0.2.0-rc）
+Day12 — ChromaDB（`feat(vector-db)`，v0.2.0-rc）✅ 已完成，见 [Day12.md](Day12.md)。

@@ -8,6 +8,9 @@
 from pathlib import Path
 
 
+# @brief: 字节数转为人类可读大小
+# @param: size_bytes: 文件字节数
+# @return: 如 "8MB"、"512KB"、"100B"
 def format_file_size(size_bytes: int) -> str:
     mb = 1024 * 1024
     kb = 1024
@@ -18,6 +21,9 @@ def format_file_size(size_bytes: int) -> str:
     return f"{size_bytes}B"
 
 
+# @brief: 确保目录存在，不存在则创建
+# @param: path: 目录路径
+# @return: Path 对象
 def ensure_dir(path: str) -> Path:
     directory = Path(path)
     directory.mkdir(parents=True, exist_ok=True)

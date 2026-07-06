@@ -19,3 +19,6 @@ langchain-text-splitters
 
 # Day11 — 本地 Embedding（EMBEDDING_PROVIDER=local 时安装）
 sentence-transformers
+
+# Day12 — Chroma 向量库
+chromadb

@@ -7,29 +7,29 @@
 from pydantic import BaseModel, Field
 
 
-# Day04 — POST /chat 请求体
+# @brief: POST /chat 请求体（Day04）
 class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, description="用户消息")
 
 
-# Day04 — POST /chat 响应体
+# @brief: POST /chat 响应体（Day04）
 class ChatResponse(BaseModel):
     answer: str
 
 
-# Day04 — GET /health 响应体
+# @brief: GET /health 响应体（Day04）
 class HealthResponse(BaseModel):
     status: str
 
 
-# Day04 — GET /models 响应体
+# @brief: GET /models 响应体（Day04）
 class ModelInfo(BaseModel):
     provider: str
     model: str
     base_url: str
 
 
-# Day08 — POST /upload 响应体
+# @brief: POST /upload 响应体（Day08）
 class UploadResponse(BaseModel):
     filename: str
     size: str

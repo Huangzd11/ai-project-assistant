@@ -13,6 +13,7 @@ ai-project-assistant/
 ├── data/parsed/       # 解析 JSON（Day09）
 ├── data/chunks/       # Chunk JSON（Day10）
 ├── data/vectors/      # Vector JSON（Day11）
+├── data/chroma/       # Chroma 持久化（Day12）
 ├── docs/              # 文档与工作日志
 ├── examples/          # Day01~03 学习脚本
 ├── tests/             # Day14 测试
@@ -22,11 +23,12 @@ ai-project-assistant/
 | 目录 | 用途 | 规则 |
 |------|------|------|
 | `app/api/` | HTTP 路由 | 不含 PDF 解析等业务细节 |
-| `app/rag/` | RAG 流水线 | Day09 解析，Day10 切分，Day11 向量，Day12+ 入库 |
+| `app/rag/` | RAG 流水线 | Day09~11 解析/切分/向量，Day12 Chroma 入库检索 |
 | `uploads/` | 原始 PDF | 仅上传产物，不入库大文件 |
 | `data/parsed/` | 解析 JSON | `.gitignore` 忽略 `*.json` |
 | `data/chunks/` | Chunk JSON | `.gitignore` 忽略 `*.json` |
 | `data/vectors/` | Vector JSON | `.gitignore` 忽略 `*.json` |
+| `data/chroma/` | Chroma 数据 | `.gitignore` 忽略运行时文件 |
 | `docs/` | 全部文档 | 每日工作写入 `DayXX.md` |
 | `examples/` | 学习示例 | 按 Day 命名，可独立运行 |
 
@@ -42,6 +44,7 @@ ai-project-assistant/
 | 解析层 | `app/rag/pdf_loader.py` | PDF → JSON（Day09） |
 | 切分层 | `app/rag/chunker.py` | 按页 Chunk → JSON（Day10） |
 | 向量层 | `app/rag/embedder.py` | Chunk → Embedding JSON（Day11） |
+| 存储层 | `app/rag/vector_store.py` | Chroma 入库 + Top-K 检索（Day12） |
 | 接口层 | `app/api/*.py` | FastAPI 路由 |
 
 **原则**：上层依赖下层，推理层不反向依赖接口层。
@@ -144,8 +147,8 @@ python examples/chat_demo.py
 # API 服务
 python -m uvicorn app.main:app --reload
 
-# PDF 解析 → Chunk → Embedding（Day09~11）
-python -c "from app.rag.pdf_loader import parse_pdf; from app.rag.chunker import chunk_pdf; from app.rag.embedder import embed_chunks; print(embed_chunks(chunk_pdf(parse_pdf('uploads/test.pdf'))))"
+# PDF 解析 → Chunk → Embedding → Chroma（Day09~12）
+python -c "from app.rag.pdf_loader import parse_pdf; from app.rag.chunker import chunk_pdf; from app.rag.embedder import embed_chunks; from app.rag.vector_store import index_chunks, search; p=parse_pdf('uploads/test.pdf'); c=chunk_pdf(p); embed_chunks(c); print(index_chunks(c)); print(search('telnet')['results'][0])"
 
 # Docker
 docker build -t ai-chat:v1 . && docker run -p 8000:8000 ai-chat:v1

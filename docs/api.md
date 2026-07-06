@@ -191,6 +191,46 @@ python -c "from app.rag.embedder import embed_chunks; print(embed_chunks('data/c
 
 ---
 
+## 向量检索（Day12 · 模块调用）
+
+Chunk + Vector 入库 Chroma 后，可通过 `search()` 做纯检索（**不接 LLM**）。
+
+```powershell
+# 入库
+python -c "from app.rag.vector_store import index_chunks; print(index_chunks('data/chunks/test.json'))"
+
+# 检索
+python -c "from app.rag.vector_store import search; import json; print(json.dumps(search('telnet'), ensure_ascii=False, indent=2))"
+```
+
+**检索返回：**
+
+```json
+{
+  "query": "telnet",
+  "top_k": 5,
+  "results": [
+    {
+      "rank": 1,
+      "score": 0.6835,
+      "chunk": 2,
+      "page": 2,
+      "source": "test.pdf",
+      "content": "工具选择telnet终端：..."
+    }
+  ]
+}
+```
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `rank` | int | 排名 |
+| `score` | float | 相似度（越高越相关） |
+| `chunk` / `page` / `source` | — | 溯源信息 |
+| `content` | string | 命中原文 |
+
+---
+
 ## 环境变量
 
 | 变量名 | 默认值 | 说明 |
@@ -210,3 +250,6 @@ python -c "from app.rag.embedder import embed_chunks; print(embed_chunks('data/c
 | `EMBEDDING_PROVIDER` | `local` | `local` 或 `dashscope` |
 | `EMBEDDING_MODEL` | `BAAI/bge-small-zh-v1.5` | Embedding 模型名 |
 | `EMBEDDING_DIMENSION` | `512` | 云端向量维度 |
+| `CHROMA_DIR` | `data/chroma` | Chroma 持久化目录 |
+| `CHROMA_COLLECTION` | `knowledge` | Collection 名称 |
+| `SEARCH_TOP_K` | `5` | 检索返回条数 |

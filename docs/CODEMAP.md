@@ -31,7 +31,8 @@ ai-project-assistant/
 │       ├── __init__.py
 │       ├── pdf_loader.py             # Day09 — PDF 按页解析 → JSON
 │       ├── chunker.py                # Day10 — LangChain Chunk 切分
-│       └── embedder.py               # Day11 — Embedding 向量化
+│       ├── embedder.py               # Day11 — Embedding 向量化
+│       └── vector_store.py           # Day12 — Chroma 入库 + 检索
 │
 ├── examples/                         # Day01~03 学习示例（独立脚本）
 │   ├── prompt_demo.py                # Day01 — Prompt 练习
@@ -42,11 +43,12 @@ ai-project-assistant/
 ├── data/
 │   ├── parsed/                       # Day09 — 解析 JSON 输出
 │   ├── chunks/                       # Day10 — Chunk JSON 输出
-│   └── vectors/                      # Day11 — Vector JSON 输出
+│   ├── vectors/                      # Day11 — Vector JSON 输出
+│   └── chroma/                       # Day12 — Chroma 持久化
 ├── tests/                            # Day14 — 自动化测试（预留）
 │
-├── docs/                             # Day06~11 — 项目文档
-│   ├── Day01.md ~ Day11.md           # 每日工作日志
+├── docs/                             # Day06~12 — 项目文档
+│   ├── Day01.md ~ Day12.md           # 每日工作日志
 │   ├── api.md                        # HTTP 接口说明
 │   ├── roadmap.md                    # 学习路线
 │   ├── solution-design.md            # AI 方案设计
@@ -85,6 +87,7 @@ ai-project-assistant/
 | **Day09** | `app/rag/pdf_loader.py` | PDF 解析 | fitz 逐页 get_text → JSON |
 | **Day10** | `app/rag/chunker.py` | Chunk 切分 | LangChain RecursiveCharacterTextSplitter → chunks JSON |
 | **Day11** | `app/rag/embedder.py` | Embedding | bge-small / DashScope → vectors JSON |
+| **Day12** | `app/rag/vector_store.py` | 向量检索 | Chroma Insert + Top-K Search（无 LLM） |
 
 ---
 
@@ -105,6 +108,10 @@ data/parsed/xxx.json → app/rag/chunker.chunk_pdf() → data/chunks/xxx.json
 
 # 向量化（Day11）
 data/chunks/xxx.json → app/rag/embedder.embed_chunks() → data/vectors/xxx.json
+
+# 入库 + 检索（Day12）
+data/chunks + data/vectors → app/rag/vector_store.index_chunks() → data/chroma/
+Question → app/rag/vector_store.search() → Top5 结果
 ```
 
 ---
@@ -131,4 +138,7 @@ python -c "from app.rag.chunker import chunk_pdf; print(chunk_pdf('data/parsed/t
 
 # Embedding 向量化（Day11）
 python -c "from app.rag.embedder import embed_chunks; print(embed_chunks('data/chunks/test.json'))"
+
+# Chroma 入库 + 检索（Day12）
+python -c "from app.rag.vector_store import index_chunks, search; print(index_chunks('data/chunks/test.json')); print(search('telnet')['results'][0])"
 ```

@@ -16,9 +16,10 @@ from app.models import ChatRequest, ChatResponse, ModelInfo
 router = APIRouter(tags=["chat"])
 
 
+# @brief: 返回当前 LLM 提供方、模型名、API 地址
+# @return: ModelInfo
 @router.get("/models", response_model=ModelInfo)
 def models():
-    """返回当前 LLM 提供方、模型名、API 地址。"""
     return ModelInfo(
         provider=PROVIDER,
         model=MODEL_NAME,
@@ -26,8 +27,10 @@ def models():
     )
 
 
+# @brief: 单轮对话，用户 message → LLM → answer
+# @param: req: ChatRequest（message 字段）
+# @return: ChatResponse
 @router.post("/chat", response_model=ChatResponse)
 def chat_endpoint(req: ChatRequest):
-    """单轮对话：用户 message → LLM → answer。"""
     answer = chat(req.message)
     return ChatResponse(answer=answer)

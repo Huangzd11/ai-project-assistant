@@ -11,6 +11,7 @@
 
 import json
 from pathlib import Path
+
 from openai import OpenAI
 
 from app.core.config import (
@@ -22,19 +23,24 @@ from app.core.config import (
     REQUEST_TIMEOUT,
     VECTORS_DIR,
 )
-from app.core.files import ensure_dir   # 确保目录存在
+from app.core.files import ensure_dir
 
-# 本地模型懒加载（避免 import 时下载）
 _local_model = None
 
-def _get_local_model():
-    global _local_model   # 全局变量
-    if _local_model is None:   # 如果模型实例不存在，则创建
-        from sentence_transformers import SentenceTransformer   # 本地模型
-        _local_model = SentenceTransformer(EMBEDDING_MODEL)   # 创建模型实例
-    return _local_model   # 返回模型实例
 
-# 步骤 A：单条文本 → 向量。根据 EMBEDDING_PROVIDER 选择实现。
+# @brief: 懒加载本地 SentenceTransformer 模型
+# @return: SentenceTransformer 实例
+def _get_local_model():
+    global _local_model
+    if _local_model is None:
+        from sentence_transformers import SentenceTransformer
+        _local_model = SentenceTransformer(EMBEDDING_MODEL)
+    return _local_model
+
+
+# @brief: 单条文本 → 向量，按 EMBEDDING_PROVIDER 分支
+# @param: text: 输入文本
+# @return: 浮点向量列表，空文本返回 []
 def embed_text(text: str) -> list[float]:
     if not text or not text.strip():
         return []
@@ -45,19 +51,23 @@ def embed_text(text: str) -> list[float]:
 
     if EMBEDDING_PROVIDER == "dashscope":
         client = OpenAI(
-            api_key=OPENAI_API_KEY,   # 设置 API 密钥
-            base_url=OPENAI_BASE_URL,   # 设置 API 基础 URL
-            timeout=REQUEST_TIMEOUT   # 设置请求超时时间
+            api_key=OPENAI_API_KEY,
+            base_url=OPENAI_BASE_URL,
+            timeout=REQUEST_TIMEOUT,
         )
         resp = client.embeddings.create(
-            model=EMBEDDING_MODEL,   # 设置模型
-            input=text,   # 设置输入文本
-            dimensions=EMBEDDING_DIMENSION,   # 设置维度
+            model=EMBEDDING_MODEL,
+            input=text,
+            dimensions=EMBEDDING_DIMENSION,
         )
         return resp.data[0].embedding
-    raise ValueError(f"Unknown EMBEDDING_PROVIDER: {EMBEDDING_PROVIDER}")   # 抛出错误
 
-# 步骤 B：遍历 chunks，组装 vectors。
+    raise ValueError(f"Unknown EMBEDDING_PROVIDER: {EMBEDDING_PROVIDER}")
+
+
+# @brief: 遍历 chunks，批量生成 vectors 列表
+# @param: chunks: chunks 列表（含 chunk_id、page、content）
+# @return: [{chunk, page, embedding}, ...]
 def embed_chunks_list(chunks: list[dict]) -> list[dict]:
     vectors = []
     for item in chunks:
@@ -72,6 +82,14 @@ def embed_chunks_list(chunks: list[dict]) -> list[dict]:
     return vectors
 
 
+# @brief: 将 vectors 列表保存为 JSON 文件
+# @param: source: 源 PDF 文件名
+# @param: chunks_json_path: chunks JSON 路径（用于输出文件名）
+# @param: vectors: vectors 列表
+# @param: vectors_dir: 输出目录
+# @param: provider: Embedding 提供方
+# @param: model: Embedding 模型名
+# @return: 输出 JSON 路径
 def save_vectors_json(
     source: str,
     chunks_json_path: str | Path,
@@ -100,7 +118,10 @@ def save_vectors_json(
     return out_path
 
 
-# 步骤 C：读 chunks JSON → 向量化 → 写入 vectors JSON。
+# @brief: 读 chunks JSON → 向量化 → 写入 vectors JSON
+# @param: chunks_json_path: chunks JSON 路径
+# @param: vectors_dir: 输出目录，默认 VECTORS_DIR
+# @return: 输出 JSON 路径
 def embed_chunks(
     chunks_json_path: str | Path,
     vectors_dir: str | Path = VECTORS_DIR,
@@ -117,5 +138,5 @@ def embed_chunks(
         source=data.get("source", chunks_json_path.stem + ".pdf"),
         chunks_json_path=chunks_json_path,
         vectors=vectors,
-        vectors_dir=vectors_dir
+        vectors_dir=vectors_dir,
     )

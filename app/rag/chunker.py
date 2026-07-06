@@ -6,16 +6,24 @@
 #   chunk_document   — 遍历 pages，分配 chunk_id
 #   save_chunks_json — 写入 data/chunks/*.json
 #   chunk_pdf        — 读文件 → 切分 → 写盘
+#
+# 详见 docs/Day10.md
 
 import json
 from pathlib import Path
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from app.core.config import CHUNKS_DIR, CHUNK_SIZE, CHUNK_OVERLAP
+from app.core.config import CHUNKS_DIR, CHUNK_OVERLAP, CHUNK_SIZE
 from app.core.files import ensure_dir
 
-# 步骤 A：单页文本 → LangChain 切块（不含 chunk_id）。
+
+# @brief: 单页文本 → LangChain 切块（不含 chunk_id）
+# @param: page: 页码
+# @param: text: 页文本内容
+# @param: chunk_size: 块大小，默认 CHUNK_SIZE
+# @param: chunk_overlap: 重叠大小，默认 CHUNK_OVERLAP
+# @return: [{page, content}, ...]
 def split_page_text(
     page: int,
     text: str,
@@ -25,17 +33,21 @@ def split_page_text(
     if not text or not text.strip():
         return []
 
-    splitter = RecursiveCharacterTextSplitter(  # 创建切块器
-        chunk_size=chunk_size,   # 切块大小
-        chunk_overlap=chunk_overlap,   # 切块重叠大小
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
     )
-    pieces = splitter.split_text(text)   # 切块
+    pieces = splitter.split_text(text)
+    return [{"page": page, "content": piece} for piece in pieces]
 
-    return [{"page": page, "content": piece} for piece in pieces]   # 返回切块结果
 
-# 步骤 B：遍历 pages，汇总块并分配全局 chunk_id。
+# @brief: 遍历 pages，汇总块并分配全局 chunk_id
+# @param: parsed: parsed JSON 数据
+# @param: chunk_size: 块大小
+# @param: chunk_overlap: 重叠大小
+# @return: [{chunk_id, page, content}, ...]
 def chunk_document(
-    parsed: dict,   # 解析后的 JSON 数据
+    parsed: dict,
     chunk_size: int = CHUNK_SIZE,
     chunk_overlap: int = CHUNK_OVERLAP,
 ) -> list[dict]:
@@ -48,7 +60,7 @@ def chunk_document(
         page_chunks = split_page_text(page_num, content, chunk_size, chunk_overlap)
 
         for block in page_chunks:
-            chunks.append({   # 添加到 chunks 列表
+            chunks.append({
                 "chunk_id": chunk_id,
                 "page": block["page"],
                 "content": block["content"],
@@ -57,7 +69,15 @@ def chunk_document(
 
     return chunks
 
-# 步骤 C1：将 chunks 列表保存为 JSON 文件。
+
+# @brief: 将 chunks 列表保存为 JSON 文件
+# @param: source: 源 PDF 文件名
+# @param: parsed_json_path: parsed JSON 路径（用于输出文件名）
+# @param: chunks: chunks 列表
+# @param: chunks_dir: 输出目录
+# @param: chunk_size: 块大小
+# @param: chunk_overlap: 重叠大小
+# @return: 输出 JSON 路径
 def save_chunks_json(
     source: str,
     parsed_json_path: str | Path,
@@ -82,12 +102,15 @@ def save_chunks_json(
 
     return out_path
 
- # 步骤 C2：读 parsed JSON → 切分 → 写入 chunks JSON。
+
+# @brief: 读 parsed JSON → 切分 → 写入 chunks JSON
+# @param: parsed_json_path: parsed JSON 路径
+# @param: chunks_dir: 输出目录，默认 CHUNKS_DIR
+# @return: 输出 JSON 路径
 def chunk_pdf(
     parsed_json_path: str | Path,
     chunks_dir: str | Path = CHUNKS_DIR,
 ) -> Path:
-   
     parsed_json_path = Path(parsed_json_path)
     if not parsed_json_path.is_file():
         raise FileNotFoundError(f"Parsed JSON not found: {parsed_json_path}")

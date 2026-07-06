@@ -20,9 +20,11 @@ from app.models import UploadResponse
 router = APIRouter(prefix="/upload", tags=["upload"])
 
 
+# @brief: 上传 PDF 并保存至 uploads/
+# @param: file: multipart 上传文件
+# @return: UploadResponse（filename、size）
 @router.post("", response_model=UploadResponse)
 async def upload_pdf(file: UploadFile = File(..., description="PDF 文件")):
-    # 取纯文件名，防止路径穿越攻击
     filename = Path(file.filename or "").name
     if not filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="仅支持 PDF 文件")

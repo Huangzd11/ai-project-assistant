@@ -28,3 +28,5 @@ data/chunks/*.json
 !data/chunks/.gitkeep
 data/vectors/*.json
 !data/vectors/.gitkeep
+data/chroma/*
+!data/chroma/.gitkeep

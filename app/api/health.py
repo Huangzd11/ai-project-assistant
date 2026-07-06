@@ -12,11 +12,15 @@ from app.models import HealthResponse
 router = APIRouter(tags=["health"])
 
 
+# @brief: 服务欢迎页
+# @return: {"message": "Hello AI"}
 @router.get("/")
 def root():
     return {"message": "Hello AI"}
 
 
+# @brief: 健康检查探活
+# @return: HealthResponse
 @router.get("/health", response_model=HealthResponse)
 def health():
     return HealthResponse(status="OK")

@@ -7,9 +7,10 @@
 #   2. 维护 messages 列表（system + 历史 user/assistant）
 #   3. 每轮：用户输入 → stream 请求 → 拼接 chunk → 追加到 messages
 
-from openai import OpenAI
 import os
+
 from dotenv import load_dotenv
+from openai import OpenAI
 
 load_dotenv()
 
@@ -25,7 +26,6 @@ if not api_key:
 
 client = OpenAI(api_key=api_key, base_url=base_url)
 
-# Day01/Day02 — messages 是对话核心：system 定角色，user/assistant 维持上下文
 messages = [
     {
         "role": "system",
@@ -41,7 +41,6 @@ while True:
         "content": question
     })
 
-    # Day02 — stream=True 实现逐字输出
     stream = client.chat.completions.create(
         model=model,
         messages=messages,
@@ -56,7 +55,6 @@ while True:
             full_answer += content
     print()
 
-    # 保存完整回答，下一轮模型才能记住上下文
     messages.append({
         "role": "assistant",
         "content": full_answer
