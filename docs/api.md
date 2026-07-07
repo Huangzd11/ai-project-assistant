@@ -1,6 +1,6 @@
 # API 接口说明
 
-> **版本：v0.3-alpha**（Sprint 3 Agent Core）  
+> **版本：v0.3-beta**（Sprint 3 Memory）  
 > 基础地址：`http://127.0.0.1:8000`  
 > 交互文档：[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
@@ -329,27 +329,64 @@ python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.
 
 ## POST `/agent`
 
-Agent 问答（Day15）：Planner 分解任务 → 调用工具（如 `rag_query`）→ 根据 Observation 生成最终回答。
+Agent 问答（Day15~17）：Planner + Tool + **session_id 多轮记忆**（Day17）。
 
 **与 `/rag` 区别：**
 
 | 接口 | 路径 | 特点 |
 |------|------|------|
 | `/rag` | 固定 RAG 流水线 | 无规划层，直接检索+回答 |
-| `/agent` | Planner + Tool | 返回 `plan` / `tool_calls`，可扩展多工具 |
+| `/agent` | Planner + Tool + Memory | 返回 `plan`；`session_id` 共享对话上下文 |
 
 **请求：**
 
 ```json
-{ "message": "总结一下 test.pdf" }
+{
+  "message": "我是谁？",
+  "session_id": "work-001"
+}
 ```
+
+`session_id` 可选；不传则单轮无记忆（兼容 Day16）。
 
 **响应：**
 
 ```json
 {
+  "message": "我是谁？",
+  "answer": "您是项目经理。",
+  "session_id": "work-001",
+  "plan": [],
+  "tool_calls": [],
+  "sources": []
+}
+```
+
+**多轮记忆测试：**
+
+```powershell
+# 第 1 轮
+Invoke-RestMethod -Uri http://127.0.0.1:8000/agent -Method Post -ContentType "application/json `
+  -Body '{"message":"我是项目经理","session_id":"work-001"}'
+
+# 第 2 轮（同一 session_id）
+Invoke-RestMethod -Uri http://127.0.0.1:8000/agent -Method Post -ContentType "application/json" `
+  -Body '{"message":"我是谁？","session_id":"work-001"}'
+```
+
+**带工具调用的请求示例：**
+
+```json
+{ "message": "总结一下 test.pdf", "session_id": "work-001" }
+```
+
+**带工具调用的响应示例：**
+
+```json
+{
   "message": "总结一下 test.pdf",
   "answer": "test.pdf 主要介绍了……",
+  "session_id": "work-001",
   "plan": [
     {
       "tool": "rag_query",
@@ -368,6 +405,7 @@ Agent 问答（Day15）：Planner 分解任务 → 调用工具（如 `rag_query
 |------|------|------|
 | `message` | string | 用户目标 |
 | `answer` | string | Agent 最终回答 |
+| `session_id` | string | 会话 ID（Day17）；多轮记忆 |
 | `plan` | array | 规划步骤（可观测、可调试） |
 | `tool_calls` | array | 实际调用的工具 |
 | `sources` | array | RAG 引用来源；纯闲聊时为空 |
@@ -412,3 +450,5 @@ python -c "from app.agent import run_agent; import json; print(json.dumps(run_ag
 | `SEARCH_TOP_K` | `5` | 检索返回条数 |
 | `RAG_SYSTEM_PROMPT` | （见 config.py） | RAG 专用 system 提示词 |
 | `AGENT_ANSWER_PROMPT` | （见 config.py） | Agent 总结阶段 system 提示词 |
+| `MEMORY_DIR` | `data/conversations` | 会话记忆 JSON 目录 |
+| `MEMORY_MAX_TURNS` | `10` | Short Memory 保留轮数 |

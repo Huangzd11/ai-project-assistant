@@ -2,6 +2,7 @@
 # Day04 — 封装为 chat() 函数，供 FastAPI 调用
 # Day13 — 支持可选 system_prompt（RAG 专用）
 # Day14 — LLM 异常映射为友好错误
+# Day17 — chat_messages() 多轮对话
 #
 # 功能：统一 LLM 推理入口
 # 逻辑：
@@ -43,6 +44,32 @@ def chat(message: str, system_prompt: str | None = None) -> str:
                 {"role": "system", "content": prompt},
                 {"role": "user", "content": message},
             ],
+        )
+        content = response.choices[0].message.content or ""
+        if not content:
+            logger.warning("LLM returned empty content  model=%s", MODEL_NAME)
+        return content
+    except APITimeoutError as exc:
+        logger.error("LLM timeout  model=%s  error=%s", MODEL_NAME, exc)
+        raise LLMTimeoutError() from exc
+    except APIConnectionError as exc:
+        logger.error("LLM connection failed  model=%s  error=%s", MODEL_NAME, exc)
+        raise LLMUnavailableError() from exc
+    except OpenAIError as exc:
+        logger.error("LLM error  model=%s  error=%s", MODEL_NAME, exc)
+        raise LLMUnavailableError() from exc
+
+
+# @brief: 多轮对话，传入完整 messages（不含 system）
+# @param: messages: 历史 + 当前 user 消息列表
+# @param: system_prompt: 可选 system 提示词
+# @return: 模型回答文本
+def chat_messages(messages: list[dict], system_prompt: str | None = None) -> str:
+    prompt = system_prompt or SYSTEM_PROMPT
+    try:
+        response = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[{"role": "system", "content": prompt}, *messages],
         )
         content = response.choices[0].message.content or ""
         if not content:

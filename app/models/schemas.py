@@ -108,6 +108,11 @@ class AgentRequest(BaseModel):
         description="用户目标",
         examples=["总结一下 test.pdf"],
     )
+    session_id: str | None = Field(
+        None,
+        description="会话 ID；相同 ID 共享 Short Memory，支持多轮对话",
+        examples=["work-001"],
+    )
 
 
 # @brief: POST /agent 响应体（Day15）
@@ -118,6 +123,7 @@ class AgentResponse(BaseModel):
                 {
                     "message": "总结一下 test.pdf",
                     "answer": "test.pdf 主要介绍了……",
+                    "session_id": "work-001",
                     "plan": [
                         {
                             "tool": "rag_query",
@@ -141,6 +147,7 @@ class AgentResponse(BaseModel):
 
     message: str = Field(..., description="用户目标")
     answer: str = Field(..., description="Agent 最终回答")
+    session_id: str | None = Field(None, description="会话 ID；与请求一致时用于多轮记忆")
     plan: list[AgentPlanStep] = Field(default_factory=list, description="规划步骤")
     tool_calls: list[dict] = Field(default_factory=list, description="实际调用的工具")
     sources: list[RagSource] = Field(

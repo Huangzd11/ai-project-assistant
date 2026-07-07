@@ -21,7 +21,8 @@ ai-project-assistant/
 │   │
 │   ├── agent/                        # Day15/16 Agent 核心
 │   │   ├── planner.py                # Day16 — 多工具路由
-│   │   ├── executor.py               # Day16 — registry.run
+│   │   ├── executor.py               # Day16/17 — registry.run + memory
+│   │   ├── memory.py                 # Day17 — Short / Long Memory
 │   │   ├── prompt.py
 │   │   └── tools/                    # Day16 — 工具注册表
 │   │       ├── registry.py
@@ -115,6 +116,8 @@ ai-project-assistant/
 | **Day16** | `app/agent/tools/rag_tool.py` | RAG 工具 | rag_query 封装 rag_answer |
 | **Day16** | `app/agent/tools/pdf_tool.py` | PDF 工具 | 读 uploads/ PDF |
 | **Day16** | `app/agent/tools/calculator.py` | 计算器 | ast 安全求值 |
+| **Day17** | `app/agent/memory.py` | 会话记忆 | Short Memory + Long facts |
+| **Day17** | `app/core/llm.py` | 多轮 LLM | `chat_messages()` |
 
 ---
 

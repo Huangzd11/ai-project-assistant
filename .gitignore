@@ -30,3 +30,5 @@ data/vectors/*.json
 !data/vectors/.gitkeep
 data/chroma/*
 !data/chroma/.gitkeep
+data/conversations/*.json
+!data/conversations/.gitkeep

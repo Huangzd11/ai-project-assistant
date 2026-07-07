@@ -8,7 +8,7 @@
 
 ## 项目简介
 
-本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 3（v0.3.x Enterprise AI Agent）**，完成 Day01 ~ Day16：
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 3（v0.3.x Enterprise AI Agent）**，完成 Day01 ~ Day17：
 
 - LLM 基础与 Prompt 设计（Day01）
 - OpenAI 兼容 API 多轮对话（Day02）
@@ -26,6 +26,7 @@
 - 企业化优化与 Release（Day14，日志 / 异常 / Swagger / Docker）
 - Agent Core + RAG 工具调用（Day15，Planner / Executor / POST /agent）
 - Tool Registry 多工具（Day16，PDF / Calculator / RAG）
+- 会话 Memory（Day17，`session_id` 多轮对话 + Long facts）
 
 适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
 
@@ -247,6 +248,20 @@ python -c "import app.agent.tools; from app.agent.tools.registry import list_nam
 
 详见 [docs/Day16.md](docs/Day16.md)。
 
+### 会话 Memory（Day17 · v0.3-beta）
+
+- Short Memory：`data/conversations/{session_id}.json`
+- Long Memory：规则提取「我是xxx」→ facts 注入 system
+- `POST /agent` 增加可选 `session_id`
+
+```powershell
+# 多轮：同一 session_id 连续请求
+Invoke-RestMethod ... -Body '{"message":"我是项目经理","session_id":"work-001"}'
+Invoke-RestMethod ... -Body '{"message":"我是谁？","session_id":"work-001"}'
+```
+
+详见 [docs/Day17.md](docs/Day17.md)。
+
 ### HTTP API 服务（Day04）
 
 
@@ -311,6 +326,7 @@ python -c "import app.agent.tools; from app.agent.tools.registry import list_nam
 - [x] Day14 Enterprise Release
 - [x] Day15 Agent Core
 - [x] Day16 Tool Registry
+- [x] Day17 Memory
 
 ---
 
@@ -334,6 +350,7 @@ ai-project-assistant/
 │   ├── agent/                        # Day15/16 — Planner / Executor / Tools
 │   │   ├── planner.py
 │   │   ├── executor.py
+│   │   ├── memory.py                 # Day17 — 会话记忆
 │   │   ├── prompt.py
 │   │   └── tools/                    # Day16 — registry + pdf/rag/calculator
 │   │       ├── registry.py
@@ -371,7 +388,7 @@ ai-project-assistant/
 │
 ├── docs/                             # 文档与工作日志
 │   ├── CODEMAP.md                    # 代码地图（按 Day 索引）
-│   ├── Day01.md ~ Day16.md
+│   ├── Day01.md ~ Day17.md
 │   ├── api.md / roadmap.md
 │   ├── solution-design.md
 │   ├── development-standards.md
@@ -536,7 +553,7 @@ curl http://127.0.0.1:8000/health
 | [docs/solution-design.md](docs/solution-design.md)             | AI 方案设计（技术选型与演进路线） |
 | [docs/api.md](docs/api.md)                                     | HTTP 接口详细说明        |
 | [docs/roadmap.md](docs/roadmap.md)                             | 学习路线与后续规划          |
-| [docs/Day01.md](docs/Day01.md) ~ [Day16.md](docs/Day16.md)     | 每日工作日志             |
+| [docs/Day01.md](docs/Day01.md) ~ [Day17.md](docs/Day17.md)     | 每日工作日志             |
 
 
 ---

@@ -55,3 +55,7 @@ RAG_SYSTEM_PROMPT = os.getenv(
 from app.agent.prompt import FINAL_ANSWER_PROMPT
 
 AGENT_ANSWER_PROMPT = os.getenv("AGENT_ANSWER_PROMPT", FINAL_ANSWER_PROMPT)
+
+# Day17 — Agent 会话记忆
+MEMORY_DIR = os.getenv("MEMORY_DIR", "data/conversations")
+MEMORY_MAX_TURNS = int(os.getenv("MEMORY_MAX_TURNS", "10"))
