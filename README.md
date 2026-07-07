@@ -8,7 +8,7 @@
 
 ## 项目简介
 
-本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 3（v0.3.x Enterprise AI Agent）**，完成 Day01 ~ Day15：
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 3（v0.3.x Enterprise AI Agent）**，完成 Day01 ~ Day16：
 
 - LLM 基础与 Prompt 设计（Day01）
 - OpenAI 兼容 API 多轮对话（Day02）
@@ -25,6 +25,7 @@
 - RAG 知识库问答（Day13，检索 + LLM + 来源溯源）
 - 企业化优化与 Release（Day14，日志 / 异常 / Swagger / Docker）
 - Agent Core + RAG 工具调用（Day15，Planner / Executor / POST /agent）
+- Tool Registry 多工具（Day16，PDF / Calculator / RAG）
 
 适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
 
@@ -234,6 +235,18 @@ python -c "from app.agent import run_agent; import json; print(json.dumps(run_ag
 
 详见 [docs/Day15.md](docs/Day15.md)。
 
+### Tool Registry（Day16 · v0.3-alpha2）
+
+- `agent/tools/registry.py`：工具注册表，`register()` / `run()`
+- 三工具：`pdf_read` / `rag_query` / `calculator`
+- 新增工具只需注册，不改 Executor
+
+```powershell
+python -c "import app.agent.tools; from app.agent.tools.registry import list_names; print(list_names())"
+```
+
+详见 [docs/Day16.md](docs/Day16.md)。
+
 ### HTTP API 服务（Day04）
 
 
@@ -297,6 +310,7 @@ python -c "from app.agent import run_agent; import json; print(json.dumps(run_ag
 - [x] Day13 RAG Pipeline
 - [x] Day14 Enterprise Release
 - [x] Day15 Agent Core
+- [x] Day16 Tool Registry
 
 ---
 
@@ -317,11 +331,15 @@ ai-project-assistant/
 │   │   ├── upload.py                 # Day08 — /upload
 │   │   ├── rag.py                    # Day13 — /rag
 │   │   └── agent.py                  # Day15 — /agent
-│   ├── agent/                        # Day15 — Planner / Executor / Tools
+│   ├── agent/                        # Day15/16 — Planner / Executor / Tools
 │   │   ├── planner.py
 │   │   ├── executor.py
-│   │   ├── tools.py
-│   │   └── prompt.py
+│   │   ├── prompt.py
+│   │   └── tools/                    # Day16 — registry + pdf/rag/calculator
+│   │       ├── registry.py
+│   │       ├── rag_tool.py
+│   │       ├── pdf_tool.py
+│   │       └── calculator.py
 │   ├── core/
 │   │   ├── config.py                 # Day02/04/08 — 环境配置
 │   │   ├── llm.py                    # Day02/04 — LLM 调用
@@ -353,7 +371,7 @@ ai-project-assistant/
 │
 ├── docs/                             # 文档与工作日志
 │   ├── CODEMAP.md                    # 代码地图（按 Day 索引）
-│   ├── Day01.md ~ Day15.md
+│   ├── Day01.md ~ Day16.md
 │   ├── api.md / roadmap.md
 │   ├── solution-design.md
 │   ├── development-standards.md
@@ -518,7 +536,7 @@ curl http://127.0.0.1:8000/health
 | [docs/solution-design.md](docs/solution-design.md)             | AI 方案设计（技术选型与演进路线） |
 | [docs/api.md](docs/api.md)                                     | HTTP 接口详细说明        |
 | [docs/roadmap.md](docs/roadmap.md)                             | 学习路线与后续规划          |
-| [docs/Day01.md](docs/Day01.md) ~ [Day15.md](docs/Day15.md)     | 每日工作日志             |
+| [docs/Day01.md](docs/Day01.md) ~ [Day16.md](docs/Day16.md)     | 每日工作日志             |
 
 
 ---

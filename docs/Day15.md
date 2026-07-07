@@ -498,4 +498,4 @@ python -m uvicorn app.main:app --reload
 
 ## 下一步
 
-Day16 — Tool 管理（`feat(tools)` · v0.3-alpha2）：工具注册表、PDF Tool、Search Tool 等
+Day16 — Tool Registry（`feat(tools)` · v0.3-alpha2）← 设计完成，见 [Day16.md](Day16.md)

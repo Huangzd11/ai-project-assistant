@@ -65,7 +65,7 @@ AI Project Assistant
 **Backlog：**
 
 - [x] Day15 Agent Core — `feat(agent-core)` — v0.3-alpha
-- [ ] Day16 Tool 管理 — `feat(tools)` — v0.3-alpha2
+- [x] Day16 Tool Registry — `feat(tools)` — v0.3-alpha2
 - [ ] Day17 Memory — `feat(memory)` — v0.3-beta
 - [ ] Day18 MCP Client — `feat(mcp-client)` — v0.3-beta2
 - [ ] Day19 MCP Server — `feat(mcp-server)` — v0.3-rc

@@ -16,10 +16,10 @@ from app.core.middleware import RequestLoggingMiddleware
 
 app = FastAPI(
     title="AI Project Assistant",
-    version="0.3-alpha",
+    version="0.3-alpha2",
     description=(
         "企业知识库 Agent API（Sprint 3）。"
-        "支持 PDF 上传、纯 LLM 对话、RAG 问答、Agent 规划与工具调用。"
+        "支持 PDF 上传、RAG 问答、Agent 工具注册表（PDF / Calculator / RAG）。"
     ),
 )
 

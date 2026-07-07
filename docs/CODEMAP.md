@@ -19,11 +19,15 @@ ai-project-assistant/
 │   │   ├── rag.py                    # Day13 — POST /rag
 │   │   └── agent.py                  # Day15 — POST /agent
 │   │
-│   ├── agent/                        # Day15 Agent 核心
-│   │   ├── planner.py                # 任务规划
-│   │   ├── executor.py               # 执行 + 总结
-│   │   ├── tools.py                  # rag_query 工具
-│   │   └── prompt.py                 # Agent 提示词
+│   ├── agent/                        # Day15/16 Agent 核心
+│   │   ├── planner.py                # Day16 — 多工具路由
+│   │   ├── executor.py               # Day16 — registry.run
+│   │   ├── prompt.py
+│   │   └── tools/                    # Day16 — 工具注册表
+│   │       ├── registry.py
+│   │       ├── rag_tool.py
+│   │       ├── pdf_tool.py
+│   │       └── calculator.py
 │   │
 │   ├── core/                         # Day04 核心层 · Day08/14 扩展
 │   │   ├── config.py                 # Day02/04/08 — 环境变量配置
@@ -104,10 +108,13 @@ ai-project-assistant/
 | **Day14** | `app/core/middleware.py` | 请求日志 | 记录 method/path/duration/status |
 | **Day14** | `app/core/exceptions.py` | 统一异常 | LLM 503/504 友好响应 |
 | **Day14** | `app/main.py` | 网关层 | 中间件 + 全局异常 + OpenAPI |
-| **Day15** | `app/agent/planner.py` | 任务规划 | 规则判断 → rag_query 步骤 |
-| **Day15** | `app/agent/executor.py` | Agent 执行 | plan → tool → observation → answer |
-| **Day15** | `app/agent/tools.py` | 工具 | rag_query 封装 rag_answer |
+| **Day15** | `app/agent/planner.py` | 任务规划 | 规则判断 → 工具步骤 |
+| **Day15** | `app/agent/executor.py` | Agent 执行 | plan → registry.run → answer |
 | **Day15** | `app/api/agent.py` | HTTP API | POST /agent |
+| **Day16** | `app/agent/tools/registry.py` | 工具注册表 | register / run / list_names |
+| **Day16** | `app/agent/tools/rag_tool.py` | RAG 工具 | rag_query 封装 rag_answer |
+| **Day16** | `app/agent/tools/pdf_tool.py` | PDF 工具 | 读 uploads/ PDF |
+| **Day16** | `app/agent/tools/calculator.py` | 计算器 | ast 安全求值 |
 
 ---
 
