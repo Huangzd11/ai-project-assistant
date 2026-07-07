@@ -9,17 +9,17 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.api import chat, health, rag, upload
+from app.api import agent, chat, health, rag, upload
 from app.core.exceptions import AppError
 from app.core.logger import logger
 from app.core.middleware import RequestLoggingMiddleware
 
 app = FastAPI(
     title="AI Project Assistant",
-    version="0.2.0",
+    version="0.3-alpha",
     description=(
-        "企业知识库 RAG API（Sprint 2 Release）。"
-        "支持 PDF 上传、纯 LLM 对话、知识库问答（含引用来源）。"
+        "企业知识库 Agent API（Sprint 3）。"
+        "支持 PDF 上传、纯 LLM 对话、RAG 问答、Agent 规划与工具调用。"
     ),
 )
 
@@ -29,6 +29,7 @@ app.include_router(health.router)
 app.include_router(chat.router)
 app.include_router(upload.router)
 app.include_router(rag.router)
+app.include_router(agent.router)
 
 
 @app.exception_handler(AppError)

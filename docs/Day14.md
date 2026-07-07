@@ -344,4 +344,4 @@ Client（Swagger / curl）
 
 ## 下一步
 
-Day15+ — 流式 API、多轮对话、Agent、前端 UI（见 roadmap）
+Day15 — Agent Core（`feat(agent-core)` · v0.3-alpha）← 设计完成，见 [Day15.md](Day15.md)

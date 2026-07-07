@@ -1,4 +1,7 @@
 from app.models.schemas import (
+    AgentPlanStep,
+    AgentRequest,
+    AgentResponse,
     ChatRequest,
     ChatResponse,
     HealthResponse,
@@ -10,6 +13,9 @@ from app.models.schemas import (
 )
 
 __all__ = [
+    "AgentPlanStep",
+    "AgentRequest",
+    "AgentResponse",
     "ChatRequest",
     "ChatResponse",
     "HealthResponse",

@@ -22,36 +22,80 @@
 
 ---
 
+## Sprint 3（v0.3.x）— Enterprise AI Agent
 
+> 在 Sprint 2 RAG 知识库之上，构建可规划、可调工具、可记记忆的企业级 Agent。
 
-## 后续方向（Day15+）
+**目标架构：**
 
+```
+用户 → AI Project Assistant
+         ├── Chat
+         ├── RAG 知识库
+         └── Memory
+               ↓
+         Agent Planner
+               ↓
+         Tools（PDF / Search / MCP …）
+               ↓
+            LLM → Answer
+```
 
-| 方向     | 计划                         |
-| ------ | -------------------------- |
+**目标模块结构：**
+
+```
+AI Project Assistant
+├── Chat
+├── Knowledge Base
+├── Agent
+├── MCP
+└── Tools
+```
+
+| Day | 功能 | Git Commit | 版本 |
+|-----|------|------------|------|
+| Day15 | Agent 基础 + Function Calling | `feat(agent-core)` | v0.3-alpha |
+| Day16 | Tool 管理 | `feat(tools)` | v0.3-alpha2 |
+| Day17 | Memory | `feat(memory)` | v0.3-beta |
+| Day18 | MCP 基础（Client） | `feat(mcp-client)` | v0.3-beta2 |
+| Day19 | MCP Server 接入 | `feat(mcp-server)` | v0.3-rc |
+| Day20 | 企业 Agent Workflow | `feat(agent-workflow)` | v0.3 |
+| Day21 | Sprint Review + Release | `release(v0.3)` | Release |
+
+**Backlog：**
+
+- [x] Day15 Agent Core — `feat(agent-core)` — v0.3-alpha
+- [ ] Day16 Tool 管理 — `feat(tools)` — v0.3-alpha2
+- [ ] Day17 Memory — `feat(memory)` — v0.3-beta
+- [ ] Day18 MCP Client — `feat(mcp-client)` — v0.3-beta2
+- [ ] Day19 MCP Server — `feat(mcp-server)` — v0.3-rc
+- [ ] Day20 Agent Workflow — `feat(agent-workflow)` — v0.3
+- [ ] Day21 Review + Release — `release(v0.3)` — v0.3.0
+
+---
+
+## 更远期（Day22+）
+
+| 方向 | 计划 |
+|------|------|
 | 流式 API | 新增 `/chat/stream`，SSE 逐字返回 |
-| 多轮对话   | 引入 `session_id`，服务端维护对话历史  |
-| Agent  | 工具调用、任务编排                  |
-| 前端     | 简单 Web 聊天界面                |
-| 评测     | Prompt 效果对比与指标统计           |
+| 前端 | 简单 Web 聊天界面 |
+| 评测 | Prompt 效果对比与指标统计 |
 
-
-
+---
 
 ## 工程化改进
 
+| 项 | 说明 | 状态 |
+|----|------|------|
+| 统一虚拟环境 | 共享依赖管理，monorepo 结构 | 进行中 |
+| `.env.example` | 提供配置模板，避免密钥泄露 | ✅ |
+| 错误处理 | 统一超时、模型不可用等异常响应 | ✅ Day14 |
+| 日志监控 | 请求耗时、Token 用量统计 | ✅ Day14（请求耗时） |
+| docker-compose | API + Ollama 一键编排 | 待做 |
+| CI/CD | 自动化测试与镜像构建 | 待做 |
 
-| 项              | 说明                 |
-| -------------- | ------------------ |
-| 统一虚拟环境         | 共享依赖管理，monorepo 结构 |
-| `.env.example` | 提供配置模板，避免密钥泄露      |
-| 错误处理           | 统一超时、模型不可用等异常响应    |
-| 日志监控           | 请求耗时、Token 用量统计    |
-| docker-compose | API + Ollama 一键编排  |
-| CI/CD          | 自动化测试与镜像构建         |
-
-
-
+---
 
 ## 相关链接
 
@@ -59,4 +103,4 @@
 - [Ollama 文档](https://github.com/ollama/ollama)
 - [OpenAI Python SDK](https://github.com/openai/openai-python)
 - [阿里云百炼](https://bailian.console.aliyun.com/)
-
+- [MCP 规范](https://modelcontextprotocol.io/)

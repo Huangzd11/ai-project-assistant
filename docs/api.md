@@ -1,6 +1,6 @@
 # API 接口说明
 
-> **版本：v0.2.0**（Sprint 2 Enterprise RAG Release）  
+> **版本：v0.3-alpha**（Sprint 3 Agent Core）  
 > 基础地址：`http://127.0.0.1:8000`  
 > 交互文档：[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
@@ -12,6 +12,7 @@
 | `/upload` | POST | 上传 PDF 至知识库 |
 | `/chat` | POST | 纯 LLM 对话（不走知识库） |
 | `/rag` | POST | 企业知识库 RAG 问答（含引用来源） |
+| `/agent` | POST | Agent 规划 + 工具调用 + 总结（Day15） |
 
 ## 错误响应（Day14）
 
@@ -326,6 +327,67 @@ python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.
 
 ---
 
+## POST `/agent`
+
+Agent 问答（Day15）：Planner 分解任务 → 调用工具（如 `rag_query`）→ 根据 Observation 生成最终回答。
+
+**与 `/rag` 区别：**
+
+| 接口 | 路径 | 特点 |
+|------|------|------|
+| `/rag` | 固定 RAG 流水线 | 无规划层，直接检索+回答 |
+| `/agent` | Planner + Tool | 返回 `plan` / `tool_calls`，可扩展多工具 |
+
+**请求：**
+
+```json
+{ "message": "总结一下 test.pdf" }
+```
+
+**响应：**
+
+```json
+{
+  "message": "总结一下 test.pdf",
+  "answer": "test.pdf 主要介绍了……",
+  "plan": [
+    {
+      "tool": "rag_query",
+      "args": { "question": "test.pdf 的主要内容是什么？" },
+      "reason": "需要从知识库获取文档内容"
+    }
+  ],
+  "tool_calls": [{ "tool": "rag_query" }],
+  "sources": [
+    { "source": "test.pdf", "page": 1, "chunk": 1, "score": 0.72 }
+  ]
+}
+```
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `message` | string | 用户目标 |
+| `answer` | string | Agent 最终回答 |
+| `plan` | array | 规划步骤（可观测、可调试） |
+| `tool_calls` | array | 实际调用的工具 |
+| `sources` | array | RAG 引用来源；纯闲聊时为空 |
+
+**PowerShell 测试：**
+
+```powershell
+Invoke-RestMethod -Uri http://127.0.0.1:8000/agent `
+  -Method Post -ContentType "application/json" `
+  -Body '{"message":"总结一下 test.pdf"}'
+```
+
+**模块调用（无 HTTP）：**
+
+```powershell
+python -c "from app.agent import run_agent; import json; print(json.dumps(run_agent('总结 test.pdf'), ensure_ascii=False, indent=2))"
+```
+
+---
+
 ## 环境变量
 
 | 变量名 | 默认值 | 说明 |
@@ -349,3 +411,4 @@ python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.
 | `CHROMA_COLLECTION` | `knowledge` | Collection 名称 |
 | `SEARCH_TOP_K` | `5` | 检索返回条数 |
 | `RAG_SYSTEM_PROMPT` | （见 config.py） | RAG 专用 system 提示词 |
+| `AGENT_ANSWER_PROMPT` | （见 config.py） | Agent 总结阶段 system 提示词 |

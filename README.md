@@ -8,7 +8,7 @@
 
 ## 项目简介
 
-本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已完成 **Sprint 2（v0.2.0 Enterprise RAG）**，完成 Day01 ~ Day14：
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 3（v0.3.x Enterprise AI Agent）**，完成 Day01 ~ Day15：
 
 - LLM 基础与 Prompt 设计（Day01）
 - OpenAI 兼容 API 多轮对话（Day02）
@@ -24,6 +24,7 @@
 - Chroma 向量入库与 Top-K 检索（Day12）
 - RAG 知识库问答（Day13，检索 + LLM + 来源溯源）
 - 企业化优化与 Release（Day14，日志 / 异常 / Swagger / Docker）
+- Agent Core + RAG 工具调用（Day15，Planner / Executor / POST /agent）
 
 适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
 
@@ -59,6 +60,7 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/rag -Method Post -ContentType "appl
 | `/upload` | POST | 上传 PDF |
 | `/chat` | POST | 纯 LLM 对话 |
 | `/rag` | POST | 知识库问答 + sources |
+| `/agent` | POST | Agent 规划 + 工具调用 + 总结（Day15） |
 
 **性能说明：** 首次 `/rag` 较慢（Embedding 模型冷启动 + LLM 生成）。可换 `qwen3:1.5b` 加速 LLM 部分；生产环境建议关闭 `--reload`。
 
@@ -220,6 +222,18 @@ python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.
 
 详见 [docs/Day14.md](docs/Day14.md)。
 
+### Agent Core（Day15 · v0.3-alpha）
+
+- Planner 规则分解：含 pdf/总结 → 调用 `rag_query`
+- Executor：`plan` → Tool → Observation → LLM 总结
+- `POST /agent` 返回 `answer` + `plan` + `sources`
+
+```powershell
+python -c "from app.agent import run_agent; import json; print(json.dumps(run_agent('总结 test.pdf'), ensure_ascii=False, indent=2))"
+```
+
+详见 [docs/Day15.md](docs/Day15.md)。
+
 ### HTTP API 服务（Day04）
 
 
@@ -231,6 +245,7 @@ python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.
 | `/chat`   | POST | AI 聊天         |
 | `/upload` | POST | PDF 上传（Day08） |
 | `/rag` | POST | 知识库 RAG 问答（Day13） |
+| `/agent` | POST | Agent 问答（Day15） |
 
 
 运行：`python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000`  
@@ -281,6 +296,7 @@ python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.
 - [x] Day12 ChromaDB
 - [x] Day13 RAG Pipeline
 - [x] Day14 Enterprise Release
+- [x] Day15 Agent Core
 
 ---
 
@@ -299,7 +315,13 @@ ai-project-assistant/
 │   │   ├── health.py                 # Day04 — / 、/health
 │   │   ├── chat.py                   # Day04 — /chat 、/models
 │   │   ├── upload.py                 # Day08 — /upload
-│   │   └── rag.py                    # Day13 — /rag（PDF）
+│   │   ├── rag.py                    # Day13 — /rag
+│   │   └── agent.py                  # Day15 — /agent
+│   ├── agent/                        # Day15 — Planner / Executor / Tools
+│   │   ├── planner.py
+│   │   ├── executor.py
+│   │   ├── tools.py
+│   │   └── prompt.py
 │   ├── core/
 │   │   ├── config.py                 # Day02/04/08 — 环境配置
 │   │   ├── llm.py                    # Day02/04 — LLM 调用
@@ -331,7 +353,7 @@ ai-project-assistant/
 │
 ├── docs/                             # 文档与工作日志
 │   ├── CODEMAP.md                    # 代码地图（按 Day 索引）
-│   ├── Day01.md ~ Day14.md
+│   ├── Day01.md ~ Day15.md
 │   ├── api.md / roadmap.md
 │   ├── solution-design.md
 │   ├── development-standards.md
@@ -496,7 +518,7 @@ curl http://127.0.0.1:8000/health
 | [docs/solution-design.md](docs/solution-design.md)             | AI 方案设计（技术选型与演进路线） |
 | [docs/api.md](docs/api.md)                                     | HTTP 接口详细说明        |
 | [docs/roadmap.md](docs/roadmap.md)                             | 学习路线与后续规划          |
-| [docs/Day01.md](docs/Day01.md) ~ [Day14.md](docs/Day14.md)     | 每日工作日志             |
+| [docs/Day01.md](docs/Day01.md) ~ [Day15.md](docs/Day15.md)     | 每日工作日志             |
 
 
 ---

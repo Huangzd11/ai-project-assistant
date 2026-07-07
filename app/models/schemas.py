@@ -91,3 +91,59 @@ class RagResponse(BaseModel):
         default_factory=list,
         description="引用来源列表；无命中时为空数组",
     )
+
+
+# @brief: Agent 计划步骤（Day15）
+class AgentPlanStep(BaseModel):
+    tool: str = Field(..., description="工具名称")
+    args: dict = Field(default_factory=dict, description="工具参数")
+    reason: str = Field(default="", description="规划原因")
+
+
+# @brief: POST /agent 请求体（Day15）
+class AgentRequest(BaseModel):
+    message: str = Field(
+        ...,
+        min_length=1,
+        description="用户目标",
+        examples=["总结一下 test.pdf"],
+    )
+
+
+# @brief: POST /agent 响应体（Day15）
+class AgentResponse(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "message": "总结一下 test.pdf",
+                    "answer": "test.pdf 主要介绍了……",
+                    "plan": [
+                        {
+                            "tool": "rag_query",
+                            "args": {"question": "test.pdf 的主要内容是什么？"},
+                            "reason": "需要从知识库获取文档内容",
+                        }
+                    ],
+                    "tool_calls": [{"tool": "rag_query"}],
+                    "sources": [
+                        {
+                            "source": "test.pdf",
+                            "page": 1,
+                            "chunk": 1,
+                            "score": 0.72,
+                        }
+                    ],
+                }
+            ]
+        }
+    )
+
+    message: str = Field(..., description="用户目标")
+    answer: str = Field(..., description="Agent 最终回答")
+    plan: list[AgentPlanStep] = Field(default_factory=list, description="规划步骤")
+    tool_calls: list[dict] = Field(default_factory=list, description="实际调用的工具")
+    sources: list[RagSource] = Field(
+        default_factory=list,
+        description="引用来源；无 RAG 命中时为空数组",
+    )

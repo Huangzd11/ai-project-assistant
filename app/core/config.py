@@ -50,3 +50,8 @@ RAG_SYSTEM_PROMPT = os.getenv(
     "若资料不足以回答，请明确说「根据现有资料无法回答」。"
     "回答时请注明引用来源，格式：根据《文档名》第X页：……",
 )
+
+# Day15 — Agent 总结阶段 system prompt
+from app.agent.prompt import FINAL_ANSWER_PROMPT
+
+AGENT_ANSWER_PROMPT = os.getenv("AGENT_ANSWER_PROMPT", FINAL_ANSWER_PROMPT)
