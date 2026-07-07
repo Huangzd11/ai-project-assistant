@@ -52,10 +52,18 @@ RAG_SYSTEM_PROMPT = os.getenv(
 )
 
 # Day15 — Agent 总结阶段 system prompt
-from app.agent.prompt import FINAL_ANSWER_PROMPT
-
-AGENT_ANSWER_PROMPT = os.getenv("AGENT_ANSWER_PROMPT", FINAL_ANSWER_PROMPT)
+AGENT_ANSWER_PROMPT = os.getenv(
+    "AGENT_ANSWER_PROMPT",
+    "你是企业知识库助手。根据下方「工具执行结果」回答用户。"
+    "若结果含 sources，回答中注明文档名与页码。"
+    "若工具未找到内容，如实告知。",
+)
 
 # Day17 — Agent 会话记忆
 MEMORY_DIR = os.getenv("MEMORY_DIR", "data/conversations")
 MEMORY_MAX_TURNS = int(os.getenv("MEMORY_MAX_TURNS", "10"))
+
+# Day18 — MCP Client
+MCP_ENABLED = os.getenv("MCP_ENABLED", "false").lower() in {"1", "true", "yes"}
+MCP_SERVER_COMMAND = os.getenv("MCP_SERVER_COMMAND", "npx")
+MCP_SERVER_ARGS = os.getenv("MCP_SERVER_ARGS", "-y,@modelcontextprotocol/server-everything")

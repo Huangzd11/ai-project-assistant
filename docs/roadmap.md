@@ -67,7 +67,7 @@ AI Project Assistant
 - [x] Day15 Agent Core — `feat(agent-core)` — v0.3-alpha
 - [x] Day16 Tool Registry — `feat(tools)` — v0.3-alpha2
 - [x] Day17 Memory — `feat(memory)` — v0.3-beta
-- [ ] Day18 MCP Client — `feat(mcp-client)` — v0.3-beta2
+- [x] Day18 MCP Client — `feat(mcp-client)` — v0.3-beta2
 - [ ] Day19 MCP Server — `feat(mcp-server)` — v0.3-rc
 - [ ] Day20 Agent Workflow — `feat(agent-workflow)` — v0.3
 - [ ] Day21 Review + Release — `release(v0.3)` — v0.3.0

@@ -1,4 +1,5 @@
 # Day16 — Agent 任务规划
+# Day18 — MCP 显式调用（mcp echo hello）
 #
 # 功能：将用户目标分解为可执行的工具调用计划
 # 逻辑：按意图路由 calculator → pdf_read → rag_query
@@ -92,6 +93,8 @@ def _build_rag_question(message: str) -> str:
 # @param: user_message: 用户目标
 # @return: 计划步骤列表，每步含 tool / args / reason
 def plan(user_message: str) -> list[dict]:
+    from app.mcp.bridge import plan_mcp_step
+
     if _is_calculator(user_message):
         return [
             {
@@ -100,6 +103,10 @@ def plan(user_message: str) -> list[dict]:
                 "reason": "需要精确数学计算",
             }
         ]
+
+    mcp_step = plan_mcp_step(user_message)
+    if mcp_step:
+        return [mcp_step]
 
     if _is_pdf_read(user_message):
         filename = _extract_pdf_name(user_message)

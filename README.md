@@ -8,7 +8,7 @@
 
 ## 项目简介
 
-本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 3（v0.3.x Enterprise AI Agent）**，完成 Day01 ~ Day17：
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 3（v0.3.x Enterprise AI Agent）**，完成 Day01 ~ Day18：
 
 - LLM 基础与 Prompt 设计（Day01）
 - OpenAI 兼容 API 多轮对话（Day02）
@@ -27,6 +27,7 @@
 - Agent Core + RAG 工具调用（Day15，Planner / Executor / POST /agent）
 - Tool Registry 多工具（Day16，PDF / Calculator / RAG）
 - 会话 Memory（Day17，`session_id` 多轮对话 + Long facts）
+- MCP Client 外部工具（Day18，连接 MCP Server 并桥接进 Tool Registry）
 
 适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
 
@@ -262,6 +263,22 @@ Invoke-RestMethod ... -Body '{"message":"我是谁？","session_id":"work-001"}'
 
 详见 [docs/Day17.md](docs/Day17.md)。
 
+### MCP Client（Day18 · v0.3-beta2）
+
+- `app/mcp/client.py`：stdio 连接 MCP Server，`list_tools` / `call_tool`
+- `app/mcp/bridge.py`：动态注册 `mcp_*` 到 Tool Registry
+- Planner 支持显式调用：`mcp echo hello`
+- `GET /mcp/status`、`GET /mcp/tools` 调试接口
+
+```powershell
+# .env 中 MCP_ENABLED=true，需 Node.js（npx）
+python -m uvicorn app.main:app --reload
+Invoke-RestMethod -Uri http://127.0.0.1:8000/mcp/status
+Invoke-RestMethod -Uri http://127.0.0.1:8000/agent -Method Post -ContentType "application/json" -Body '{"message":"mcp echo hello"}'
+```
+
+详见 [docs/Day18.md](docs/Day18.md)。
+
 ### HTTP API 服务（Day04）
 
 
@@ -274,6 +291,7 @@ Invoke-RestMethod ... -Body '{"message":"我是谁？","session_id":"work-001"}'
 | `/upload` | POST | PDF 上传（Day08） |
 | `/rag` | POST | 知识库 RAG 问答（Day13） |
 | `/agent` | POST | Agent 问答（Day15） |
+| `/mcp/status` | GET | MCP 状态（Day18） |
 
 
 运行：`python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000`  
@@ -327,6 +345,7 @@ Invoke-RestMethod ... -Body '{"message":"我是谁？","session_id":"work-001"}'
 - [x] Day15 Agent Core
 - [x] Day16 Tool Registry
 - [x] Day17 Memory
+- [x] Day18 MCP Client
 
 ---
 
@@ -346,7 +365,8 @@ ai-project-assistant/
 │   │   ├── chat.py                   # Day04 — /chat 、/models
 │   │   ├── upload.py                 # Day08 — /upload
 │   │   ├── rag.py                    # Day13 — /rag
-│   │   └── agent.py                  # Day15 — /agent
+│   │   ├── agent.py                  # Day15 — /agent
+│   │   └── mcp.py                    # Day18 — /mcp/status
 │   ├── agent/                        # Day15/16 — Planner / Executor / Tools
 │   │   ├── planner.py
 │   │   ├── executor.py
@@ -357,6 +377,10 @@ ai-project-assistant/
 │   │       ├── rag_tool.py
 │   │       ├── pdf_tool.py
 │   │       └── calculator.py
+│   ├── mcp/                          # Day18 — MCP Client
+│   │   ├── client.py
+│   │   ├── bridge.py
+│   │   └── runtime.py
 │   ├── core/
 │   │   ├── config.py                 # Day02/04/08 — 环境配置
 │   │   ├── llm.py                    # Day02/04 — LLM 调用
@@ -388,7 +412,7 @@ ai-project-assistant/
 │
 ├── docs/                             # 文档与工作日志
 │   ├── CODEMAP.md                    # 代码地图（按 Day 索引）
-│   ├── Day01.md ~ Day17.md
+│   ├── Day01.md ~ Day18.md
 │   ├── api.md / roadmap.md
 │   ├── solution-design.md
 │   ├── development-standards.md
@@ -536,6 +560,9 @@ curl http://127.0.0.1:8000/health
 | `CHROMA_DIR`          | `data/chroma`               | Chroma 持久化目录          |
 | `CHROMA_COLLECTION`   | `knowledge`                 | Collection 名称         |
 | `SEARCH_TOP_K`        | `5`                         | 检索返回条数                |
+| `MCP_ENABLED`         | `false`                     | 是否启用 MCP Client        |
+| `MCP_SERVER_COMMAND`  | `npx`                       | MCP Server 启动命令         |
+| `MCP_SERVER_ARGS`     | `-y,@modelcontextprotocol/server-everything` | MCP Server 参数 |
 | `RAG_SYSTEM_PROMPT`   | （见 config.py）               | RAG 专用 system 提示词     |
 
 
@@ -553,7 +580,7 @@ curl http://127.0.0.1:8000/health
 | [docs/solution-design.md](docs/solution-design.md)             | AI 方案设计（技术选型与演进路线） |
 | [docs/api.md](docs/api.md)                                     | HTTP 接口详细说明        |
 | [docs/roadmap.md](docs/roadmap.md)                             | 学习路线与后续规划          |
-| [docs/Day01.md](docs/Day01.md) ~ [Day17.md](docs/Day17.md)     | 每日工作日志             |
+| [docs/Day01.md](docs/Day01.md) ~ [Day18.md](docs/Day18.md)     | 每日工作日志             |
 
 
 ---

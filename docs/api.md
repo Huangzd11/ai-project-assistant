@@ -1,6 +1,6 @@
 # API 接口说明
 
-> **版本：v0.3-beta**（Sprint 3 Memory）  
+> **版本：v0.3-beta2**（Sprint 3 MCP Client）  
 > 基础地址：`http://127.0.0.1:8000`  
 > 交互文档：[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
@@ -13,6 +13,8 @@
 | `/chat` | POST | 纯 LLM 对话（不走知识库） |
 | `/rag` | POST | 企业知识库 RAG 问答（含引用来源） |
 | `/agent` | POST | Agent 规划 + 工具调用 + 总结（Day15） |
+| `/mcp/status` | GET | MCP 连接状态与已注册工具（Day18） |
+| `/mcp/tools` | GET | MCP 工具列表（Day18） |
 
 ## 错误响应（Day14）
 
@@ -424,6 +426,40 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/agent `
 python -c "from app.agent import run_agent; import json; print(json.dumps(run_agent('总结 test.pdf'), ensure_ascii=False, indent=2))"
 ```
 
+**MCP 显式调用（Day18）：**
+
+在 `.env` 中设置 `MCP_ENABLED=true` 并安装 Node.js 后，可用 `mcp <tool> <args>` 格式调用外部工具：
+
+```powershell
+Invoke-RestMethod -Uri http://127.0.0.1:8000/agent `
+  -Method Post -ContentType "application/json" `
+  -Body '{"message":"mcp echo hello"}'
+```
+
+---
+
+## GET `/mcp/status`
+
+MCP 连接状态与已注册工具（Day18）。
+
+**响应：**
+
+```json
+{
+  "enabled": true,
+  "tool_count": 13,
+  "tools": [
+    { "name": "mcp_echo", "description": "Echoes back the input" }
+  ]
+}
+```
+
+---
+
+## GET `/mcp/tools`
+
+返回 MCP 工具列表（与 `/mcp/status` 的 `tools` 字段相同）。
+
 ---
 
 ## 环境变量
@@ -452,3 +488,6 @@ python -c "from app.agent import run_agent; import json; print(json.dumps(run_ag
 | `AGENT_ANSWER_PROMPT` | （见 config.py） | Agent 总结阶段 system 提示词 |
 | `MEMORY_DIR` | `data/conversations` | 会话记忆 JSON 目录 |
 | `MEMORY_MAX_TURNS` | `10` | Short Memory 保留轮数 |
+| `MCP_ENABLED` | `false` | 是否启动 MCP Client |
+| `MCP_SERVER_COMMAND` | `npx` | MCP Server 启动命令 |
+| `MCP_SERVER_ARGS` | `-y,@modelcontextprotocol/server-everything` | MCP Server 参数（逗号分隔） |

@@ -10,7 +10,7 @@
 ai-project-assistant/
 │
 ├── app/                              # Day04 创建 · Day08 重构
-│   ├── main.py                       # Day04/08/14 — FastAPI 入口，中间件与异常
+│   ├── main.py                       # Day04/08/14/18 — FastAPI 入口，MCP lifespan
 │   │
 │   ├── api/                          # Day04 拆分 · Day08 扩展
 │   │   ├── health.py                 # Day04 — GET / 、/health
@@ -18,9 +18,10 @@ ai-project-assistant/
 │   │   ├── upload.py                 # Day08 — POST /upload（PDF 上传）
 │   │   ├── rag.py                    # Day13 — POST /rag
 │   │   └── agent.py                  # Day15 — POST /agent
+│   │   └── mcp.py                    # Day18 — GET /mcp/status、/mcp/tools
 │   │
 │   ├── agent/                        # Day15/16 Agent 核心
-│   │   ├── planner.py                # Day16 — 多工具路由
+│   │   ├── planner.py                # Day16/18 — 多工具 + MCP 路由
 │   │   ├── executor.py               # Day16/17 — registry.run + memory
 │   │   ├── memory.py                 # Day17 — Short / Long Memory
 │   │   ├── prompt.py
@@ -30,8 +31,14 @@ ai-project-assistant/
 │   │       ├── pdf_tool.py
 │   │       └── calculator.py
 │   │
+│   ├── mcp/                          # Day18 — MCP Client
+│   │   ├── client.py                 # connect / list_tools / call_tool
+│   │   ├── bridge.py                 # MCP → Tool Registry 桥接
+│   │   ├── runtime.py                # 后台事件循环
+│   │   └── __init__.py               # bootstrap / shutdown
+│   │
 │   ├── core/                         # Day04 核心层 · Day08/14 扩展
-│   │   ├── config.py                 # Day02/04/08 — 环境变量配置
+│   │   ├── config.py                 # Day02/04/08/18 — 环境变量配置
 │   │   ├── llm.py                    # Day02/04/14 — LLM chat() 封装
 │   │   ├── logger.py                 # Day08/14 — 日志
 │   │   ├── middleware.py             # Day14 — 请求日志中间件
@@ -118,6 +125,11 @@ ai-project-assistant/
 | **Day16** | `app/agent/tools/calculator.py` | 计算器 | ast 安全求值 |
 | **Day17** | `app/agent/memory.py` | 会话记忆 | Short Memory + Long facts |
 | **Day17** | `app/core/llm.py` | 多轮 LLM | `chat_messages()` |
+| **Day18** | `app/mcp/client.py` | MCP Client | stdio 连接 / list / call |
+| **Day18** | `app/mcp/bridge.py` | MCP 桥接 | 动态注册 `mcp_*` 到 Registry |
+| **Day18** | `app/mcp/runtime.py` | 后台循环 | sync 工具跨线程调度 |
+| **Day18** | `app/api/mcp.py` | HTTP API | GET /mcp/status、/mcp/tools |
+| **Day18** | `app/agent/planner.py` | MCP 路由 | `mcp echo hello` 显式调用 |
 
 ---
 
@@ -150,6 +162,11 @@ Browser → POST /rag → app/api/rag.py → rag_pipeline
 # Agent 问答（Day15）
 Message → app/agent/executor.run_agent() → { answer, plan, sources }
 Browser → POST /agent → app/api/agent.py → planner → tools → llm
+
+# MCP 外部工具（Day18）
+lifespan → app/mcp/bootstrap_mcp() → mcp/client → 外部 MCP Server
+Planner「mcp echo hello」→ registry.run("mcp_echo") → bridge → MCP call_tool
+Browser → GET /mcp/status → app/api/mcp.py
 ```
 
 ---

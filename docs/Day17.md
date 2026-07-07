@@ -389,4 +389,4 @@ POST /agent { message, session_id? }
 
 ## 下一步
 
-Day18 — MCP Client（`feat(mcp-client)` · v0.3-beta2）
+Day18 — MCP Client（`feat(mcp-client)` · v0.3-beta2）← 设计完成，见 [Day18.md](Day18.md)

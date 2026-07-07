@@ -22,3 +22,6 @@ sentence-transformers
 
 # Day12 — Chroma 向量库
 chromadb
+
+# Day18 — MCP Client
+mcp
