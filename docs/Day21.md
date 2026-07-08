@@ -176,4 +176,5 @@ git push origin main --tags
 
 ## 下一步（Day22+）
 
-见 [roadmap.md](roadmap.md) 更远期规划：流式 API、Web UI、Prompt 评测等。
+- Web 聊天界面设计见 [Day21_1.md](Day21_1.md)（已实现 `frontend/`）
+- 更远期见 [roadmap.md](roadmap.md)：流式 API、Prompt 评测等

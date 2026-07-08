@@ -87,7 +87,23 @@ docker run -p 8000:8000 `
   ai-assistant:v0.3.0
 ```
 
-详见 [docs/CHANGELOG.md](docs/CHANGELOG.md)、[docs/Day21.md](docs/Day21.md)。
+详见 [docs/Day21.md](docs/Day21.md)、[docs/Day21_1.md](docs/Day21_1.md)、[docs/CHANGELOG.md](docs/CHANGELOG.md)。
+
+### Web 聊天界面（frontend · React）
+
+简易 Web UI：聊天、PDF 上传、引用来源、工具 / Workflow 状态展示。
+
+```powershell
+# 终端 1：后端
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+
+# 终端 2：前端
+cd frontend
+npm install
+npm run dev
+```
+
+浏览器打开 [http://127.0.0.1:5173](http://127.0.0.1:5173)。开发模式通过 Vite 代理访问 API；后端已启用 CORS。
 
 ---
 

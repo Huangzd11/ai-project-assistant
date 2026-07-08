@@ -79,7 +79,7 @@ AI Project Assistant
 | 方向 | 计划 |
 |------|------|
 | 流式 API | 新增 `/chat/stream`，SSE 逐字返回 |
-| 前端 | 简单 Web 聊天界面 |
+| 前端 | 简单 Web 聊天界面 | ✅ `frontend/` React + Vite |
 | 评测 | Prompt 效果对比与指标统计 |
 
 ---
