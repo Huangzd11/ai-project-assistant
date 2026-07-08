@@ -3,6 +3,7 @@
 # Day13 — 支持可选 system_prompt（RAG 专用）
 # Day14 — LLM 异常映射为友好错误
 # Day17 — chat_messages() 多轮对话
+# Day21_2 — chat_messages_stream() SSE 流式输出
 #
 # 功能：统一 LLM 推理入口
 # 逻辑：
@@ -11,6 +12,7 @@
 #   3. 调用 chat.completions.create，返回文本内容
 #
 # 说明：切换 OPENAI_BASE_URL 即可在 Ollama / 通义千问之间迁移
+from typing import Iterator
 
 from openai import APIConnectionError, APITimeoutError, OpenAI, OpenAIError
 
@@ -75,6 +77,36 @@ def chat_messages(messages: list[dict], system_prompt: str | None = None) -> str
         if not content:
             logger.warning("LLM returned empty content  model=%s", MODEL_NAME)
         return content
+    except APITimeoutError as exc:
+        logger.error("LLM timeout  model=%s  error=%s", MODEL_NAME, exc)
+        raise LLMTimeoutError() from exc
+    except APIConnectionError as exc:
+        logger.error("LLM connection failed  model=%s  error=%s", MODEL_NAME, exc)
+        raise LLMUnavailableError() from exc
+    except OpenAIError as exc:
+        logger.error("LLM error  model=%s  error=%s", MODEL_NAME, exc)
+        raise LLMUnavailableError() from exc
+
+
+# @brief: 多轮对话流式输出，逐 token yield
+# @param: messages: 历史 + 当前 user 消息列表
+# @param: system_prompt: 可选 system 提示词
+# @return: 文本片段迭代器
+def chat_messages_stream(
+    messages: list[dict],
+    system_prompt: str | None = None,
+) -> Iterator[str]:
+    prompt = system_prompt or SYSTEM_PROMPT
+    try:
+        stream = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[{"role": "system", "content": prompt}, *messages],
+            stream=True,
+        )
+        for chunk in stream:
+            delta = chunk.choices[0].delta.content or ""
+            if delta:
+                yield delta
     except APITimeoutError as exc:
         logger.error("LLM timeout  model=%s  error=%s", MODEL_NAME, exc)
         raise LLMTimeoutError() from exc

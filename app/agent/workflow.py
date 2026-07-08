@@ -1,4 +1,5 @@
 # Day20 — Agent 工作流引擎
+# Day21_2 — 天气 / 新闻 / 体育 Tool 路由
 #
 # 功能：意图分类 + 统一编排，作为 Planner 唯一真相源
 # 逻辑：classify → build_workflow → steps + workflow 元数据
@@ -7,6 +8,9 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 
+from app.agent.tools.news_tool import extract_query as extract_news_query
+from app.agent.tools.sports_tool import extract_sport, extract_team
+from app.agent.tools.weather_tool import extract_location
 from app.mcp.bridge import (
     match_filesystem_intent,
     match_mcp_explicit_intent,
@@ -17,6 +21,12 @@ from app.mcp.bridge import (
 RAG_KEYWORDS = ("总结", "文档", "知识库", "资料", "根据", "telnet", "如何", "什么")
 PDF_READ_KEYWORDS = ("多少页", "几页", "页数", "读取", "解析", "打开", "预览")
 CALC_KEYWORDS = ("计算", "等于", "加", "减", "乘", "除")
+WEATHER_KEYWORDS = ("天气", "气温", "温度", "下雨", "降雪", "湿度", "风力", "预报", "穿衣", "多少度")
+NEWS_KEYWORDS = ("新闻", "头条", "热点", "资讯", "快讯", "报道")
+SPORTS_KEYWORDS = (
+    "体育", "足球", "篮球", "比分", "赛况", "比赛", "联赛", "赛程", "直播",
+    "英超", "西甲", "意甲", "德甲", "欧冠", "世界杯", "NBA", "CBA",
+)
 CALC_PATTERN = re.compile(r"[\d+\-*/().\s×÷]+")
 
 # @brief: 意图枚举
@@ -24,6 +34,9 @@ class Intent(str, Enum):
     CHAT = "chat"
     CALCULATOR = "calculator"
     FILESYSTEM = "filesystem"
+    WEATHER = "weather"
+    NEWS = "news"
+    SPORTS = "sports"
     RAG = "rag"
     PDF_READ = "pdf_read"
     MCP_EXPLICIT = "mcp_explicit"
@@ -107,6 +120,25 @@ def _build_rag_question(message: str) -> str:
         return f"{filename} 的主要内容是什么？"
     return message
 
+# @brief: 检查是否为天气意图
+# @param: message: 用户消息
+# @return: 是否为天气意图
+def _is_weather_intent(message: str) -> bool:
+    return any(keyword in message for keyword in WEATHER_KEYWORDS)
+
+# @brief: 检查是否为体育意图
+# @param: message: 用户消息
+# @return: 是否为体育意图
+def _is_sports_intent(message: str) -> bool:
+    lower = message.lower()
+    return any(keyword.lower() in lower or keyword in message for keyword in SPORTS_KEYWORDS)
+
+# @brief: 检查是否为新闻意图
+# @param: message: 用户消息
+# @return: 是否为新闻意图
+def _is_news_intent(message: str) -> bool:
+    return any(keyword in message for keyword in NEWS_KEYWORDS)
+
 # @brief: 检查是否为 MCP 显式意图
 # @param: message: 用户消息
 # @return: 是否为 MCP 显式意图
@@ -141,6 +173,12 @@ def classify(message: str) -> Intent:
         return Intent.MCP_EXPLICIT
     if _is_filesystem_intent(message):
         return Intent.FILESYSTEM
+    if _is_weather_intent(message):
+        return Intent.WEATHER
+    if _is_sports_intent(message):
+        return Intent.SPORTS
+    if _is_news_intent(message):
+        return Intent.NEWS
     if _is_pdf_read_intent(message):
         return Intent.PDF_READ
     if _needs_rag(message):
@@ -170,6 +208,44 @@ def _step_pdf_read(message: str) -> dict:
         "tool": "pdf_read",
         "args": args,
         "reason": "需要读取 PDF 文件内容或页数",
+    }
+
+# @brief: 创建天气查询步骤
+# @param: message: 用户消息
+# @return: 天气查询步骤
+def _step_weather(message: str) -> dict:
+    return {
+        "tool": "weather_query",
+        "args": {"location": extract_location(message)},
+        "reason": "需要查询实时天气",
+    }
+
+# @brief: 创建体育查询步骤
+# @param: message: 用户消息
+# @return: 体育查询步骤
+def _step_sports(message: str) -> dict:
+    args: dict = {"sport": extract_sport(message)}
+    team = extract_team(message)
+    if team:
+        args["team"] = team
+    return {
+        "tool": "sports_query",
+        "args": args,
+        "reason": "需要查询实时体育赛事比分或赛程",
+    }
+
+# @brief: 创建新闻检索步骤
+# @param: message: 用户消息
+# @return: 新闻检索步骤
+def _step_news(message: str) -> dict:
+    query = extract_news_query(message)
+    args: dict = {}
+    if query:
+        args["query"] = query
+    return {
+        "tool": "news_search",
+        "args": args,
+        "reason": "需要获取最新新闻头条",
     }
 
 # @brief: 创建 RAG 步骤
@@ -219,6 +295,33 @@ def build_workflow(message: str) -> WorkflowDecision:
             steps=[step],
             route="Question → Filesystem MCP → Answer",
             reason="读取/列出项目源码文件",
+        )
+
+    if intent == Intent.WEATHER:
+        return WorkflowDecision(
+            intent=intent,
+            need_tool=True,
+            steps=[_step_weather(message)],
+            route="Question → Weather API → Answer",
+            reason="实时天气查询",
+        )
+
+    if intent == Intent.SPORTS:
+        return WorkflowDecision(
+            intent=intent,
+            need_tool=True,
+            steps=[_step_sports(message)],
+            route="Question → Sports API → Answer",
+            reason="实时体育赛事查询",
+        )
+
+    if intent == Intent.NEWS:
+        return WorkflowDecision(
+            intent=intent,
+            need_tool=True,
+            steps=[_step_news(message)],
+            route="Question → News RSS → Answer",
+            reason="新闻头条检索",
         )
 
     if intent == Intent.PDF_READ:

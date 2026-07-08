@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { checkHealth, sendAgentMessage, uploadPdf } from "./api";
+import { checkHealth, sendAgentMessageStream, uploadPdf } from "./api";
 
 function loadSessionId() {
   let id = localStorage.getItem("agent_session_id");
@@ -63,8 +63,18 @@ function MetaBlock({ workflow, plan, toolCalls, sources }) {
           <ul className="sources-list">
             {sources.map((s, i) => (
               <li key={i}>
-                {s.source} · Page {s.page} · chunk {s.chunk}
-                <span className="score">（{s.score?.toFixed?.(2) ?? s.score}）</span>
+                {s.url ? (
+                  <a href={s.url} target="_blank" rel="noreferrer">
+                    {s.source}
+                  </a>
+                ) : (
+                  s.source
+                )}
+                {s.page != null && s.page > 0 && <> · Page {s.page}</>}
+                {s.chunk != null && s.chunk > 0 && <> · chunk {s.chunk}</>}
+                {s.score != null && (
+                  <span className="score">（{s.score?.toFixed?.(2) ?? s.score}）</span>
+                )}
               </li>
             ))}
           </ul>
@@ -105,25 +115,87 @@ export default function App() {
     setMessages((prev) => [...prev, { role: "user", content: text }]);
     setLoading(true);
 
-    try {
-      const data = await sendAgentMessage(text, sessionId);
-      setMessages((prev) => [
+    const assistantIdx = { current: -1 };
+    setMessages((prev) => {
+      assistantIdx.current = prev.length;
+      return [
         ...prev,
         {
           role: "assistant",
-          content: data.answer,
-          workflow: data.workflow,
-          plan: data.plan,
-          toolCalls: data.tool_calls,
-          sources: data.sources,
+          content: "",
+          workflow: null,
+          plan: [],
+          toolCalls: [],
+          sources: [],
+          streaming: true,
         },
-      ]);
+      ];
+    });
+
+    try {
+      await sendAgentMessageStream(text, sessionId, (event) => {
+        if (event.type === "workflow") {
+          setMessages((prev) => {
+            const next = [...prev];
+            const msg = next[assistantIdx.current];
+            if (msg) msg.workflow = event.workflow;
+            return next;
+          });
+        } else if (event.type === "plan") {
+          setMessages((prev) => {
+            const next = [...prev];
+            const msg = next[assistantIdx.current];
+            if (msg) msg.plan = event.plan;
+            return next;
+          });
+        } else if (event.type === "tool_calls") {
+          setMessages((prev) => {
+            const next = [...prev];
+            const msg = next[assistantIdx.current];
+            if (msg) msg.toolCalls = event.tool_calls;
+            return next;
+          });
+        } else if (event.type === "token") {
+          setMessages((prev) => {
+            const next = [...prev];
+            const msg = next[assistantIdx.current];
+            if (msg) msg.content += event.content;
+            return next;
+          });
+        } else if (event.type === "done") {
+          setMessages((prev) => {
+            const next = [...prev];
+            const msg = next[assistantIdx.current];
+            if (msg) {
+              msg.content = event.answer;
+              msg.workflow = event.workflow;
+              msg.plan = event.plan;
+              msg.toolCalls = event.tool_calls;
+              msg.sources = event.sources;
+              msg.streaming = false;
+            }
+            return next;
+          });
+        } else if (event.type === "error") {
+          throw new Error(event.detail || "流式请求失败");
+        }
+      });
     } catch (e) {
       setError(e.message);
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: `出错了：${e.message}`, isError: true },
-      ]);
+      setMessages((prev) => {
+        const next = [...prev];
+        const msg = next[assistantIdx.current];
+        if (msg?.streaming) {
+          next[assistantIdx.current] = {
+            role: "assistant",
+            content: `出错了：${e.message}`,
+            isError: true,
+          };
+        } else {
+          next.push({ role: "assistant", content: `出错了：${e.message}`, isError: true });
+        }
+        return next;
+      });
     } finally {
       setLoading(false);
     }
@@ -207,6 +279,9 @@ export default function App() {
               <p>试试：</p>
               <ul>
                 <li>帮我总结 test.pdf</li>
+                <li>北京今天天气怎么样</li>
+                <li>今天有什么新闻</li>
+                <li>足球比赛比分</li>
                 <li>README 里面写了什么（需 MCP_ENABLED=true）</li>
                 <li>计算 1+2</li>
               </ul>
@@ -218,8 +293,11 @@ export default function App() {
                 <div className="bubble-label">
                   {msg.role === "user" ? "你" : msg.role === "system" ? "系统" : "助手"}
                 </div>
-                <div className="bubble-content">{msg.content}</div>
-                {msg.role === "assistant" && !msg.isError && (
+                <div className="bubble-content">
+                  {msg.content}
+                  {msg.streaming && <span className="cursor-blink">▍</span>}
+                </div>
+                {msg.role === "assistant" && !msg.isError && !msg.streaming && (
                   <MetaBlock
                     workflow={msg.workflow}
                     plan={msg.plan}
@@ -230,7 +308,7 @@ export default function App() {
               </div>
             </div>
           ))}
-          {loading && (
+          {loading && messages[messages.length - 1]?.role !== "assistant" && (
             <div className="bubble-wrap assistant">
               <div className="bubble loading-bubble">
                 <div className="bubble-label">助手</div>

@@ -27,6 +27,42 @@ export async function uploadPdf(file) {
   return res.json();
 }
 
+export async function sendAgentMessageStream(message, sessionId, onEvent) {
+  const res = await fetch(`${API_BASE}/agent/stream`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message, session_id: sessionId }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `请求失败 (${res.status})`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const parts = buffer.split("\n\n");
+    buffer = parts.pop() || "";
+    for (const part of parts) {
+      const line = part.trim();
+      if (!line.startsWith("data:")) continue;
+      const json = line.slice(5).trim();
+      if (!json) continue;
+      onEvent(JSON.parse(json));
+    }
+  }
+
+  if (buffer.trim().startsWith("data:")) {
+    const json = buffer.trim().slice(5).trim();
+    if (json) onEvent(JSON.parse(json));
+  }
+}
+
 export async function checkHealth() {
   const res = await fetch(`${API_BASE}/health`);
   if (!res.ok) throw new Error("后端不可用");

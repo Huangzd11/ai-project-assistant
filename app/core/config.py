@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-APP_VERSION = "0.3.0"
+APP_VERSION = "0.3.2"
 
 # Day02/Day03 — OpenAI 兼容 API（云端通义千问 或 本地 Ollama）
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "ollama")
@@ -59,6 +59,7 @@ AGENT_ANSWER_PROMPT = os.getenv(
     "你是企业 AI Agent 助手。根据下方「工具执行结果」用简洁中文回答用户。"
     "若结果为知识库检索且含 sources，回答中注明文档名与页码。"
     "若结果为项目文件内容（如 README），概括要点，勿逐字复述全文。"
+    "若结果为天气、新闻或体育赛事，用自然语言概括要点，可提及数据来源。"
     "若工具失败或 MCP 未启用，如实说明原因，不要编造。",
 )
 
@@ -75,3 +76,32 @@ MCP_FILESYSTEM_ROOT = os.getenv(
 )
 _default_fs_args = f"-y,@modelcontextprotocol/server-filesystem,{MCP_FILESYSTEM_ROOT}"
 MCP_SERVER_ARGS = os.getenv("MCP_SERVER_ARGS", _default_fs_args)
+
+# Day21_2 — 天气 / 新闻 Tool（Open-Meteo 无需 Key；新闻默认 RSS）
+WEATHER_ENABLED = os.getenv("WEATHER_ENABLED", "true").lower() in {"1", "true", "yes"}
+NEWS_ENABLED = os.getenv("NEWS_ENABLED", "true").lower() in {"1", "true", "yes"}
+NEWS_MAX_ITEMS = int(os.getenv("NEWS_MAX_ITEMS", "5"))
+TOOL_HTTP_TIMEOUT = float(os.getenv("TOOL_HTTP_TIMEOUT", "10"))
+_default_news_feeds = ",".join(
+    [
+        "https://feeds.bbci.co.uk/news/world/rss.xml",
+        "https://www.chinanews.com.cn/rss/scroll-news.xml",
+    ]
+)
+NEWS_RSS_FEEDS = [
+    url.strip()
+    for url in os.getenv("NEWS_RSS_FEEDS", _default_news_feeds).split(",")
+    if url.strip()
+]
+
+# Day21_2 — 体育 Tool（TheSportsDB 赛程 + RSS 回退）
+SPORTS_ENABLED = os.getenv("SPORTS_ENABLED", "true").lower() in {"1", "true", "yes"}
+SPORTSDB_API_KEY = os.getenv("SPORTSDB_API_KEY", "3")
+SPORTS_MAX_ITEMS = int(os.getenv("SPORTS_MAX_ITEMS", "5"))
+SPORTS_DEFAULT_LEAGUE_ID = os.getenv("SPORTS_DEFAULT_LEAGUE_ID", "4328")
+_default_sports_feeds = "https://feeds.bbci.co.uk/sport/rss.xml"
+SPORTS_RSS_FEEDS = [
+    url.strip()
+    for url in os.getenv("SPORTS_RSS_FEEDS", _default_sports_feeds).split(",")
+    if url.strip()
+]

@@ -122,7 +122,7 @@ class AgentRequest(BaseModel):
 class AgentWorkflowInfo(BaseModel):
     intent: str = Field(
         ...,
-        description="意图：chat / rag / filesystem / calculator / pdf_read / mcp_explicit",
+        description="意图：chat / rag / filesystem / calculator / weather / news / sports / pdf_read / mcp_explicit",
     )
     need_tool: bool = Field(..., description="是否调用了工具")
     route: str = Field(..., description="路由链路说明")

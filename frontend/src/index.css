@@ -351,3 +351,15 @@ body {
     height: calc(100vh - 200px);
   }
 }
+
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+  color: var(--accent);
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
