@@ -531,4 +531,4 @@ for c in cases:
 
 ## 下一步
 
-Day21 — Sprint Review + Release（`release(v0.3)`）：CHANGELOG、全链路验收、打 Tag `v0.3.0`
+Day21 — Sprint Review + Release（`release(v0.3)` · v0.3.0）：见 [Day21.md](Day21.md)、[CHANGELOG.md](CHANGELOG.md)

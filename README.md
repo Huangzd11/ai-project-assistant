@@ -8,7 +8,7 @@
 
 ## 项目简介
 
-本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 3（v0.3.x Enterprise AI Agent）**，完成 Day01 ~ Day20：
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已完成 **Sprint 3（v0.3.0 Enterprise AI Agent）**，Day01 ~ Day21 全部收官。
 
 - LLM 基础与 Prompt 设计（Day01）
 - OpenAI 兼容 API 多轮对话（Day02）
@@ -30,8 +30,64 @@
 - MCP Client 外部工具（Day18，连接 MCP Server 并桥接进 Tool Registry）
 - Filesystem MCP 读项目文件（Day19，自然语言「看看 README」）
 - Enterprise Workflow（Day20，RAG / MCP / Chat 统一路由 + `workflow` 可观测）
+- Sprint Review + Release（Day21，v0.3.0 交付）
 
 适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
+
+---
+
+## v0.3.0 Release — 企业 AI Agent 快速体验
+
+**Sprint 3 核心能力：** 多轮 Memory · 企业 RAG · Tool Calling · MCP · Workflow 编排
+
+```powershell
+# 1. 启动（Ollama 或通义千问，见 .env）
+ollama serve
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+
+# 2. 健康检查（含版本号）
+Invoke-RestMethod http://127.0.0.1:8000/health
+
+# 3. Agent — 总结 PDF（需知识库已入库）
+Invoke-RestMethod -Uri http://127.0.0.1:8000/agent -Method Post `
+  -ContentType "application/json" -Body '{"message":"帮我总结 test.pdf"}'
+
+# 4. Agent — 读 README（.env: MCP_ENABLED=true，需 Node.js）
+Invoke-RestMethod -Uri http://127.0.0.1:8000/agent -Method Post `
+  -ContentType "application/json" -Body '{"message":"README 里面写了什么"}'
+
+# 5. 多轮记忆
+Invoke-RestMethod ... -Body '{"message":"我是项目经理","session_id":"work-001"}'
+Invoke-RestMethod ... -Body '{"message":"我是谁","session_id":"work-001"}'
+```
+
+**架构（v0.3.0）：**
+
+```
+用户 → POST /agent → Workflow → Tool（RAG / MCP / Calculator）→ Memory + LLM → Answer
+```
+
+| 能力 | 说明 |
+|------|------|
+| Workflow | 自动选择 chat / rag / filesystem / calculator |
+| Memory | `session_id` 多轮对话 |
+| RAG | 知识库总结 PDF，带 sources |
+| MCP | Filesystem 读项目文件 |
+| 可观测 | 响应 `workflow.intent` + `route` |
+
+**Docker（v0.3.0）：**
+
+```powershell
+docker build -t ai-assistant:v0.3.0 .
+docker run -p 8000:8000 `
+  -e OPENAI_BASE_URL=http://host.docker.internal:11434/v1 `
+  -e MCP_ENABLED=false `
+  -v ${PWD}/data:/app/data `
+  -v ${PWD}/uploads:/app/uploads `
+  ai-assistant:v0.3.0
+```
+
+详见 [docs/CHANGELOG.md](docs/CHANGELOG.md)、[docs/Day21.md](docs/Day21.md)。
 
 ---
 
@@ -269,7 +325,7 @@ Invoke-RestMethod ... -Body '{"message":"我是谁？","session_id":"work-001"}'
 
 - `app/mcp/client.py`：stdio 连接 MCP Server，`list_tools` / `call_tool`
 - `app/mcp/bridge.py`：动态注册 `mcp_*` 到 Tool Registry
-- Planner 支持显式调用：`mcp echo hello`
+- Planner 支持显式调用：`mcp read_file README.md`
 - `GET /mcp/status`、`GET /mcp/tools` 调试接口
 
 ```powershell
@@ -375,6 +431,7 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/agent -Method Post -ContentType "ap
 - [x] Day18 MCP Client
 - [x] Day19 Filesystem MCP
 - [x] Day20 Enterprise Workflow
+- [x] Day21 Sprint Review — v0.3.0
 
 ---
 
@@ -441,7 +498,7 @@ ai-project-assistant/
 │
 ├── docs/                             # 文档与工作日志
 │   ├── CODEMAP.md                    # 代码地图（按 Day 索引）
-│   ├── Day01.md ~ Day19.md
+│   ├── Day01.md ~ Day21.md
 │   ├── api.md / roadmap.md
 │   ├── solution-design.md
 │   ├── development-standards.md
@@ -609,7 +666,8 @@ curl http://127.0.0.1:8000/health
 | [docs/solution-design.md](docs/solution-design.md)             | AI 方案设计（技术选型与演进路线） |
 | [docs/api.md](docs/api.md)                                     | HTTP 接口详细说明        |
 | [docs/roadmap.md](docs/roadmap.md)                             | 学习路线与后续规划          |
-| [docs/Day01.md](docs/Day01.md) ~ [Day19.md](docs/Day19.md)     | 每日工作日志             |
+| [docs/CHANGELOG.md](docs/CHANGELOG.md)                             | 版本发布说明             |
+| [docs/Day01.md](docs/Day01.md) ~ [Day21.md](docs/Day21.md)     | 每日工作日志             |
 
 
 ---

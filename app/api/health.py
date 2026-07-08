@@ -1,5 +1,6 @@
 # Day04 — 健康检查接口
 # Day14 — Swagger 描述完善
+# Day21 — /health 返回版本号
 #
 # 功能：服务探活与欢迎页
 # 逻辑：
@@ -8,6 +9,7 @@
 
 from fastapi import APIRouter
 
+from app.core.config import APP_VERSION
 from app.models import HealthResponse
 
 router = APIRouter(tags=["health"])
@@ -29,4 +31,4 @@ def root():
     response_description="服务正常时返回 status=OK，供 Docker/K8s 探活",
 )
 def health():
-    return HealthResponse(status="OK")
+    return HealthResponse(status="OK", version=APP_VERSION)

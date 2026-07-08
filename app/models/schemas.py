@@ -22,11 +22,14 @@ class ChatResponse(BaseModel):
     answer: str = Field(..., description="模型生成的回答")
 
 
-# @brief: GET /health 响应体（Day04）
+# @brief: GET /health 响应体（Day04 / Day21 增加 version）
 class HealthResponse(BaseModel):
-    model_config = ConfigDict(json_schema_extra={"examples": [{"status": "OK"}]})
+    model_config = ConfigDict(
+        json_schema_extra={"examples": [{"status": "OK", "version": "0.3.0"}]}
+    )
 
     status: str = Field(..., description="服务状态，正常时为 OK")
+    version: str = Field(..., description="API 版本号")
 
 
 # @brief: GET /models 响应体（Day04）

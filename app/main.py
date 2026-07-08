@@ -13,6 +13,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from app.api import agent, chat, health, mcp, rag, upload
+from app.core.config import APP_VERSION
 from app.core.exceptions import AppError
 from app.core.logger import logger
 from app.core.middleware import RequestLoggingMiddleware
@@ -31,10 +32,10 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(
     title="AI Project Assistant",
-    version="0.3",
+    version=APP_VERSION,
     description=(
-        "企业知识库 Agent API（Sprint 3）。"
-        "支持 Workflow 意图路由、Tool Registry、Memory、Filesystem MCP。"
+        "企业 AI Agent API（v0.3.0）。"
+        "Workflow 意图路由、Tool Registry、会话 Memory、Filesystem MCP、企业 RAG。"
     ),
     lifespan=lifespan,
 )

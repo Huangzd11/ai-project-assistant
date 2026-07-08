@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+APP_VERSION = "0.3.0"
+
 # Day02/Day03 — OpenAI 兼容 API（云端通义千问 或 本地 Ollama）
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "ollama")
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "http://127.0.0.1:11434/v1")
@@ -51,12 +53,13 @@ RAG_SYSTEM_PROMPT = os.getenv(
     "回答时请注明引用来源，格式：根据《文档名》第X页：……",
 )
 
-# Day15 — Agent 总结阶段 system prompt
+# Day15 — Agent 总结阶段 system prompt（Day21 优化：区分 RAG / 文件 / 失败）
 AGENT_ANSWER_PROMPT = os.getenv(
     "AGENT_ANSWER_PROMPT",
-    "你是企业知识库助手。根据下方「工具执行结果」回答用户。"
-    "若结果含 sources，回答中注明文档名与页码。"
-    "若工具未找到内容，如实告知。",
+    "你是企业 AI Agent 助手。根据下方「工具执行结果」用简洁中文回答用户。"
+    "若结果为知识库检索且含 sources，回答中注明文档名与页码。"
+    "若结果为项目文件内容（如 README），概括要点，勿逐字复述全文。"
+    "若工具失败或 MCP 未启用，如实说明原因，不要编造。",
 )
 
 # Day17 — Agent 会话记忆

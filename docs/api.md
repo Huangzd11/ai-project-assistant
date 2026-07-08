@@ -1,6 +1,6 @@
 # API 接口说明
 
-> **版本：v0.3**（Sprint 3 Enterprise Workflow）  
+> **版本：v0.3.0**（Enterprise AI Agent Release）  
 > 基础地址：`http://127.0.0.1:8000`  
 > 交互文档：[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
@@ -51,11 +51,16 @@
 
 ## GET `/health`
 
-健康检查，用于探活（Docker/K8s）。
+健康检查，用于探活（Docker/K8s）；含 API 版本号（Day21）。
 
 ```json
-{ "status": "OK" }
+{ "status": "OK", "version": "0.3.0" }
 ```
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `status` | string | 服务状态，正常为 OK |
+| `version` | string | 当前 API 版本 |
 
 **PowerShell 测试：**
 

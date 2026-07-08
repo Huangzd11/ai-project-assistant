@@ -73,6 +73,27 @@
               Answer + sources
 ```
 
+**企业 Agent 链路（v0.3.0 · Day15~21）：**
+
+```
+              POST /agent
+                    │
+                    ▼
+           app/agent/workflow.py     ← 意图：chat / rag / filesystem / …
+                    │
+     ┌──────────────┼──────────────┐
+     ▼              ▼              ▼
+rag_query    mcp_read_file   calculator
+     │              │              │
+     └──────────────┴──────────────┘
+                    │
+                    ▼
+        executor + memory (Day17)
+                    │
+                    ▼
+         Answer + workflow + sources
+```
+
 ![架构图](architecture.png)
 
 | 层级 | 组件 | 说明 |
@@ -83,6 +104,8 @@
 | 向量层 | embedder | Day11 bge-small / 通义 Embedding |
 | 存储层 | vector_store | Day12 Chroma 持久化 + Top-K 检索 |
 | 编排层 | rag_pipeline | Day13 检索结果 → Prompt → 带来源回答 |
+| Agent 层 | workflow + executor | Day20 意图路由；Day15~17 工具执行与记忆 |
+| MCP 层 | mcp/client + bridge | Day18~19 外部 Filesystem 工具 |
 | 网关层 | FastAPI | HTTP 路由、请求校验、响应封装 |
 | 客户端层 | OpenAI SDK | 统一 Chat Completions 调用方式 |
 | 推理层 | Ollama | 本地模型运行时，暴露 `/v1` 兼容端点 |

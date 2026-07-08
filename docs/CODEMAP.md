@@ -135,6 +135,8 @@ ai-project-assistant/
 | **Day20** | `app/agent/workflow.py` | 工作流引擎 | `classify` + `build_workflow` |
 | **Day20** | `app/agent/planner.py` | 薄封装 | 委托 `workflow.build_workflow` |
 | **Day20** | `app/agent/executor.py` | Workflow 元数据 | 返回 `workflow` 字段 |
+| **Day21** | `docs/CHANGELOG.md` | Release | v0.3.0 发布说明 |
+| **Day21** | `app/core/config.py` | 版本号 | `APP_VERSION` |
 
 ---
 

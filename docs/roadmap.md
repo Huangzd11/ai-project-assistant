@@ -70,7 +70,7 @@ AI Project Assistant
 - [x] Day18 MCP Client — `feat(mcp-client)` — v0.3-beta2
 - [x] Day19 Filesystem MCP — `feat(mcp-server)` — v0.3-rc
 - [x] Day20 Agent Workflow — `feat(agent-workflow)` — v0.3
-- [ ] Day21 Review + Release — `release(v0.3)` — v0.3.0
+- [x] Day21 Review + Release — `release(v0.3)` — v0.3.0
 
 ---
 
