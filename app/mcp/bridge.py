@@ -75,7 +75,6 @@ def _tool_schema(tool: Any, registry_name: str) -> dict:
         },
     }
 
-
 # @brief: 将 MCP Server 工具注册进 Tool Registry
 # @param: client: MCP Client
 # @return: 注册的工具数量
@@ -101,7 +100,6 @@ async def register_mcp_tools(client: MCPClient) -> int:
         logger.info("mcp tool registered  name=%s", registry_name)
     _registered = count > 0
     return count
-
 
 # @brief: 列出所有 MCP Tool 名称
 # @return: MCP Tool 名称列表
@@ -150,19 +148,42 @@ def _extract_directory_path(message: str) -> str | None:
         return match.group(1).replace("\\", "/").rstrip("/")
     return None
 
+# @brief: 检查是否为文件系统意图
+# @param: user_message: 用户消息
+# @return: 是否为文件系统意图
+def match_filesystem_intent(user_message: str) -> bool:
+    """检测文件/目录语义（不依赖 MCP 是否在线）。"""
+    if _extract_pdf_path(user_message):
+        return False
+    if _is_list_directory_intent(user_message) and _extract_directory_path(user_message):
+        return True
+    path = _extract_file_path(user_message)
+    has_read_intent = path is not None or any(
+        keyword in user_message for keyword in FILE_READ_KEYWORDS
+    )
+    if has_read_intent and re.search(r"readme|\.md|\.txt|\.py|文件", user_message, re.I):
+        return True
+    return False
+
+# @brief: 检查是否为 MCP 显式意图
+# @param: user_message: 用户消息
+# @return: 是否为 MCP 显式意图
+def match_mcp_explicit_intent(user_message: str) -> bool:
+    """检测显式 mcp 命令（不依赖 MCP 是否在线）。"""
+    return bool(re.search(r"mcp\s+[\w-]+", user_message.strip(), re.I))
+
 # @brief: 计划文件系统步骤
 # @param: user_message: 用户消息
 # @return: 文件系统步骤
 def plan_filesystem_step(user_message: str) -> dict | None:
     """自然语言文件/目录意图 → Filesystem MCP 工具。"""
+    if not match_filesystem_intent(user_message):
+        return None
     if not is_mcp_enabled():
         return None
 
     tools = set(list_mcp_tool_names())
     if "mcp_read_file" not in tools and "mcp_list_directory" not in tools:
-        return None
-
-    if _extract_pdf_path(user_message):
         return None
 
     if _is_list_directory_intent(user_message) and "mcp_list_directory" in tools:

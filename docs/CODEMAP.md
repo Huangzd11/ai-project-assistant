@@ -132,6 +132,9 @@ ai-project-assistant/
 | **Day18** | `app/agent/planner.py` | MCP 路由 | 显式 `mcp read_file` 调用 |
 | **Day19** | `app/core/config.py` | Filesystem MCP | `MCP_FILESYSTEM_ROOT`、默认 server |
 | **Day19** | `app/mcp/bridge.py` | 文件意图 | `plan_filesystem_step` 自然语言读 README |
+| **Day20** | `app/agent/workflow.py` | 工作流引擎 | `classify` + `build_workflow` |
+| **Day20** | `app/agent/planner.py` | 薄封装 | 委托 `workflow.build_workflow` |
+| **Day20** | `app/agent/executor.py` | Workflow 元数据 | 返回 `workflow` 字段 |
 
 ---
 

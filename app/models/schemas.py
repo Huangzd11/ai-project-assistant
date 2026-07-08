@@ -115,6 +115,17 @@ class AgentRequest(BaseModel):
     )
 
 
+# @brief: Agent 工作流决策（Day20）
+class AgentWorkflowInfo(BaseModel):
+    intent: str = Field(
+        ...,
+        description="意图：chat / rag / filesystem / calculator / pdf_read / mcp_explicit",
+    )
+    need_tool: bool = Field(..., description="是否调用了工具")
+    route: str = Field(..., description="路由链路说明")
+    reason: str = Field(..., description="决策原因")
+
+
 # @brief: POST /agent 响应体（Day15）
 class AgentResponse(BaseModel):
     model_config = ConfigDict(
@@ -124,6 +135,12 @@ class AgentResponse(BaseModel):
                     "message": "总结一下 test.pdf",
                     "answer": "test.pdf 主要介绍了……",
                     "session_id": "work-001",
+                    "workflow": {
+                        "intent": "rag",
+                        "need_tool": True,
+                        "route": "Question → RAG Search → Summary → Answer",
+                        "reason": "知识库检索与总结",
+                    },
                     "plan": [
                         {
                             "tool": "rag_query",
@@ -148,6 +165,7 @@ class AgentResponse(BaseModel):
     message: str = Field(..., description="用户目标")
     answer: str = Field(..., description="Agent 最终回答")
     session_id: str | None = Field(None, description="会话 ID；与请求一致时用于多轮记忆")
+    workflow: AgentWorkflowInfo | None = Field(None, description="工作流决策（Day20）")
     plan: list[AgentPlanStep] = Field(default_factory=list, description="规划步骤")
     tool_calls: list[dict] = Field(default_factory=list, description="实际调用的工具")
     sources: list[RagSource] = Field(

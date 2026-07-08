@@ -31,10 +31,10 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(
     title="AI Project Assistant",
-    version="0.3-rc",
+    version="0.3",
     description=(
         "企业知识库 Agent API（Sprint 3）。"
-        "支持 Tool Registry、会话 Memory、Filesystem MCP 读项目文件。"
+        "支持 Workflow 意图路由、Tool Registry、Memory、Filesystem MCP。"
     ),
     lifespan=lifespan,
 )

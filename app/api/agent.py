@@ -8,7 +8,7 @@ from fastapi import APIRouter
 
 from app.agent.executor import run_agent
 from app.core.logger import logger
-from app.models import AgentPlanStep, AgentRequest, AgentResponse, RagSource
+from app.models import AgentPlanStep, AgentRequest, AgentResponse, AgentWorkflowInfo, RagSource
 
 router = APIRouter(tags=["agent"])
 
@@ -25,10 +25,12 @@ router = APIRouter(tags=["agent"])
 def agent_endpoint(req: AgentRequest):
     logger.info("agent request  message=%s  session_id=%s", req.message, req.session_id)
     result = run_agent(req.message, session_id=req.session_id)
+    workflow = result.get("workflow")
     return AgentResponse(
         message=result["message"],
         answer=result["answer"],
         session_id=result.get("session_id"),
+        workflow=AgentWorkflowInfo(**workflow) if workflow else None,
         plan=[AgentPlanStep(**step) for step in result["plan"]],
         tool_calls=result["tool_calls"],
         sources=[RagSource(**item) for item in result["sources"]],

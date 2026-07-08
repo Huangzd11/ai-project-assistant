@@ -8,7 +8,7 @@
 
 ## 项目简介
 
-本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 3（v0.3.x Enterprise AI Agent）**，完成 Day01 ~ Day19：
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 3（v0.3.x Enterprise AI Agent）**，完成 Day01 ~ Day20：
 
 - LLM 基础与 Prompt 设计（Day01）
 - OpenAI 兼容 API 多轮对话（Day02）
@@ -29,6 +29,7 @@
 - 会话 Memory（Day17，`session_id` 多轮对话 + Long facts）
 - MCP Client 外部工具（Day18，连接 MCP Server 并桥接进 Tool Registry）
 - Filesystem MCP 读项目文件（Day19，自然语言「看看 README」）
+- Enterprise Workflow（Day20，RAG / MCP / Chat 统一路由 + `workflow` 可观测）
 
 适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
 
@@ -293,6 +294,18 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/agent -Method Post -ContentType "ap
 
 详见 [docs/Day19.md](docs/Day19.md)。
 
+### Enterprise Workflow（Day20 · v0.3）
+
+- `app/agent/workflow.py`：`classify` + `build_workflow` 统一意图路由
+- `POST /agent` 响应增加 `workflow`（intent / need_tool / route / reason）
+- 「总结 Linux.pdf」→ RAG；「README 写了什么」→ Filesystem MCP
+
+```powershell
+Invoke-RestMethod -Uri http://127.0.0.1:8000/agent -Method Post -ContentType "application/json" -Body '{"message":"帮我总结 Linux.pdf"}'
+```
+
+详见 [docs/Day20.md](docs/Day20.md)。
+
 ### HTTP API 服务（Day04）
 
 
@@ -361,6 +374,7 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/agent -Method Post -ContentType "ap
 - [x] Day17 Memory
 - [x] Day18 MCP Client
 - [x] Day19 Filesystem MCP
+- [x] Day20 Enterprise Workflow
 
 ---
 

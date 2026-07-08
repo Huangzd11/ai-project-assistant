@@ -1,6 +1,6 @@
 # API 接口说明
 
-> **版本：v0.3-rc**（Sprint 3 Filesystem MCP）  
+> **版本：v0.3**（Sprint 3 Enterprise Workflow）  
 > 基础地址：`http://127.0.0.1:8000`  
 > 交互文档：[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
@@ -331,14 +331,14 @@ python -c "from app.rag.rag_pipeline import rag_answer; import json; print(json.
 
 ## POST `/agent`
 
-Agent 问答（Day15~17）：Planner + Tool + **session_id 多轮记忆**（Day17）。
+Agent 问答（Day15~20）：Workflow 意图路由 + Tool + **session_id 多轮记忆**。
 
 **与 `/rag` 区别：**
 
 | 接口 | 路径 | 特点 |
 |------|------|------|
 | `/rag` | 固定 RAG 流水线 | 无规划层，直接检索+回答 |
-| `/agent` | Planner + Tool + Memory | 返回 `plan`；`session_id` 共享对话上下文 |
+| `/agent` | Workflow + Tool + Memory | 返回 `workflow` + `plan`；自动选择 RAG / MCP / Chat |
 
 **请求：**
 
@@ -355,9 +355,47 @@ Agent 问答（Day15~17）：Planner + Tool + **session_id 多轮记忆**（Day1
 
 ```json
 {
+  "message": "帮我总结 Linux.pdf",
+  "answer": "Linux.pdf 主要介绍了……",
+  "session_id": "work-001",
+  "workflow": {
+    "intent": "rag",
+    "need_tool": true,
+    "route": "Question → RAG Search → Summary → Answer",
+    "reason": "知识库检索与总结"
+  },
+  "plan": [
+    {
+      "tool": "rag_query",
+      "args": { "question": "Linux.pdf 的主要内容是什么？" },
+      "reason": "需要从知识库获取文档内容"
+    }
+  ],
+  "tool_calls": [{ "tool": "rag_query" }],
+  "sources": []
+}
+```
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `workflow.intent` | string | `chat` / `rag` / `filesystem` / `calculator` / `pdf_read` / `mcp_explicit` |
+| `workflow.need_tool` | bool | 是否调用了工具 |
+| `workflow.route` | string | 路由链路说明 |
+| `workflow.reason` | string | 决策原因 |
+
+**响应（闲聊）：**
+
+```json
+{
   "message": "我是谁？",
   "answer": "您是项目经理。",
   "session_id": "work-001",
+  "workflow": {
+    "intent": "chat",
+    "need_tool": false,
+    "route": "Question → Memory → LLM → Answer",
+    "reason": "无需工具，直接对话"
+  },
   "plan": [],
   "tool_calls": [],
   "sources": []
