@@ -75,7 +75,28 @@ Invoke-RestMethod ... -Body '{"message":"我是谁","session_id":"work-001"}'
 | MCP | Filesystem 读项目文件 |
 | 可观测 | 响应 `workflow.intent` + `route` |
 
-**Docker（v0.3.0）：**
+**Docker Compose（v0.4.0-alpha · 推荐）：**
+
+```powershell
+# 1. 配置 .env（通义千问 Key 等，见 .env.example）
+cp .env.example .env
+
+# 2a. 云端 LLM（默认）：api + chroma，使用 .env 中的通义配置
+docker compose up -d --build
+docker compose ps
+Invoke-RestMethod http://127.0.0.1:8000/health
+
+# 2b. 本地 Ollama（可选 profile）
+docker compose --profile local-llm up -d --build
+.\scripts\ollama-pull.ps1
+
+# 3. 可选 Redis
+docker compose --profile redis up -d
+```
+
+详见 [docs/Day22.md](docs/Day22.md)。
+
+**单容器 Docker（v0.3.0）：**
 
 ```powershell
 docker build -t ai-assistant:v0.3.0 .

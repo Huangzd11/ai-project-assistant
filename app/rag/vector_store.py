@@ -14,14 +14,26 @@ from pathlib import Path
 
 import chromadb
 
-from app.core.config import CHROMA_COLLECTION_NAME, CHROMA_DIR, SEARCH_TOP_K, VECTORS_DIR
+from app.core.config import (
+    CHROMA_COLLECTION_NAME,
+    CHROMA_DIR,
+    CHROMA_HOST,
+    CHROMA_MODE,
+    CHROMA_PORT,
+    SEARCH_TOP_K,
+    VECTORS_DIR,
+)
 from app.core.files import ensure_dir
+from app.core.logger import logger
 from app.rag.embedder import embed_text
 
 
-# @brief: 获取 Chroma 持久化客户端
-# @return: PersistentClient 实例
+# @brief: 获取 Chroma 客户端（embedded 本地 / server Compose）
+# @return: PersistentClient 或 HttpClient 实例
 def get_chroma_client():
+    if CHROMA_MODE == "server":
+        logger.info("chroma client  mode=server  host=%s  port=%s", CHROMA_HOST, CHROMA_PORT)
+        return chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
     ensure_dir(CHROMA_DIR)
     return chromadb.PersistentClient(path=str(CHROMA_DIR))
 

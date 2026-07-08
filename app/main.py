@@ -35,8 +35,8 @@ app = FastAPI(
     title="AI Project Assistant",
     version=APP_VERSION,
     description=(
-        "企业 AI Agent API（v0.3.0）。"
-        "Workflow 意图路由、Tool Registry、会话 Memory、Filesystem MCP、企业 RAG。"
+        "企业 AI Agent API（v0.4.0-alpha）。"
+        "Workflow 意图路由、Tool Registry、会话 Memory、Docker Compose、企业 RAG。"
     ),
     lifespan=lifespan,
 )

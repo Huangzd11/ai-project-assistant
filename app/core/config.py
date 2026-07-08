@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-APP_VERSION = "0.3.2"
+APP_VERSION = "0.4.0-alpha"
 
 # Day02/Day03 — OpenAI 兼容 API（云端通义千问 或 本地 Ollama）
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "ollama")
@@ -42,8 +42,14 @@ EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "512"))
 
 # Day12 — Chroma 向量库
 CHROMA_DIR = os.getenv("CHROMA_DIR", "data/chroma")
+CHROMA_MODE = os.getenv("CHROMA_MODE", "embedded").lower()
+CHROMA_HOST = os.getenv("CHROMA_HOST", "localhost")
+CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000"))
 CHROMA_COLLECTION_NAME = os.getenv("CHROMA_COLLECTION", "knowledge")
 SEARCH_TOP_K = int(os.getenv("SEARCH_TOP_K", "5"))
+
+# Day22 — Redis（Compose 可选，业务接入留待后续）
+REDIS_URL = os.getenv("REDIS_URL", "")
 
 # Day13 — RAG 问答
 RAG_SYSTEM_PROMPT = os.getenv(
