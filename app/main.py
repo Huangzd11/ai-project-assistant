@@ -1,7 +1,7 @@
 # Day04 — FastAPI 应用入口
 # Day08 — 重构：路由拆分到 app/api/，注册 upload 路由
 # Day14 — 中间件、全局异常、OpenAPI 元数据
-# Day18 — MCP Client 启动引导
+# Day18/19 — MCP Client 启动引导
 #
 # 功能：创建 FastAPI 实例，挂载各 API 路由模块
 # 逻辑：main.py 只做组装，不包含业务逻辑
@@ -19,6 +19,9 @@ from app.core.middleware import RequestLoggingMiddleware
 from app.mcp import bootstrap_mcp, shutdown_mcp
 
 
+# @brief: 生命周期管理
+# @param: _app: FastAPI
+# @return: None
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     await bootstrap_mcp()
@@ -28,16 +31,20 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(
     title="AI Project Assistant",
-    version="0.3-beta2",
+    version="0.3-rc",
     description=(
         "企业知识库 Agent API（Sprint 3）。"
-        "支持 Tool Registry、会话 Memory、MCP Client 外部工具。"
+        "支持 Tool Registry、会话 Memory、Filesystem MCP 读项目文件。"
     ),
     lifespan=lifespan,
 )
 
+# @brief: 添加中间件
+# @return: None
 app.add_middleware(RequestLoggingMiddleware)
 
+# @brief: 注册路由
+# @return: None
 app.include_router(health.router)
 app.include_router(chat.router)
 app.include_router(upload.router)
@@ -45,14 +52,20 @@ app.include_router(rag.router)
 app.include_router(agent.router)
 app.include_router(mcp.router)
 
-
+# @brief: 处理 AppError
+# @param: _request: 请求
+# @param: exc: AppError
+# @return: JSONResponse
 @app.exception_handler(AppError)
 async def app_error_handler(_request: Request, exc: AppError) -> JSONResponse:
     if exc.status_code >= 500:
         logger.error("AppError: %s", exc.detail)
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
-
+# @brief: 处理未捕获的异常
+# @param: _request: 请求
+# @param: exc: Exception
+# @return: JSONResponse
 @app.exception_handler(Exception)
 async def unhandled_error_handler(_request: Request, exc: Exception) -> JSONResponse:
     logger.exception("Unhandled error: %s", exc)

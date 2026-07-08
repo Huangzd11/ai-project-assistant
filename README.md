@@ -8,7 +8,7 @@
 
 ## 项目简介
 
-本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 3（v0.3.x Enterprise AI Agent）**，完成 Day01 ~ Day18：
+本项目是一个 **渐进式学习仓库**，采用 monorepo 结构，将每日实战代码与文档统一管理。目前已进入 **Sprint 3（v0.3.x Enterprise AI Agent）**，完成 Day01 ~ Day19：
 
 - LLM 基础与 Prompt 设计（Day01）
 - OpenAI 兼容 API 多轮对话（Day02）
@@ -28,6 +28,7 @@
 - Tool Registry 多工具（Day16，PDF / Calculator / RAG）
 - 会话 Memory（Day17，`session_id` 多轮对话 + Long facts）
 - MCP Client 外部工具（Day18，连接 MCP Server 并桥接进 Tool Registry）
+- Filesystem MCP 读项目文件（Day19，自然语言「看看 README」）
 
 适合希望系统学习 AI 应用开发的开发者，尤其是想从技术项目经理视角理解 LLM 工程化落地的同学。
 
@@ -279,6 +280,19 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/agent -Method Post -ContentType "ap
 
 详见 [docs/Day18.md](docs/Day18.md)。
 
+### Filesystem MCP（Day19 · v0.3-rc）
+
+- 默认 Server：`@modelcontextprotocol/server-filesystem`
+- `MCP_FILESYSTEM_ROOT` 沙箱根目录
+- Planner：「看看 README」→ `mcp_read_file`；「列出 docs 目录」→ `mcp_list_directory`
+
+```powershell
+# .env: MCP_ENABLED=true
+Invoke-RestMethod -Uri http://127.0.0.1:8000/agent -Method Post -ContentType "application/json" -Body '{"message":"帮我看看 README 写了什么"}'
+```
+
+详见 [docs/Day19.md](docs/Day19.md)。
+
 ### HTTP API 服务（Day04）
 
 
@@ -346,6 +360,7 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/agent -Method Post -ContentType "ap
 - [x] Day16 Tool Registry
 - [x] Day17 Memory
 - [x] Day18 MCP Client
+- [x] Day19 Filesystem MCP
 
 ---
 
@@ -412,7 +427,7 @@ ai-project-assistant/
 │
 ├── docs/                             # 文档与工作日志
 │   ├── CODEMAP.md                    # 代码地图（按 Day 索引）
-│   ├── Day01.md ~ Day18.md
+│   ├── Day01.md ~ Day19.md
 │   ├── api.md / roadmap.md
 │   ├── solution-design.md
 │   ├── development-standards.md
@@ -561,8 +576,8 @@ curl http://127.0.0.1:8000/health
 | `CHROMA_COLLECTION`   | `knowledge`                 | Collection 名称         |
 | `SEARCH_TOP_K`        | `5`                         | 检索返回条数                |
 | `MCP_ENABLED`         | `false`                     | 是否启用 MCP Client        |
+| `MCP_FILESYSTEM_ROOT` | 项目根目录                     | Filesystem 沙箱路径         |
 | `MCP_SERVER_COMMAND`  | `npx`                       | MCP Server 启动命令         |
-| `MCP_SERVER_ARGS`     | `-y,@modelcontextprotocol/server-everything` | MCP Server 参数 |
 | `RAG_SYSTEM_PROMPT`   | （见 config.py）               | RAG 专用 system 提示词     |
 
 
@@ -580,7 +595,7 @@ curl http://127.0.0.1:8000/health
 | [docs/solution-design.md](docs/solution-design.md)             | AI 方案设计（技术选型与演进路线） |
 | [docs/api.md](docs/api.md)                                     | HTTP 接口详细说明        |
 | [docs/roadmap.md](docs/roadmap.md)                             | 学习路线与后续规划          |
-| [docs/Day01.md](docs/Day01.md) ~ [Day18.md](docs/Day18.md)     | 每日工作日志             |
+| [docs/Day01.md](docs/Day01.md) ~ [Day19.md](docs/Day19.md)     | 每日工作日志             |
 
 
 ---

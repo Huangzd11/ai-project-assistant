@@ -63,7 +63,12 @@ AGENT_ANSWER_PROMPT = os.getenv(
 MEMORY_DIR = os.getenv("MEMORY_DIR", "data/conversations")
 MEMORY_MAX_TURNS = int(os.getenv("MEMORY_MAX_TURNS", "10"))
 
-# Day18 — MCP Client
+# Day18/19 — MCP Client（默认 Filesystem Server）
 MCP_ENABLED = os.getenv("MCP_ENABLED", "false").lower() in {"1", "true", "yes"}
 MCP_SERVER_COMMAND = os.getenv("MCP_SERVER_COMMAND", "npx")
-MCP_SERVER_ARGS = os.getenv("MCP_SERVER_ARGS", "-y,@modelcontextprotocol/server-everything")
+MCP_FILESYSTEM_ROOT = os.getenv(
+    "MCP_FILESYSTEM_ROOT",
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")),
+)
+_default_fs_args = f"-y,@modelcontextprotocol/server-filesystem,{MCP_FILESYSTEM_ROOT}"
+MCP_SERVER_ARGS = os.getenv("MCP_SERVER_ARGS", _default_fs_args)

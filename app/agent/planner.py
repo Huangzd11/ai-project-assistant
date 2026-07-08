@@ -1,8 +1,9 @@
 # Day16 — Agent 任务规划
-# Day18 — MCP 显式调用（mcp echo hello）
+# Day18 — MCP 显式调用（mcp read_file README.md）
+# Day19 — Filesystem 自然语言（看看 README）
 #
 # 功能：将用户目标分解为可执行的工具调用计划
-# 逻辑：按意图路由 calculator → pdf_read → rag_query
+# 逻辑：按意图路由 calculator → filesystem → mcp 显式 → pdf_read → rag_query
 
 import re
 
@@ -45,7 +46,6 @@ def _extract_expression(message: str) -> str:
     expr = expr.replace("×", "*").replace("÷", "/")
     return expr.rstrip("?？.")
 
-
 # @brief: 判断是否为 PDF 读取意图
 # @param: message: 用户消息
 # @return: 是否读 PDF
@@ -58,14 +58,12 @@ def _is_pdf_read(message: str) -> bool:
         return True
     return False
 
-
 # @brief: 提取 PDF 页码（可选）
 # @param: message: 用户消息
 # @return: 页码或 None
 def _extract_page(message: str) -> int | None:
     match = re.search(r"第\s*(\d+)\s*页", message)
     return int(match.group(1)) if match else None
-
 
 # @brief: 判断是否需要走知识库检索
 # @param: message: 用户消息
@@ -78,7 +76,6 @@ def _needs_rag(message: str) -> bool:
         return True
     return False
 
-
 # @brief: 从用户消息构造 RAG 检索问题
 # @param: message: 用户消息
 # @return: 检索问题文本
@@ -88,12 +85,11 @@ def _build_rag_question(message: str) -> str:
         return f"{filename} 的主要内容是什么？"
     return message
 
-
 # @brief: 规划执行步骤
 # @param: user_message: 用户目标
 # @return: 计划步骤列表，每步含 tool / args / reason
 def plan(user_message: str) -> list[dict]:
-    from app.mcp.bridge import plan_mcp_step
+    from app.mcp.bridge import plan_filesystem_step, plan_mcp_step
 
     if _is_calculator(user_message):
         return [
@@ -103,6 +99,10 @@ def plan(user_message: str) -> list[dict]:
                 "reason": "需要精确数学计算",
             }
         ]
+
+    fs_step = plan_filesystem_step(user_message)
+    if fs_step:
+        return [fs_step]
 
     mcp_step = plan_mcp_step(user_message)
     if mcp_step:

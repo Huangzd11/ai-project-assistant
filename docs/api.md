@@ -1,6 +1,6 @@
 # API 接口说明
 
-> **版本：v0.3-beta2**（Sprint 3 MCP Client）  
+> **版本：v0.3-rc**（Sprint 3 Filesystem MCP）  
 > 基础地址：`http://127.0.0.1:8000`  
 > 交互文档：[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
@@ -428,12 +428,18 @@ python -c "from app.agent import run_agent; import json; print(json.dumps(run_ag
 
 **MCP 显式调用（Day18）：**
 
-在 `.env` 中设置 `MCP_ENABLED=true` 并安装 Node.js 后，可用 `mcp <tool> <args>` 格式调用外部工具：
+```powershell
+Invoke-RestMethod -Uri http://127.0.0.1:8000/agent `
+  -Method Post -ContentType "application/json" `
+  -Body '{"message":"mcp read_file README.md"}'
+```
+
+**Filesystem 自然语言（Day19）：**
 
 ```powershell
 Invoke-RestMethod -Uri http://127.0.0.1:8000/agent `
   -Method Post -ContentType "application/json" `
-  -Body '{"message":"mcp echo hello"}'
+  -Body '{"message":"帮我看看 README 写了什么"}'
 ```
 
 ---
@@ -490,4 +496,5 @@ MCP 连接状态与已注册工具（Day18）。
 | `MEMORY_MAX_TURNS` | `10` | Short Memory 保留轮数 |
 | `MCP_ENABLED` | `false` | 是否启动 MCP Client |
 | `MCP_SERVER_COMMAND` | `npx` | MCP Server 启动命令 |
-| `MCP_SERVER_ARGS` | `-y,@modelcontextprotocol/server-everything` | MCP Server 参数（逗号分隔） |
+| `MCP_FILESYSTEM_ROOT` | 项目根目录 | Filesystem MCP 沙箱根目录（绝对路径） |
+| `MCP_SERVER_ARGS` | 自动拼接 filesystem + root | MCP Server 参数（逗号分隔） |

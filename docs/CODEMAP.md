@@ -129,7 +129,9 @@ ai-project-assistant/
 | **Day18** | `app/mcp/bridge.py` | MCP 桥接 | 动态注册 `mcp_*` 到 Registry |
 | **Day18** | `app/mcp/runtime.py` | 后台循环 | sync 工具跨线程调度 |
 | **Day18** | `app/api/mcp.py` | HTTP API | GET /mcp/status、/mcp/tools |
-| **Day18** | `app/agent/planner.py` | MCP 路由 | `mcp echo hello` 显式调用 |
+| **Day18** | `app/agent/planner.py` | MCP 路由 | 显式 `mcp read_file` 调用 |
+| **Day19** | `app/core/config.py` | Filesystem MCP | `MCP_FILESYSTEM_ROOT`、默认 server |
+| **Day19** | `app/mcp/bridge.py` | 文件意图 | `plan_filesystem_step` 自然语言读 README |
 
 ---
 
@@ -165,7 +167,7 @@ Browser → POST /agent → app/api/agent.py → planner → tools → llm
 
 # MCP 外部工具（Day18）
 lifespan → app/mcp/bootstrap_mcp() → mcp/client → 外部 MCP Server
-Planner「mcp echo hello」→ registry.run("mcp_echo") → bridge → MCP call_tool
+Planner「看看 README」→ registry.run("mcp_read_file") → bridge → MCP call_tool
 Browser → GET /mcp/status → app/api/mcp.py
 ```
 

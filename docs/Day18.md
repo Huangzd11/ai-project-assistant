@@ -408,4 +408,4 @@ python -m uvicorn app.main:app --reload
 
 ## 下一步
 
-Day19 — MCP Server 接入（`feat(mcp-server)` · v0.3-rc）：把项目 RAG/PDF 能力暴露为 MCP Server
+Day19 — 真实 MCP Server 接入（`feat(mcp-server)` · v0.3-rc）：Filesystem MCP，自然语言读 README，见 [Day19.md](Day19.md)

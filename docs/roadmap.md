@@ -58,7 +58,7 @@ AI Project Assistant
 | Day16 | Tool 管理 | `feat(tools)` | v0.3-alpha2 |
 | Day17 | Memory | `feat(memory)` | v0.3-beta |
 | Day18 | MCP 基础（Client） | `feat(mcp-client)` | v0.3-beta2 |
-| Day19 | MCP Server 接入 | `feat(mcp-server)` | v0.3-rc |
+| Day19 | 真实 MCP Server（Filesystem） | `feat(mcp-server)` | v0.3-rc |
 | Day20 | 企业 Agent Workflow | `feat(agent-workflow)` | v0.3 |
 | Day21 | Sprint Review + Release | `release(v0.3)` | Release |
 
@@ -68,7 +68,7 @@ AI Project Assistant
 - [x] Day16 Tool Registry — `feat(tools)` — v0.3-alpha2
 - [x] Day17 Memory — `feat(memory)` — v0.3-beta
 - [x] Day18 MCP Client — `feat(mcp-client)` — v0.3-beta2
-- [ ] Day19 MCP Server — `feat(mcp-server)` — v0.3-rc
+- [x] Day19 Filesystem MCP — `feat(mcp-server)` — v0.3-rc
 - [ ] Day20 Agent Workflow — `feat(agent-workflow)` — v0.3
 - [ ] Day21 Review + Release — `release(v0.3)` — v0.3.0
 
