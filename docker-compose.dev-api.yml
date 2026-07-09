@@ -1,0 +1,10 @@
+# 可选：Vite 开发模式需直连 API 时叠加此文件
+#
+#   docker compose -f docker-compose.yml -f docker-compose.dev-api.yml up -d api chroma
+#
+# 然后 npm run dev（Vite 代理 http://127.0.0.1:8000）
+
+services:
+  api:
+    ports:
+      - "8000:8000"

@@ -75,16 +75,18 @@ Invoke-RestMethod ... -Body '{"message":"我是谁","session_id":"work-001"}'
 | MCP | Filesystem 读项目文件 |
 | 可观测 | 响应 `workflow.intent` + `route` |
 
-**Docker Compose（v0.4.0-alpha · 推荐）：**
+**Docker Compose（v0.4.0-alpha2 · 推荐）：**
 
 ```powershell
 # 1. 配置 .env（通义千问 Key 等，见 .env.example）
 cp .env.example .env
 
-# 2a. 云端 LLM（默认）：api + chroma，使用 .env 中的通义配置
+# 2a. 一键启动（Nginx :80 + API + Chroma）
 docker compose up -d --build
 docker compose ps
-Invoke-RestMethod http://127.0.0.1:8000/health
+Invoke-RestMethod http://localhost/health
+# 浏览器 http://localhost  → Web UI
+# 浏览器 http://localhost/docs → Swagger
 
 # 2b. 本地 Ollama（可选 profile）
 docker compose --profile local-llm up -d --build
@@ -92,9 +94,13 @@ docker compose --profile local-llm up -d --build
 
 # 3. 可选 Redis
 docker compose --profile redis up -d
+
+# 4. Vite 开发模式（需容器 API 暴露 8000）
+docker compose -f docker-compose.yml -f docker-compose.dev-api.yml up -d api chroma
+cd frontend && npm run dev
 ```
 
-详见 [docs/Day22.md](docs/Day22.md)。
+详见 [docs/Day22.md](docs/Day22.md)、[docs/Day23.md](docs/Day23.md)。
 
 **单容器 Docker（v0.3.0）：**
 

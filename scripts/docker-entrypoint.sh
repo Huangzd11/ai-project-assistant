@@ -21,7 +21,7 @@ fi
 if [ "$OPENAI_BASE_URL" = "http://ollama:11434/v1" ]; then
   :
 else
-  echo "[entrypoint] LLM: ${OPENAI_BASE_URL:-（未设置）} model=${MODEL_NAME:-（未设置）}"
+  echo "[entrypoint] LLM: ${OPENAI_BASE_URL:-(unset)} model=${MODEL_NAME:-(unset)}"
 fi
 
 exec uvicorn app.main:app --host 0.0.0.0 --port 8000

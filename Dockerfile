@@ -18,10 +18,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN chmod +x scripts/docker-entrypoint.sh
+RUN sed -i 's/\r$//' scripts/docker-entrypoint.sh && chmod +x scripts/docker-entrypoint.sh
 
 EXPOSE 8000
 
 ENV MCP_ENABLED=false
 
-ENTRYPOINT ["scripts/docker-entrypoint.sh"]
+ENTRYPOINT ["sh", "/app/scripts/docker-entrypoint.sh"]

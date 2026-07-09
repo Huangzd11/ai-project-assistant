@@ -1,11 +1,16 @@
 # Day22 — Docker Compose 一键启动
+# Day23 — Nginx 统一入口（:80），api 仅内网
 #
-# 云端 LLM（默认，使用 .env 中通义等配置）：
+# 生产演示（默认，Nginx + API + Chroma）：
 #   docker compose up -d --build
+#   浏览器 http://localhost
 #
-# 本地 Ollama：
+# 云端 LLM（.env 通义等）+ 本地 Ollama：
 #   docker compose --profile local-llm up -d --build
 #   .\scripts\ollama-pull.ps1
+#
+# Vite 开发 + 容器 API（暴露 8000）：
+#   docker compose -f docker-compose.yml -f docker-compose.dev-api.yml up -d api chroma
 
 name: ai-project-assistant
 
@@ -55,8 +60,8 @@ services:
       CHROMA_PORT: "8000"
       CHROMA_COLLECTION: ${CHROMA_COLLECTION:-knowledge}
       MCP_ENABLED: "false"
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     volumes:
       - ./uploads:/app/uploads
       - ./data:/app/data
@@ -79,6 +84,25 @@ services:
       timeout: 5s
       retries: 3
       start_period: 90s
+    networks:
+      - app-net
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     networks:
       - app-net
 

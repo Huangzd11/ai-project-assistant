@@ -35,8 +35,8 @@ app = FastAPI(
     title="AI Project Assistant",
     version=APP_VERSION,
     description=(
-        "企业 AI Agent API（v0.4.0-alpha）。"
-        "Workflow 意图路由、Tool Registry、会话 Memory、Docker Compose、企业 RAG。"
+        "企业 AI Agent API（v0.4.0-alpha2）。"
+        "Workflow 意图路由、Tool Registry、会话 Memory、Docker Compose、Nginx 反代、企业 RAG。"
     ),
     lifespan=lifespan,
 )
@@ -50,6 +50,8 @@ app.add_middleware(
     allow_origins=[
         "http://127.0.0.1:5173",
         "http://localhost:5173",
+        "http://127.0.0.1",
+        "http://localhost",
     ],
     allow_credentials=True,
     allow_methods=["*"],

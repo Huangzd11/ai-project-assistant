@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-APP_VERSION = "0.4.0-alpha"
+APP_VERSION = "0.4.0-alpha2"
 
 # Day02/Day03 — OpenAI 兼容 API（云端通义千问 或 本地 Ollama）
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "ollama")
