@@ -55,7 +55,7 @@ def agent_stream_endpoint(req: AgentRequest):
             for event in run_agent_stream(req.message, session_id=req.session_id):
                 yield format_sse_event(event)
         except Exception as exc:
-            logger.exception("agent stream error: %s", exc)
+            logger.exception("event=agent_stream_error  error=%s", exc)
             yield format_sse_event({"type": "error", "detail": str(exc)})
 
     return StreamingResponse(

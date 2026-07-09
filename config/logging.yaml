@@ -1,0 +1,41 @@
+# Day24 — logging dictConfig 模板（路径与级别由 app/core/logger.py 运行时注入）
+version: 1
+disable_existing_loggers: false
+
+filters:
+  request_context:
+    (): app.core.request_context.RequestContextFilter
+
+formatters:
+  standard:
+    format: "%(asctime)s [%(levelname)s] %(name)s %(request_id)s %(trace_id)s %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: standard
+    filters: [request_context]
+    level: INFO
+  app_file:
+    class: logging.handlers.RotatingFileHandler
+    filename: logs/app.log
+    maxBytes: 10485760
+    backupCount: 5
+    formatter: standard
+    filters: [request_context]
+    level: INFO
+    encoding: utf-8
+  error_file:
+    class: logging.handlers.RotatingFileHandler
+    filename: logs/error.log
+    maxBytes: 10485760
+    backupCount: 5
+    formatter: standard
+    filters: [request_context]
+    level: ERROR
+    encoding: utf-8
+
+root:
+  level: INFO
+  handlers: [console, app_file, error_file]

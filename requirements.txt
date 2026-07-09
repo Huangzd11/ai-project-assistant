@@ -25,3 +25,6 @@ chromadb
 
 # Day18 — MCP Client
 mcp
+
+# Day24 — 配置分层（config/settings.yaml）
+pyyaml

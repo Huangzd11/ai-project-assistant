@@ -49,16 +49,16 @@ def chat(message: str, system_prompt: str | None = None) -> str:
         )
         content = response.choices[0].message.content or ""
         if not content:
-            logger.warning("LLM returned empty content  model=%s", MODEL_NAME)
+            logger.warning("event=llm_empty_content  model=%s", MODEL_NAME)
         return content
     except APITimeoutError as exc:
-        logger.error("LLM timeout  model=%s  error=%s", MODEL_NAME, exc)
+        logger.error("event=llm_timeout  model=%s  error=%s", MODEL_NAME, exc)
         raise LLMTimeoutError() from exc
     except APIConnectionError as exc:
-        logger.error("LLM connection failed  model=%s  error=%s", MODEL_NAME, exc)
+        logger.error("event=llm_connection_failed  model=%s  error=%s", MODEL_NAME, exc)
         raise LLMUnavailableError() from exc
     except OpenAIError as exc:
-        logger.error("LLM error  model=%s  error=%s", MODEL_NAME, exc)
+        logger.error("event=llm_error  model=%s  error=%s", MODEL_NAME, exc)
         raise LLMUnavailableError() from exc
 
 
@@ -75,16 +75,16 @@ def chat_messages(messages: list[dict], system_prompt: str | None = None) -> str
         )
         content = response.choices[0].message.content or ""
         if not content:
-            logger.warning("LLM returned empty content  model=%s", MODEL_NAME)
+            logger.warning("event=llm_empty_content  model=%s", MODEL_NAME)
         return content
     except APITimeoutError as exc:
-        logger.error("LLM timeout  model=%s  error=%s", MODEL_NAME, exc)
+        logger.error("event=llm_timeout  model=%s  error=%s", MODEL_NAME, exc)
         raise LLMTimeoutError() from exc
     except APIConnectionError as exc:
-        logger.error("LLM connection failed  model=%s  error=%s", MODEL_NAME, exc)
+        logger.error("event=llm_connection_failed  model=%s  error=%s", MODEL_NAME, exc)
         raise LLMUnavailableError() from exc
     except OpenAIError as exc:
-        logger.error("LLM error  model=%s  error=%s", MODEL_NAME, exc)
+        logger.error("event=llm_error  model=%s  error=%s", MODEL_NAME, exc)
         raise LLMUnavailableError() from exc
 
 
@@ -108,11 +108,11 @@ def chat_messages_stream(
             if delta:
                 yield delta
     except APITimeoutError as exc:
-        logger.error("LLM timeout  model=%s  error=%s", MODEL_NAME, exc)
+        logger.error("event=llm_timeout  model=%s  error=%s", MODEL_NAME, exc)
         raise LLMTimeoutError() from exc
     except APIConnectionError as exc:
-        logger.error("LLM connection failed  model=%s  error=%s", MODEL_NAME, exc)
+        logger.error("event=llm_connection_failed  model=%s  error=%s", MODEL_NAME, exc)
         raise LLMUnavailableError() from exc
     except OpenAIError as exc:
-        logger.error("LLM error  model=%s  error=%s", MODEL_NAME, exc)
+        logger.error("event=llm_error  model=%s  error=%s", MODEL_NAME, exc)
         raise LLMUnavailableError() from exc

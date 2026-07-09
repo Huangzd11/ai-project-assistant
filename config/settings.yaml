@@ -1,0 +1,15 @@
+app:
+  name: ai-project-assistant
+  env: dev
+
+logging:
+  level: INFO
+  dir: logs
+  app_file: app.log
+  error_file: error.log
+  console: true
+
+paths:
+  upload_dir: uploads
+  memory_dir: data/conversations
+  chroma_dir: data/chroma

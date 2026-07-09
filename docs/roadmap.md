@@ -124,7 +124,7 @@ AI Project Assistant
 |-----|------|------|------|
 | Day22 | Docker Compose | 一键启动（API + Chroma + Ollama） | v0.4-alpha ✅ |
 | Day23 | Nginx + Reverse Proxy | 部署能力（反代、静态资源、生产入口） | v0.4-alpha2 ✅ |
-| Day24 | 日志 + 配置管理 | 工程化（结构化日志、环境分层） | v0.4-beta |
+| Day24 | 日志 + 配置管理 | 工程化（结构化日志、环境分层） | v0.4-beta ✅ |
 | Day25 | Token / 成本统计 | AI PM 能力（用量可观测、成本估算） | v0.4-beta2 |
 | Day26 | 架构设计文档 | Solution 能力（方案文档、架构图） | v0.4-rc |
 | Day27 | README + GitHub 包装 | 作品集（徽章、截图、Quick Start） | v0.4 |
@@ -134,7 +134,7 @@ AI Project Assistant
 
 - [x] Day22 Docker Compose — `feat(docker-compose)` — v0.4-alpha — [Day22.md](Day22.md)
 - [x] Day23 Nginx 反代 — `feat(nginx)` — v0.4-alpha2 — [Day23.md](Day23.md)
-- [ ] Day24 日志与配置 — `feat(logging,config)` — v0.4-beta
+- [x] Day24 日志与配置 — `feat(logging,config)` — v0.4-beta — [Day24.md](Day24.md)
 - [ ] Day25 Token / 成本 — `feat(token-metrics)` — v0.4-beta2
 - [ ] Day26 架构文档 — `docs(architecture)` — v0.4-rc
 - [ ] Day27 README / GitHub — `docs(readme,portfolio)` — v0.4
@@ -165,7 +165,7 @@ AI Project Assistant
 | SSE 流式 API | `POST /agent/stream` 逐字返回 | ✅ Day21_2 |
 | docker-compose | API + Chroma + Ollama 一键编排 | ✅ Day22 |
 | Nginx 反代 | 生产部署入口 | ✅ Day23 |
-| 结构化日志 + 配置分层 | 工程化运维 | 📋 Day24 |
+| 结构化日志 + 配置分层 | 工程化运维 | ✅ Day24 |
 | Token / 成本统计 | AI PM 可观测 | 📋 Day25 |
 | CI/CD | 自动化测试与镜像构建 | 待做 |
 

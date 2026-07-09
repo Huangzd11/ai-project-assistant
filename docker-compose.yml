@@ -60,11 +60,16 @@ services:
       CHROMA_PORT: "8000"
       CHROMA_COLLECTION: ${CHROMA_COLLECTION:-knowledge}
       MCP_ENABLED: "false"
+      APP_ENV: prod
+      LOG_LEVEL: INFO
+      LOG_CONSOLE: "true"
     expose:
       - "8000"
     volumes:
       - ./uploads:/app/uploads
       - ./data:/app/data
+      - ./logs:/app/logs
+      - ./config:/app/config:ro
       - hf_cache:/root/.cache/huggingface
     depends_on:
       chroma:

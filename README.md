@@ -75,7 +75,7 @@ Invoke-RestMethod ... -Body '{"message":"我是谁","session_id":"work-001"}'
 | MCP | Filesystem 读项目文件 |
 | 可观测 | 响应 `workflow.intent` + `route` |
 
-**Docker Compose（v0.4.0-alpha2 · 推荐）：**
+**Docker Compose（v0.4.0-beta · 推荐）：**
 
 ```powershell
 # 1. 配置 .env（通义千问 Key 等，见 .env.example）
@@ -100,7 +100,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev-api.yml up -d api chr
 cd frontend && npm run dev
 ```
 
-详见 [docs/Day22.md](docs/Day22.md)、[docs/Day23.md](docs/Day23.md)。
+详见 [docs/Day22.md](docs/Day22.md)、[docs/Day23.md](docs/Day23.md)、[docs/Day24.md](docs/Day24.md)。
 
 **单容器 Docker（v0.3.0）：**
 
