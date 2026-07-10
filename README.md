@@ -186,6 +186,7 @@ ai-project-assistant/
 ├── nginx/               # 反代 + 静态资源
 ├── config/              # settings / logging / pricing
 ├── docs/                # 架构、方案、API、Roadmap、Day 日志
+├── mindmap/             # Day01~27 学习思维导图（Mermaid）
 ├── scripts/
 ├── docker-compose.yml
 ├── Dockerfile
@@ -282,6 +283,7 @@ FastAPI · Uvicorn · OpenAI SDK · Ollama / 通义 · Chroma · PyMuPDF · Lang
 | [CHANGELOG.md](docs/CHANGELOG.md) | 版本 |
 | [RELEASE.md](docs/RELEASE.md) | v1.0.0 收官说明 |
 | [CODEMAP.md](docs/CODEMAP.md) | 代码地图 |
+| [mindmap/](mindmap/README.md) | Day01~27 学习思维导图 |
 
 ---
 
