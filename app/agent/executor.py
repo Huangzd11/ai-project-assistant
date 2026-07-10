@@ -3,6 +3,7 @@
 # Day17 — 接入 Short / Long Memory
 # Day20 — Workflow 元数据
 # Day21_2 — SSE 流式 run_agent_stream
+# Day25 — 聚合 LLM usage 写入响应
 #
 # 功能：执行 Workflow 计划，调用 Tool，根据 Observation 与历史生成回答
 # 逻辑：memory → build_workflow → registry.run → chat_messages → 写回 memory
@@ -23,6 +24,7 @@ from app.agent.workflow import build_workflow, workflow_to_dict
 from app.core.config import AGENT_ANSWER_PROMPT, SYSTEM_PROMPT
 from app.core.llm import chat_messages, chat_messages_stream
 from app.core.logger import logger
+from app.core.token_meter import UsageInfo
 
 
 # @brief: 格式化持续时间
@@ -144,6 +146,10 @@ def _prepare_run(
     }
 
 
+def _usage_dict(usage: UsageInfo | None) -> dict | None:
+    return usage.to_dict() if usage else None
+
+
 # @brief: 构建响应
 def _build_response(
     user_message: str,
@@ -154,6 +160,7 @@ def _build_response(
     sources: list[dict],
     session_id: str | None,
     memory_session_id: str | None,
+    usage: UsageInfo | None = None,
 ) -> dict:
     return {
         "message": user_message,
@@ -163,6 +170,7 @@ def _build_response(
         "plan": steps,
         "tool_calls": [{"tool": item["tool"]} for item in observations],
         "sources": sources,
+        "usage": _usage_dict(usage),
     }
 
 
@@ -172,7 +180,8 @@ def run_agent(user_message: str, session_id: str | None = None) -> dict:
     ctx = _prepare_run(user_message, session_id)
     memory = ctx["memory"]
 
-    answer = chat_messages(ctx["llm_messages"], system_prompt=ctx["system_prompt"])
+    result = chat_messages(ctx["llm_messages"], system_prompt=ctx["system_prompt"])
+    answer = result.content
     logger.info("agent done  duration=%s", _format_duration(time.perf_counter() - start))
 
     if memory:
@@ -190,6 +199,7 @@ def run_agent(user_message: str, session_id: str | None = None) -> dict:
         ctx["sources"],
         session_id,
         mem_sid,
+        usage=result.usage,
     )
 
 
@@ -214,9 +224,13 @@ def run_agent_stream(user_message: str, session_id: str | None = None) -> Iterat
         }
 
     answer_parts: list[str] = []
-    for token in chat_messages_stream(ctx["llm_messages"], system_prompt=ctx["system_prompt"]):
-        answer_parts.append(token)
-        yield {"type": "token", "content": token}
+    usage: UsageInfo | None = None
+    for item in chat_messages_stream(ctx["llm_messages"], system_prompt=ctx["system_prompt"]):
+        if isinstance(item, UsageInfo) or item is None:
+            usage = item
+            continue
+        answer_parts.append(item)
+        yield {"type": "token", "content": item}
 
     answer = "".join(answer_parts)
     logger.info("agent stream done  duration=%s", _format_duration(time.perf_counter() - start))
@@ -225,6 +239,10 @@ def run_agent_stream(user_message: str, session_id: str | None = None) -> Iterat
         maybe_extract_facts(memory, user_message)
         memory.append("user", user_message)
         memory.append("assistant", answer)
+
+    usage_payload = _usage_dict(usage)
+    if usage_payload:
+        yield {"type": "usage", "usage": usage_payload}
 
     mem_sid = memory.session_id if memory else None
     yield {
@@ -236,4 +254,5 @@ def run_agent_stream(user_message: str, session_id: str | None = None) -> Iterat
         "plan": ctx["steps"],
         "tool_calls": [{"tool": item["tool"]} for item in ctx["observations"]],
         "sources": ctx["sources"],
+        "usage": usage_payload,
     }

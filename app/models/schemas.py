@@ -13,19 +13,44 @@ class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, description="用户消息", examples=["什么是 RAG？"])
 
 
+# @brief: Token / 成本用量（Day25）
+class UsageInfo(BaseModel):
+    prompt_tokens: int = Field(..., description="Input / Prompt Tokens")
+    completion_tokens: int = Field(..., description="Output / Completion Tokens")
+    total_tokens: int = Field(..., description="合计 Tokens")
+    cost_usd: float = Field(..., description="估算成本（美元）")
+    model: str = Field(..., description="计费所用模型名")
+    currency: str = Field(default="USD", description="货币单位")
+
+
 # @brief: POST /chat 响应体（Day04）
 class ChatResponse(BaseModel):
     model_config = ConfigDict(
-        json_schema_extra={"examples": [{"answer": "RAG（Retrieval-Augmented Generation）是检索增强生成..."}]}
+        json_schema_extra={
+            "examples": [
+                {
+                    "answer": "RAG（Retrieval-Augmented Generation）是检索增强生成...",
+                    "usage": {
+                        "prompt_tokens": 120,
+                        "completion_tokens": 80,
+                        "total_tokens": 200,
+                        "cost_usd": 0.0004,
+                        "model": "qwen-plus",
+                        "currency": "USD",
+                    },
+                }
+            ]
+        }
     )
 
     answer: str = Field(..., description="模型生成的回答")
+    usage: UsageInfo | None = Field(None, description="Token 与成本（Day25）")
 
 
 # @brief: GET /health 响应体（Day04 / Day21 增加 version）
 class HealthResponse(BaseModel):
     model_config = ConfigDict(
-        json_schema_extra={"examples": [{"status": "OK", "version": "0.3.0"}]}
+        json_schema_extra={"examples": [{"status": "OK", "version": "1.0.0"}]}
     )
 
     status: str = Field(..., description="服务状态，正常时为 OK")
@@ -94,6 +119,7 @@ class RagResponse(BaseModel):
         default_factory=list,
         description="引用来源列表；无命中时为空数组",
     )
+    usage: UsageInfo | None = Field(None, description="Token 与成本（Day25）")
 
 
 # @brief: Agent 计划步骤（Day15）
@@ -160,6 +186,14 @@ class AgentResponse(BaseModel):
                             "score": 0.72,
                         }
                     ],
+                    "usage": {
+                        "prompt_tokens": 1450,
+                        "completion_tokens": 632,
+                        "total_tokens": 2082,
+                        "cost_usd": 0.0038,
+                        "model": "qwen-plus",
+                        "currency": "USD",
+                    },
                 }
             ]
         }
@@ -175,3 +209,19 @@ class AgentResponse(BaseModel):
         default_factory=list,
         description="引用来源；无 RAG 命中时为空数组",
     )
+    usage: UsageInfo | None = Field(None, description="Token 与成本（Day25）")
+
+
+# @brief: GET /metrics/cost-estimate 响应（Day25）
+class CostEstimateResponse(BaseModel):
+    users: int
+    queries_per_user: int
+    avg_total_tokens: int
+    input_ratio: float
+    model: str
+    daily_prompt_tokens: int
+    daily_completion_tokens: int
+    daily_cost_usd: float
+    monthly_cost_usd: float
+    currency: str = "USD"
+    formula: str

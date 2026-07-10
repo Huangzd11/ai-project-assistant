@@ -1,0 +1,22 @@
+# Day25 — 模型单价表（估算用，非账单权威）
+# 单价：美元 / 百万 Token
+# 官方价以阿里云百炼控制台为准：https://help.aliyun.com/zh/model-studio/model-pricing
+
+default_model: qwen-plus
+fx_cny_per_usd: 7.2
+currency: USD
+
+models:
+  qwen-plus:
+    input_per_1m_usd: 0.11   # ≈ ¥0.8 / 1M
+    output_per_1m_usd: 0.28  # ≈ ¥2.0 / 1M
+  qwen-turbo:
+    input_per_1m_usd: 0.04
+    output_per_1m_usd: 0.08
+  qwen-max:
+    input_per_1m_usd: 0.33
+    output_per_1m_usd: 1.33
+  # 本地 Ollama：API 费用记 0（电费/机器另算）
+  qwen3:4b:
+    input_per_1m_usd: 0.0
+    output_per_1m_usd: 0.0

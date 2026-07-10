@@ -1,5 +1,6 @@
 # Day04 — HTTP 聊天接口
 # Day14 — Swagger 描述完善
+# Day25 — 返回 usage
 #
 # 功能：暴露 /chat 与 /models 两个端点
 # 逻辑：
@@ -12,7 +13,7 @@ from fastapi import APIRouter
 
 from app.core.config import MODEL_NAME, OPENAI_BASE_URL, PROVIDER
 from app.core.llm import chat
-from app.models import ChatRequest, ChatResponse, ModelInfo
+from app.models import ChatRequest, ChatResponse, ModelInfo, UsageInfo
 
 router = APIRouter(tags=["chat"])
 
@@ -38,5 +39,6 @@ def models():
     description="纯 LLM 单轮对话，不走知识库检索。需要 Ollama 或云端 API 可用。",
 )
 def chat_endpoint(req: ChatRequest):
-    answer = chat(req.message)
-    return ChatResponse(answer=answer)
+    result = chat(req.message)
+    usage = UsageInfo(**result.usage.to_dict()) if result.usage else None
+    return ChatResponse(answer=result.content, usage=usage)

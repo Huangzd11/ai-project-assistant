@@ -1,7 +1,8 @@
 # AI Solution Design
 
-> 本文档是 **AI Project Assistant** 的方案设计雏形，记录关键技术选型理由与后续演进方向。  
-> 随项目迭代持续更新。
+> 版本：**v1.0.0** | 架构结构视图见 [architecture.md](architecture.md)  
+> **本文回答：为什么做？为什么这样选？风险与演进是什么？**  
+> 面向：AI Solution / 技术项目经理评审与面试口述。
 
 ---
 
@@ -9,301 +10,274 @@
 
 ### 1.1 业务目标
 
-构建一个可渐进演进的 AI 助手后端，支撑从「单轮问答」到「知识库问答」「工具调用」「多 Agent 协作」的完整能力链路。当前阶段聚焦 **LLM 接入与 API 化**，为后续 RAG、Agent、MCP 等能力预留统一接口层。
+构建可演示、可部署的 **企业 AI 项目助手**：
 
-### 1.2 现状与约束
+- 基于内部 **PDF 知识库** 做可溯源问答（RAG）
+- 通过 **Agent + Tool** 完成天气、新闻、计算、读项目文件等任务
+- 以 **统一 HTTP API + Web UI** 交付，并具备日志、成本等工程化能力
 
-| 维度 | 现状 |
+本仓库同时是 **30 天 AI 技术项目经理** 实战作品：从 LLM 接入一路做到 Compose / Nginx / Token 统计与方案文档。
+
+### 1.2 用户与场景
+
+| 角色 | 典型问题 |
+|------|----------|
+| 业务用户 | 「test.pdf 里怎么开 telnet？」「北京天气？」「README 写了什么？」 |
+| 开发 / 演示 | 一键 `docker compose up`，浏览器打开 `http://localhost` |
+| AI PM / Solution | 「1000 用户一天多少钱？」「为什么用 RAG 而不是微调？」 |
+
+### 1.3 约束
+
+| 维度 | 约束 |
 |------|------|
-| 用户场景 | 学习 / 原型验证为主，需快速迭代 |
-| 部署环境 | 本地开发 + Docker 容器，兼顾云端 API |
-| 团队规模 | 小团队 / 个人，优先降低学习与维护成本 |
-| 模型策略 | 开发用本地 Ollama，生产可切换云端通义千问 |
+| 团队 | 个人 / 小团队，优先可维护、可讲清 |
+| 部署 | 本地 Docker Compose；LLM 支持本地 Ollama 与云端通义 |
+| 数据 | 以 PDF 与项目文件为主，非海量向量检索集群 |
+| 预算 | 开发期可控；生产需能估算 Token 成本（Day25） |
 
-### 1.3 设计原则
+### 1.4 设计原则
 
-1. **接口统一**：上层业务不感知底层模型提供方（Ollama / DashScope / OpenAI）
-2. **分层清晰**：配置、模型调用、HTTP 路由各自独立，便于替换与测试
-3. **渐进演进**：先跑通最小可用链路，再按需叠加 RAG、Agent、MCP
-4. **可观测**：预留健康检查、模型信息查询等运维接口
+1. **接口统一**：业务不绑定某一家模型（OpenAI Compatible）
+2. **分层清晰**：API / Agent / RAG / 向量库可替换
+3. **渐进演进**：先 chat，再 RAG，再 Agent/MCP，再工程化
+4. **可观测**：Request ID、日志落盘、Token/Cost 可见
+5. **可溯源**：知识库回答尽量带 `sources`，降低幻觉信任成本
 
 ---
 
-## 2. 架构概览
+## 2. 为什么需要知识库？
 
-### 2.1 请求链路（结构图）
+### 2.1 问题
 
-**聊天链路：**
+企业文档（手册、规范、PDF）**不在公网模型训练语料里**，且会持续更新。若只用裸 LLM：
 
-```
-                    Browser
-                       │
-                    FastAPI
-                       │
-                  OpenAI SDK
-                       │
-                     Ollama
-                       │
-                      Qwen3
-```
+- 知识截止 / 不知道内部条款  
+- 容易 **幻觉**（编造步骤、页码）  
+- 无法给出「根据《xx》第 n 页」的引用  
 
-**文档解析与 RAG 链路（v0.2.0 · Day09~13）：**
+### 2.2 方案对比
 
-```
-              uploads/xxx.pdf
-                     │
-                     ▼
-            app/rag/pdf_loader.py  →  data/parsed/xxx.json
-                     │
-                     ▼
-            app/rag/chunker.py     →  data/chunks/xxx.json
-                     │
-                     ▼
-            app/rag/embedder.py    →  data/vectors/xxx.json
-                     │
-                     ▼
-            app/rag/vector_store.py → data/chroma/
-                     │
-         Question → search() → Top-K chunks
-                     │
-                     ▼
-            app/rag/rag_pipeline.py → Prompt → LLM
-                     │
-                     ▼
-              Answer + sources
-```
+| 方案 | 优点 | 缺点 | 本项目结论 |
+|------|------|------|------------|
+| 纯 LLM | 实现简单 | 无内部知识、易幻觉 | 仅适合闲聊（`/chat`） |
+| 全文塞进 Prompt | 实现快 | Token 爆炸、超上下文窗口 | **不可规模化** |
+| Fine-tune | 风格/领域贴合 | 贵、慢、文档一变就要再训 | **不做** |
+| **RAG** | 可更新、可引用、成本相对可控 | 依赖切块与检索质量 | **采用** |
 
-**企业 Agent 链路（v0.3.0 · Day15~21）：**
+### 2.3 面试一句话
+
+> 企业 PDF 会变，我们要的是**可溯源的答案**，不是把模型再训练一遍。RAG 用检索把相关片段注入 Prompt，并用 `sources` 约束幻觉、控制 Token。
+
+### 2.4 本项目 RAG 落点
 
 ```
-              POST /agent
-                    │
-                    ▼
-           app/agent/workflow.py     ← 意图：chat / rag / filesystem / …
-                    │
-     ┌──────────────┼──────────────┐
-     ▼              ▼              ▼
-rag_query    mcp_read_file   calculator
-     │              │              │
-     └──────────────┴──────────────┘
-                    │
-                    ▼
-        executor + memory (Day17)
-                    │
-                    ▼
-         Answer + workflow + sources
+Upload PDF → Parse → Chunk → Embed → Chroma
+Question → Top-K → Prompt → LLM → Answer + sources
 ```
 
-![架构图](architecture.png)
-
-| 层级 | 组件 | 说明 |
-|------|------|------|
-| 摄入层 | uploads/ | Day08 原始 PDF 存储 |
-| 解析层 | pdf_loader | Day09 PyMuPDF 按页提取 |
-| 切分层 | chunker | Day10 LangChain 文本切块 |
-| 向量层 | embedder | Day11 bge-small / 通义 Embedding |
-| 存储层 | vector_store | Day12 Chroma 持久化 + Top-K 检索 |
-| 编排层 | rag_pipeline | Day13 检索结果 → Prompt → 带来源回答 |
-| Agent 层 | workflow + executor | Day20 意图路由；Day15~17 工具执行与记忆 |
-| MCP 层 | mcp/client + bridge | Day18~19 外部 Filesystem 工具 |
-| 网关层 | FastAPI | HTTP 路由、请求校验、响应封装 |
-| 客户端层 | OpenAI SDK | 统一 Chat Completions 调用方式 |
-| 推理层 | Ollama | 本地模型运行时，暴露 `/v1` 兼容端点 |
-| 模型层 | Qwen3 | 实际执行推理的大语言模型（如 `qwen3:4b`） |
-
-### 2.2 模块分层
-
-```
-┌─────────────┐     HTTP      ┌─────────────┐     OpenAI Compatible API     ┌─────────────┐
-│   Client    │ ────────────► │   FastAPI   │ ─────────────────────────────► │   Ollama    │
-│ (CLI / Web) │               │   (app.py)  │                               │   + Qwen3   │
-└─────────────┘               └──────┬──────┘                               └─────────────┘
-                                     │
-                              ┌──────┴──────┐
-                              │   llm.py    │  ← 模型调用封装
-                              │  config.py  │  ← 环境配置
-                              │  models.py  │  ← 请求/响应契约
-                              └─────────────┘
-```
-
-当前实现：`Browser → FastAPI → OpenAI SDK → Ollama → Qwen3`
+详情：[Day13.md](Day13.md)、[architecture.md](architecture.md) §5.1。
 
 ---
 
 ## 3. 技术选型
 
-### 3.1 为什么选择 FastAPI
+每项按统一结构：**场景 → 对比 → 理由 → 边界**。
 
-| 考量 | 说明 |
-|------|------|
-| 开发效率 | 基于 Python 类型注解，自动生成 OpenAPI 文档（`/docs`） |
-| 数据校验 | 原生集成 Pydantic，请求/响应契约清晰，减少接口联调成本 |
-| 性能 | 基于 ASGI（Uvicorn），异步友好，满足后续流式 SSE 扩展 |
-| 生态 | 与 Python AI 栈（OpenAI SDK、LangChain 等）无缝衔接 |
-| 运维 | 内置健康检查路由，便于 K8s / Docker 探活 |
+### 3.1 FastAPI（HTTP 网关）
 
-**结论**：FastAPI 适合作为 AI 服务的 HTTP 网关层，在原型期与生产期均能保持较低迁移成本。
+**场景：** 需要类型安全的 REST、自动 OpenAPI、后续 SSE 流式。
 
-### 3.2 为什么选择 Ollama
+| 候选 | 适合 | 不适合本项目的点 |
+|------|------|------------------|
+| Flask | 极简脚本 | 校验与文档要自拼 |
+| Django | 全栈 CMS | 对纯 API + AI 过重 |
+| **FastAPI** | AI/API 服务、Pydantic、ASGI | — |
 
-| 考量 | 说明 |
-|------|------|
-| 本地优先 | 无需 API Key，离线可开发，降低学习门槛 |
-| 一键部署 | `ollama pull` + `ollama serve` 即可运行开源模型 |
-| 成本可控 | 开发/调试阶段无 Token 费用，适合高频实验 |
-| 模型灵活 | 支持 qwen、llama 等多种模型，便于对比评测 |
-| OpenAI 兼容 | 提供 `/v1` 端点，与云端 API 调用方式一致 |
+**选择理由：**
 
-**结论**：Ollama 作为本地默认推理引擎；生产环境通过切换 `OPENAI_BASE_URL` 即可迁移至云端，无需改动业务代码。
+- Pydantic 契约清晰，Swagger 开箱即用（`/docs`）
+- Uvicorn ASGI，天然适合 SSE（`/agent/stream`）
+- 与 Python AI 生态（OpenAI SDK、Chroma、MCP）同语言栈
 
-### 3.3 为什么采用 OpenAI Compatible API
+**边界：** 超高并发网关可再前置专用 LB；当前 Compose + Nginx 足够演示与中小流量。
 
-OpenAI Chat Completions API 已成为事实上的 **行业标准接口形态**：
+### 3.2 Chroma（向量库）
 
-```
-POST /v1/chat/completions
-{
-  "model": "qwen3:4b",
-  "messages": [
-    {"role": "system", "content": "..."},
-    {"role": "user", "content": "..."}
-  ]
-}
-```
+**场景：** PDF Chunk 向量化后做 Top-K 语义检索，需可持久化、可 Docker 化。
 
-| 优势 | 说明 |
-|------|------|
-| 统一 SDK | 一套 `openai` 客户端同时对接 Ollama、通义千问、OpenAI |
-| 切换成本低 | 修改 `base_url` + `api_key` 即可切换提供方 |
-| 生态兼容 | LangChain、LlamaIndex、Cursor MCP 等均以此为基础 |
-| 未来扩展 | Tool Calling、Streaming、Embeddings 均有对应标准端点 |
+| 候选 | 适合 | 不适合 |
+|------|------|--------|
+| FAISS | 本地极简实验 | 元数据/服务化弱 |
+| **Chroma** | 学习与中小原型、Python 友好 | 超大规模集群运维 |
+| Milvus / pgvector | 生产海量、强一致 | 对本阶段过重 |
 
-本项目在 `llm.py` 中封装 `chat()`，上层仅传入 `message` 字符串；后续扩展流式、工具调用时，仍可在同一客户端上演进。
+**选择理由：**
 
----
+- 嵌入式与 Server 双模式（本地 / Compose 已打通，Day22）
+- 与 Embedding、元数据（source/page）集成简单
+- 满足「可演示的企业知识库」而非亿级向量
 
-## 4. 当前方案（v0.2.0）
+**边界：** 数据量与 QPS 上去后，可迁移 pgvector/Milvus，检索接口保持 `search()` 抽象。
 
-### 4.1 模块职责
+### 3.3 Ollama + 通义（双模 LLM）
 
-| 模块 | 文件 | 职责 |
+**场景：** 开发要零/低成本试错；演示与生产要稳定、中文效果好。
+
+| 候选 | 适合 | 代价 |
 |------|------|------|
-| 配置层 | `app/core/config.py` | API、模型、RAG 全链路目录与参数 |
-| 契约层 | `app/models/schemas.py` | Pydantic 请求/响应模型 |
-| 推理层 | `app/core/llm.py` | OpenAI 客户端 + `chat()` |
-| 接口层 | `app/api/*.py` | REST：`/chat`、`/upload`、`/rag`、`/health` |
-| 解析层 | `app/rag/pdf_loader.py` | PDF → 按页 JSON（Day09） |
-| 切分层 | `app/rag/chunker.py` | 按页 Chunk → JSON（Day10） |
-| 向量层 | `app/rag/embedder.py` | Chunk → Embedding JSON（Day11） |
-| 存储层 | `app/rag/vector_store.py` | Chroma 入库 + Top-K 检索（Day12） |
-| 编排层 | `app/rag/rag_pipeline.py` | RAG 问答（Day13） |
+| **仅云端** | 效果稳 | 开发期 Token 费用、需网络与 Key |
+| **仅 Ollama** | 离线、免费 API 费 | 机器要求、效果/速度参差 |
+| **双模（本项目）** | 开发本地、演示可切通义 | 需维护一套 OpenAI 兼容封装 |
 
-### 4.2 核心能力
+**选择理由：**
 
-| 能力 | 入口 | 状态 |
-|------|------|------|
-| `POST /chat` | HTTP API | ✅ Day04 |
-| `POST /upload` | HTTP API | ✅ Day08 |
-| `parse_pdf()` | Python 函数 | ✅ Day09 |
-| `chunk_pdf()` | Python 函数 | ✅ Day10 |
-| `embed_chunks()` | Python 函数 | ✅ Day11 |
-| `index_chunks()` / `search()` | Python 函数 | ✅ Day12 |
-| `rag_answer()` / `POST /rag` | Python / HTTP | ✅ Day13 |
+- `OPENAI_BASE_URL` 切换，业务代码不改（`app/core/llm.py`）
+- Compose：默认读 `.env` 通义；`--profile local-llm` 启 Ollama
+- 符合「先本地验证，再云端交付」的 PM 节奏
 
-### 4.3 部署形态
+**边界：** 本地小模型能力有限；关键路径建议通义 `qwen-plus` 等，并用 Day25 看成本。
 
-- **本地**：`python -m uvicorn app.main:app --reload`
-- **容器**：`Dockerfile` 构建镜像，通过环境变量注入配置
+### 3.4 MCP（外部工具协议）
 
----
+**场景：** 让 Agent 读取项目文件等能力，且不希望为每个数据源写一套私有插件协议。
 
-## 5. 后续演进路线
+| 候选 | 适合 | 不适合 |
+|------|------|--------|
+| 自研 HTTP 插件 | 完全可控 | 生态割裂、重复造轮子 |
+| Function Calling 硬编码 | 简单工具 | 难跨产品复用 |
+| **MCP** | 标准 Tools/Resources、可插拔 Server | 生态仍在演进 |
 
-### 5.1 RAG（检索增强生成）— Sprint 2
+**选择理由：**
 
-**目标**：让 AI 基于私有知识库回答，减少幻觉。
+- 用标准 Client 接 Filesystem MCP（Day18/19），再 **bridge** 进现有 Tool Registry
+- FastAPI 仍是对外唯一 HTTP 入口；MCP 是 Agent 的工具提供层，不替代网关
+- 简历/面试可讲清「协议 vs 自研插件」的取舍
 
-```
-PDF 上传 → 解析(Day09✅) → 切分(Day10✅) → 向量(Day11✅) → 入库(Day12✅) → 检索问答(Day13✅)
-```
+**边界：** 必须限制 `MCP_FILESYSTEM_ROOT` 沙箱；容器默认 `MCP_ENABLED=false`（无 Node 时）。
 
-| 阶段 | Day | 状态 |
-|------|-----|------|
-| PDF 上传 | Day08 | ✅ |
-| PDF 解析 | Day09 | ✅ `data/parsed/*.json` |
-| Chunk 切分 | Day10 | ✅ `data/chunks/*.json` |
-| Embedding | Day11 | ✅ `data/vectors/*.json` |
-| ChromaDB | Day12 | ✅ `data/chroma/` + `search()` |
-| RAG Pipeline | Day13 | ✅ `POST /rag` + `rag_answer()` |
+### 3.5 其他（点到为止）
 
-**与现有架构的关系**：解析逻辑在 `app/rag/`，不污染 `upload.py`；Day13 在 `chat()` 前插入检索模块。
-
-### 5.2 Agent（工具调用与任务编排）
-
-**目标**：让 LLM 能调用外部工具（搜索、数据库、API），完成多步任务。
-
-```
-用户意图 → LLM 规划 → 选择 Tool → 执行 → 观察结果 → 循环直至完成
-```
-
-| 阶段 | 计划 |
+| 技术 | 作用 |
 |------|------|
-| Tool 定义 | 函数签名 + JSON Schema 描述 |
-| 调用协议 | OpenAI Function Calling / Tool Calling |
-| 编排框架 | 可选 LangGraph / 自研 ReAct 循环 |
-| API 扩展 | `POST /agent/run`，支持多轮工具调用 |
+| Nginx | 统一入口、静态资源、SSE 反代（Day23） |
+| Docker Compose | 一键拉起 api + chroma + 可选 ollama（Day22） |
+| React + Vite | 聊天 / 上传 / workflow / usage 展示（Day21） |
+| OpenAI Compatible API | 行业标准调用形态，降低供应商锁定 |
 
-**与现有架构的关系**：`llm.py` 扩展为支持 `tools` 参数；新增 `tools/` 目录存放可调用工具。
+---
 
-### 5.3 MCP（Model Context Protocol）
+## 4. 架构设计（摘要）
 
-**目标**：通过标准协议连接外部数据源与工具，实现「可插拔」能力扩展。
+权威结构图与部署拓扑见 **[architecture.md](architecture.md)**。此处仅保留与方案评审一致的主链路：
 
 ```
-FastAPI / Agent ── MCP Client ──► MCP Server（文件系统、数据库、GitHub…）
+Client → Nginx → FastAPI → Agent → RAG → Vector DB (Chroma) → LLM
+                              └─ Tool Registry / MCP / …
+                                    → Answer + sources + usage
 ```
 
-| 阶段 | 计划 |
+| 能力阶段 | 版本 | 要点 |
+|----------|------|------|
+| LLM + API | v0.1 | FastAPI、Ollama/通义 |
+| 企业 RAG | v0.2 | Upload → Chroma → `/rag` |
+| Enterprise Agent | v0.3 | Workflow、Memory、MCP、Web、SSE |
+| 工程化 | v0.4 → **v1.0** | Compose、Nginx、日志、Token、方案文档、README |
+
+---
+
+## 5. 风险与优化
+
+### 5.1 Token 成本
+
+| 项 | 说明 |
+|----|------|
+| **风险** | DAU 与上下文变长后，云端费用线性上升 |
+| **现象** | 月账单超预期；Memory/RAG 把 Prompt 撑大 |
+| **已有对策** | Day25：`usage`（prompt/completion/total）+ `cost_usd`；`GET /metrics/cost-estimate`；`scripts/estimate_cost.py` |
+| **优化建议** | 裁剪 Short Memory 轮数；RAG Top-K 与 chunk 控长；路由用小模型、总结用大模型；本地 Ollama 做开发 |
+
+**面试题口径（1000×20×3000）：**  
+日成本 ≈ 拆分 Input/Output 后按单价估算（见 Day25），不要只用「平均 Token × 一个模糊单价」。
+
+### 5.2 幻觉问题
+
+| 项 | 说明 |
+|----|------|
+| **风险** | 模型编造文档内容或页码，用户误信 |
+| **现象** | 无依据的「根据第 x 页」；知识库未命中仍强答 |
+| **已有对策** | RAG system prompt 要求基于参考资料；无命中返回明确提示；响应带 `sources` |
+| **优化建议** | 答案后处理校验引用；低分检索降权；关键场景人工抽检；评测集（后续） |
+
+### 5.3 Chunk 大小优化
+
+| 项 | 说明 |
+|----|------|
+| **现状** | 默认 `CHUNK_SIZE=500`，`CHUNK_OVERLAP=50`（可经 `.env` 调整） |
+| **过大** | 单块噪声多、易超上下文、检索「看起来相关其实稀释」 |
+| **过小** | 语义破碎、同一段落拆散、回答缺上下文 |
+| **调参建议** | 先看坏例再改：问答不准 → 略增 chunk 或 overlap；总 Token 高 → 减 size 或 Top-K；按标题/页边界切优于纯固定长度（后续可增强） |
+
+### 5.4 其他风险
+
+| 风险 | 对策 |
 |------|------|
-| 协议理解 | 掌握 MCP 的 Resources / Tools / Prompts 三类能力 |
-| Server 接入 | 对接文件、Git、Slack 等现成 MCP Server |
-| Client 集成 | 在 Agent 层通过 MCP Client 发现并调用工具 |
-| 自研 Server | 为项目知识库封装专属 MCP Server |
+| SSE 被 Nginx 缓冲，前端不「逐字」 | `proxy_buffering off`（Day23） |
+| 密钥进 Git | `.gitignore` + `.env.example` |
+| MCP 读盘越权 | `MCP_FILESYSTEM_ROOT` 沙箱；默认关闭 |
+| 向量与模型漂移 | 换 Embedding 模型需重建索引 |
+| Docker Hub 拉取失败 | 镜像加速 / 重试；开发可用本地 uvicorn |
 
-**与现有架构的关系**：MCP 作为 Agent 的**工具提供层**，不替代 FastAPI 网关；FastAPI 仍是对外 HTTP 入口，内部 Agent 通过 MCP 获取上下文与执行能力。
+---
 
-### 5.4 演进路线图
+## 6. 演进路线
 
 ```
-Phase 1（v0.1）   LLM 单轮对话 + HTTP API + Docker
-      ↓
-Phase 2（v0.2）   企业知识库 RAG
-      Day08✅ 上传 → … → Day13✅ RAG 问答 → Day14 Release
-      ↓
-Phase 3           Agent + MCP
+v0.1  LLM + FastAPI + Docker
+  ↓
+v0.2  企业 RAG（PDF → Chroma → 引用）
+  ↓
+v0.3  Agent + Memory + MCP + Web + SSE
+  ↓
+v0.4    Compose + Nginx + 日志 + Token + 方案/架构 + README
+  ↓
+v1.0    工程与文档收官（当前）   ← 你在这里
+  ↓
+（可选）Day28~30 简历 / 面试 / 投递 — 暂不设计
 ```
 
----
+**可选下一阶段（未承诺）：**
 
-## 6. 风险与权衡
-
-| 风险 | 缓解措施 |
-|------|----------|
-| 本地模型推理慢 | 开发用 Ollama，生产切换云端；Prompt 加 `/no_think` 加速 |
-| 单轮对话无上下文 | Phase 2 前引入 `session_id` 与消息历史 |
-| 接口膨胀 | 保持 `app.py` 精简，复杂逻辑下沉 `src/` |
-| 供应商锁定 | OpenAI Compatible API 抽象层，配置驱动切换 |
+- RAG 评测集与回归  
+- 多租户 / API Key  
+- pgvector 或托管向量服务  
+- OpenTelemetry 完整 Trace  
+- Day28~30 求职材料（按需）
 
 ---
 
-## 7. 相关文档
+## 7. 面试口述提纲（5~10 分钟）
 
-- [api.md](api.md) — HTTP 接口说明
-- [roadmap.md](roadmap.md) — 学习进度与待办
-- [CODEMAP.md](CODEMAP.md) — 代码地图（按 Day 索引）
-- [development-standards.md](development-standards.md) — 项目开发规范
-- [Day01.md](Day01.md) ~ [Day13.md](Day13.md) — 每日工作日志
+1. **背景**：内部 PDF 问答 + 工具型助手，不能只靠公网模型  
+2. **为何 RAG**：可更新、可引用、比微调便宜；对比塞全文与纯 LLM  
+3. **选型**：FastAPI 网关；Chroma 向量；Ollama/通义双模；MCP 接外部工具  
+4. **架构**：Client → Nginx → FastAPI → Agent → RAG → Chroma → LLM  
+5. **风险**：成本用 Token 计量；幻觉靠 sources；Chunk 可调参  
 
 ---
 
-*文档版本：v0.2.0 | 最后更新：2026-07*
+## 8. 相关文档
+
+| 文档 | 用途 |
+|------|------|
+| [architecture.md](architecture.md) | 结构、链路、部署 |
+| [CODEMAP.md](CODEMAP.md) | 文件级 Day 索引 |
+| [roadmap.md](roadmap.md) | 进度与 Sprint |
+| [Day13.md](Day13.md) | RAG 细节 |
+| [Day22.md](Day22.md) ~ [Day27.md](Day27.md) | Sprint 4 工程日志 |
+| [api.md](api.md) | 接口说明 |
+| [CHANGELOG.md](CHANGELOG.md) | 版本记录 |
+| [README.md](../README.md) | 快速开始 · v1.0 成果 |
+
+---
+
+*文档版本：v1.0.0 | 30 天收官*

@@ -1,5 +1,6 @@
 # Day13 — RAG Pipeline（检索增强生成）
 # Day14 — 分段耗时日志、无结果 WARNING
+# Day25 — 返回 LLM usage
 #
 # 功能：Question → Search → Prompt → LLM → Answer + sources
 # 逻辑：
@@ -66,7 +67,7 @@ def _format_duration(seconds: float) -> str:
 # @brief: RAG 问答门面，检索 → Prompt → LLM → 带来源的回答
 # @param: question: 用户问题
 # @param: top_k: 检索条数，默认 SEARCH_TOP_K
-# @return: { question, answer, sources }
+# @return: { question, answer, sources, usage }
 def rag_answer(question: str, top_k: int = SEARCH_TOP_K) -> dict:
     total_start = time.perf_counter()
 
@@ -86,12 +87,14 @@ def rag_answer(question: str, top_k: int = SEARCH_TOP_K) -> dict:
             "question": question,
             "answer": "知识库中未找到相关内容。",
             "sources": [],
+            "usage": None,
         }
 
     prompt = build_rag_prompt(question, chunks)
 
     llm_start = time.perf_counter()
-    answer = chat(prompt, system_prompt=RAG_SYSTEM_PROMPT)
+    result = chat(prompt, system_prompt=RAG_SYSTEM_PROMPT)
+    answer = result.content
     llm_elapsed = time.perf_counter() - llm_start
     logger.info(
         "rag llm  duration=%s  model=%s",
@@ -113,4 +116,5 @@ def rag_answer(question: str, top_k: int = SEARCH_TOP_K) -> dict:
         "question": question,
         "answer": answer,
         "sources": sources,
+        "usage": result.usage.to_dict() if result.usage else None,
     }

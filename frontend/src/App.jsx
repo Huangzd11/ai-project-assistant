@@ -10,13 +10,29 @@ function loadSessionId() {
   return id;
 }
 
-function MetaBlock({ workflow, plan, toolCalls, sources }) {
-  if (!workflow && !plan?.length && !toolCalls?.length && !sources?.length) {
+function MetaBlock({ workflow, plan, toolCalls, sources, usage }) {
+  if (
+    !workflow &&
+    !plan?.length &&
+    !toolCalls?.length &&
+    !sources?.length &&
+    !usage
+  ) {
     return null;
   }
 
   return (
     <div className="meta-block">
+      {usage && (
+        <div className="meta-section">
+          <div className="meta-title">本次请求</div>
+          <div className="usage-line">
+            Input {usage.prompt_tokens} · Output {usage.completion_tokens} · Cost $
+            {Number(usage.cost_usd).toFixed(4)}
+          </div>
+        </div>
+      )}
+
       {workflow && (
         <div className="meta-section">
           <div className="meta-title">工作流</div>
@@ -127,6 +143,7 @@ export default function App() {
           plan: [],
           toolCalls: [],
           sources: [],
+          usage: null,
           streaming: true,
         },
       ];
@@ -162,6 +179,13 @@ export default function App() {
             if (msg) msg.content += event.content;
             return next;
           });
+        } else if (event.type === "usage") {
+          setMessages((prev) => {
+            const next = [...prev];
+            const msg = next[assistantIdx.current];
+            if (msg) msg.usage = event.usage;
+            return next;
+          });
         } else if (event.type === "done") {
           setMessages((prev) => {
             const next = [...prev];
@@ -172,6 +196,7 @@ export default function App() {
               msg.plan = event.plan;
               msg.toolCalls = event.tool_calls;
               msg.sources = event.sources;
+              if (event.usage) msg.usage = event.usage;
               msg.streaming = false;
             }
             return next;
@@ -303,6 +328,7 @@ export default function App() {
                     plan={msg.plan}
                     toolCalls={msg.toolCalls}
                     sources={msg.sources}
+                    usage={msg.usage}
                   />
                 )}
               </div>

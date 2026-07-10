@@ -227,6 +227,12 @@ body {
   margin-top: 0.25rem;
 }
 
+.usage-line {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
 .chip {
   display: inline-block;
   padding: 0.15rem 0.5rem;

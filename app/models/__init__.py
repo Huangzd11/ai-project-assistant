@@ -5,12 +5,14 @@ from app.models.schemas import (
     AgentWorkflowInfo,
     ChatRequest,
     ChatResponse,
+    CostEstimateResponse,
     HealthResponse,
     ModelInfo,
     RagRequest,
     RagResponse,
     RagSource,
     UploadResponse,
+    UsageInfo,
 )
 
 __all__ = [
@@ -20,10 +22,12 @@ __all__ = [
     "AgentWorkflowInfo",
     "ChatRequest",
     "ChatResponse",
+    "CostEstimateResponse",
     "HealthResponse",
     "ModelInfo",
     "RagRequest",
     "RagResponse",
     "RagSource",
     "UploadResponse",
+    "UsageInfo",
 ]

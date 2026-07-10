@@ -14,7 +14,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api import agent, chat, health, mcp, rag, upload
+from app.api import agent, chat, health, mcp, metrics, rag, upload
 from app.core.config import APP_VERSION
 from app.core.exceptions import AppError
 from app.core.logger import logger
@@ -52,9 +52,8 @@ app = FastAPI(
     title="AI Project Assistant",
     version=APP_VERSION,
     description=(
-        "企业 AI Agent API（v0.4.0-beta）。"
-        "Workflow 意图路由、Tool Registry、会话 Memory、Docker Compose、"
-        "Nginx 反代、结构化日志、企业 RAG。"
+        "企业 AI Agent API（v1.0.0）。"
+        "LLM · RAG · Agent · MCP · Docker Compose · Nginx · Token/成本 · 方案文档。"
     ),
     lifespan=lifespan,
 )
@@ -84,6 +83,7 @@ app.include_router(upload.router)
 app.include_router(rag.router)
 app.include_router(agent.router)
 app.include_router(mcp.router)
+app.include_router(metrics.router)
 
 
 # @brief: 处理 AppError

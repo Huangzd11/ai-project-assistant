@@ -1,5 +1,6 @@
 # Day13 — RAG 知识库问答接口
 # Day14 — 引用来源日志、Swagger 描述完善
+# Day25 — 返回 usage
 #
 # 功能：暴露 POST /rag 端点
 # 逻辑：接收问题 → rag_answer() → 返回答案与来源
@@ -7,7 +8,7 @@
 from fastapi import APIRouter
 
 from app.core.logger import logger
-from app.models import RagRequest, RagResponse, RagSource
+from app.models import RagRequest, RagResponse, RagSource, UsageInfo
 from app.rag.rag_pipeline import rag_answer
 
 router = APIRouter(tags=["rag"])
@@ -30,8 +31,10 @@ def rag_endpoint(req: RagRequest):
     logger.info("rag request  question=%s", req.question)
     result = rag_answer(req.question)
     sources = [RagSource(**s) for s in result["sources"]]
+    usage = UsageInfo(**result["usage"]) if result.get("usage") else None
     return RagResponse(
         question=result["question"],
         answer=result["answer"],
         sources=sources,
+        usage=usage,
     )

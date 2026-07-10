@@ -1,5 +1,17 @@
 # Roadmap
 
+> **当前版本：v1.0.0** · 工程与文档已收官 · Day28~30（简历/面试/投递）可选、暂不设计
+
+## 最终成果对照（v1.0）
+
+| 类别 | 能力 | 状态 |
+|------|------|------|
+| 技术 | LLM · Prompt · FastAPI · Docker · RAG · Embedding · Vector DB · Agent · MCP | ✅ |
+| 项目 | 方案设计 · 技术选型 · 成本评估 · 风险分析 · 项目交付 | ✅ |
+| 产出 | GitHub 项目 · 架构图 · README | ✅ |
+
+---
+
 ## Sprint 1（v0.1.x）— 基础链路
 
 - [x] Day01 LLM Basic
@@ -116,7 +128,7 @@ AI Project Assistant
 上传 PDF → 提问 → RAG 检索 → Agent 调用工具 → 返回答案 + 引用来源
 ```
 
-浏览器端已具备聊天、上传、workflow / sources 展示与 SSE 流式输出（Day21_1 / Day21_2）；Sprint 4 重点是**工程化补齐**与**求职交付**。
+浏览器端已具备聊天、上传、workflow / sources 展示与 SSE 流式输出（Day21_1 / Day21_2）；Sprint 4 已完成**工程化补齐**与**作品集包装**，工程版本定为 **v1.0.0**。
 
 ### Backlog
 
@@ -125,31 +137,33 @@ AI Project Assistant
 | Day22 | Docker Compose | 一键启动（API + Chroma + Ollama） | v0.4-alpha ✅ |
 | Day23 | Nginx + Reverse Proxy | 部署能力（反代、静态资源、生产入口） | v0.4-alpha2 ✅ |
 | Day24 | 日志 + 配置管理 | 工程化（结构化日志、环境分层） | v0.4-beta ✅ |
-| Day25 | Token / 成本统计 | AI PM 能力（用量可观测、成本估算） | v0.4-beta2 |
-| Day26 | 架构设计文档 | Solution 能力（方案文档、架构图） | v0.4-rc |
-| Day27 | README + GitHub 包装 | 作品集（徽章、截图、Quick Start） | v0.4 |
-| Day28 | 简历优化 | 投递材料（项目描述、技术关键词） | — |
-| Day29 | AI 创业公司模拟面试 | 面试准备（项目深挖 Q&A） | — |
-| Day30 | 项目发布 + 投递 | 冲刺（tag v1.0、投递） | **v1.0** |
+| Day25 | Token / 成本统计 | AI PM 能力（用量可观测、成本估算） | v0.4-beta2 ✅ |
+| Day26 | 架构设计文档 | Solution 能力（方案文档、架构图） | v0.4-rc ✅ |
+| Day27 | README + GitHub 包装 | 作品集（徽章、Quick Start） | v0.4 ✅ |
+| — | **工程收官** | 版本对齐、成果清单 | **v1.0.0** ✅ |
+| Day28 | 简历优化 | 投递材料（可选，暂不设计） | ⏸ |
+| Day29 | AI 创业公司模拟面试 | 面试准备（可选，暂不设计） | ⏸ |
+| Day30 | 项目发布 + 投递 | tag / 投递（可选，暂不设计） | ⏸ |
 
 - [x] Day22 Docker Compose — `feat(docker-compose)` — v0.4-alpha — [Day22.md](Day22.md)
 - [x] Day23 Nginx 反代 — `feat(nginx)` — v0.4-alpha2 — [Day23.md](Day23.md)
 - [x] Day24 日志与配置 — `feat(logging,config)` — v0.4-beta — [Day24.md](Day24.md)
-- [ ] Day25 Token / 成本 — `feat(token-metrics)` — v0.4-beta2
-- [ ] Day26 架构文档 — `docs(architecture)` — v0.4-rc
-- [ ] Day27 README / GitHub — `docs(readme,portfolio)` — v0.4
-- [ ] Day28 简历 — 投递材料
-- [ ] Day29 模拟面试 — 面试准备
-- [ ] Day30 发布 + 投递 — `release(v1.0)` — **v1.0**
+- [x] Day25 Token / 成本 — `feat(token-metrics)` — v0.4-beta2 — [Day25.md](Day25.md)
+- [x] Day26 架构文档 — `docs(architecture)` — v0.4-rc — [Day26.md](Day26.md) · [architecture.md](architecture.md) · [solution-design.md](solution-design.md)
+- [x] Day27 README / GitHub — `docs(readme,portfolio)` — v0.4 — [Day27.md](Day27.md) · [README.md](../README.md)
+- [x] **v1.0.0 Release** — 工程与文档收官 — [CHANGELOG.md](CHANGELOG.md)
+- [ ] Day28 简历 — 可选，暂不设计
+- [ ] Day29 模拟面试 — 可选，暂不设计
+- [ ] Day30 发布投递 — 可选，暂不设计
 
 ### Sprint 4 与 Sprint 3 的分工
 
-| Sprint 3（已完成） | Sprint 4（进行中） |
-|-------------------|-------------------|
+| Sprint 3（已完成） | Sprint 4（已完成 → v1.0） |
+|-------------------|---------------------------|
 | Agent / Workflow / Tool / MCP / RAG 核心能力 | Compose / Nginx / 部署 |
-| Web UI + SSE 流式 | 日志、监控、Token 成本 |
-| 实时 Tool（天气 / 新闻 / 体育） | 架构文档、README 包装 |
-| v0.3.x 功能交付 | 简历、面试、v1.0 发布 |
+| Web UI + SSE 流式 | 日志、Token 成本 |
+| 实时 Tool（天气 / 新闻 / 体育） | 架构文档、README 包装 ✅ |
+| v0.3.x 功能交付 | **v1.0.0 工程收官** |
 
 ---
 
@@ -166,8 +180,12 @@ AI Project Assistant
 | docker-compose | API + Chroma + Ollama 一键编排 | ✅ Day22 |
 | Nginx 反代 | 生产部署入口 | ✅ Day23 |
 | 结构化日志 + 配置分层 | 工程化运维 | ✅ Day24 |
-| Token / 成本统计 | AI PM 可观测 | 📋 Day25 |
-| CI/CD | 自动化测试与镜像构建 | 待做 |
+| Token / 成本统计 | AI PM 可观测 | ✅ Day25 |
+| 架构 / 方案文档 | Solution 交付 | ✅ Day26 |
+| README / GitHub 包装 | 作品集门面 | ✅ Day27 |
+| **v1.0.0 Release** | 30 天工程收官 | ✅ |
+| CI/CD | 自动化测试与镜像构建 | 可选 |
+| Day28~30 | 简历 / 面试 / 投递 | ⏸ 暂不设计 |
 
 ---
 

@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-APP_VERSION = "0.4.0-beta"
+APP_VERSION = "1.0.0"
 
 # Day02/Day03 — OpenAI 兼容 API（云端通义千问 或 本地 Ollama）
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "ollama")
@@ -111,3 +111,7 @@ SPORTS_RSS_FEEDS = [
     for url in os.getenv("SPORTS_RSS_FEEDS", _default_sports_feeds).split(",")
     if url.strip()
 ]
+
+# Day25 — Token / 成本（单价表路径与货币，详见 config/pricing.yaml）
+PRICING_FILE = os.getenv("PRICING_FILE", "config/pricing.yaml")
+COST_CURRENCY = os.getenv("COST_CURRENCY", "USD")

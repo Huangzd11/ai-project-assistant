@@ -12,6 +12,7 @@ export default defineConfig({
       "/chat": "http://127.0.0.1:8000",
       "/rag": "http://127.0.0.1:8000",
       "/mcp": "http://127.0.0.1:8000",
+      "/metrics": "http://127.0.0.1:8000",
     },
   },
 });
