@@ -1,14 +1,45 @@
 # Roadmap
 
-> **当前版本：v1.0.0** · 工程与文档已收官 · Day28~30（简历/面试/投递）可选、暂不设计
+> **第一个月（Day01~30）**：AI Project Assistant **v1.0.0** 已收官 · 工程与文档完成  
+> **第二个月（Day31~60）**：升维阶段 · 补原理 / 生产架构 / Solution / 面试表达 · **以理解为主，不大写新功能**
 
-## 最终成果对照（v1.0）
+---
+
+## 两个月总览
+
+| 阶段 | 天数 | 定位 | 状态 |
+|------|------|------|------|
+| 第一个月 | Day01~30 | **AI Application Engineer** — 动手做项目 | ✅ v1.0.0 |
+| 第二个月 | Day31~60 | **Technical PM → Solution Architect** — 懂原理、讲方案、过面试 | 📋 规划中 |
+
+### 能力进阶路径（第二个月目标）
+
+```
+AI Application Engineer        ← 第一个月（Day01~30 · 已完成）
+        ↓
+AI Technical PM                ← Sprint 5~6（原理 + 生产架构）
+        ↓
+AI Solution Architect          ← Sprint 7~8（方案设计 + 面试表达）
+```
+
+---
+
+## 最终成果对照（第一个月 · v1.0）
 
 | 类别 | 能力 | 状态 |
 |------|------|------|
 | 技术 | LLM · Prompt · FastAPI · Docker · RAG · Embedding · Vector DB · Agent · MCP | ✅ |
 | 项目 | 方案设计 · 技术选型 · 成本评估 · 风险分析 · 项目交付 | ✅ |
-| 产出 | GitHub 项目 · 架构图 · README | ✅ |
+| 产出 | GitHub 项目 · 架构图 · README · mindmap | ✅ |
+
+### 第二个月目标成果（Day60 对照）
+
+| 类别 | 能力 | 状态 |
+|------|------|------|
+| 原理 | Transformer / 推理 / 幻觉 / RAG vs 微调选型 | 📋 |
+| 生产 | 高可用 / 缓存限流 / 观测 / 安全（对照 v1.0 差距） | 📋 |
+| 方案 | 完整 Solution 叙事 · 架构图 · 评审话术 | 📋 |
+| 求职 | 简历 · STAR · 模拟面试 · Demo 脚本 | 📋 |
 
 ---
 
@@ -141,9 +172,7 @@ AI Project Assistant
 | Day26 | 架构设计文档 | Solution 能力（方案文档、架构图） | v0.4-rc ✅ |
 | Day27 | README + GitHub 包装 | 作品集（徽章、Quick Start） | v0.4 ✅ |
 | — | **工程收官** | 版本对齐、成果清单 | **v1.0.0** ✅ |
-| Day28 | 简历优化 | 投递材料（可选，暂不设计） | ⏸ |
-| Day29 | AI 创业公司模拟面试 | 面试准备（可选，暂不设计） | ⏸ |
-| Day30 | 项目发布 + 投递 | tag / 投递（可选，暂不设计） | ⏸ |
+| Day28~30 | 简历 / 面试 / 投递（可选） | 并入第二个月 Sprint 8 | ⏸ → Sprint 8 |
 
 - [x] Day22 Docker Compose — `feat(docker-compose)` — v0.4-alpha — [Day22.md](Day22.md)
 - [x] Day23 Nginx 反代 — `feat(nginx)` — v0.4-alpha2 — [Day23.md](Day23.md)
@@ -152,9 +181,6 @@ AI Project Assistant
 - [x] Day26 架构文档 — `docs(architecture)` — v0.4-rc — [Day26.md](Day26.md) · [architecture.md](architecture.md) · [solution-design.md](solution-design.md)
 - [x] Day27 README / GitHub — `docs(readme,portfolio)` — v0.4 — [Day27.md](Day27.md) · [README.md](../README.md)
 - [x] **v1.0.0 Release** — 工程与文档收官 — [CHANGELOG.md](CHANGELOG.md)
-- [ ] Day28 简历 — 可选，暂不设计
-- [ ] Day29 模拟面试 — 可选，暂不设计
-- [ ] Day30 发布投递 — 可选，暂不设计
 
 ### Sprint 4 与 Sprint 3 的分工
 
@@ -167,7 +193,144 @@ AI Project Assistant
 
 ---
 
-## 工程化改进
+## 第二个月（Day31~60）— 升维：原理 · 生产 · 方案 · 面试
+
+> **主题：** 在 **AI Project Assistant v1.0** 之上升维，不另起炉灶做大项目。  
+> **方式：** 以「理解 + 文档 + 表达」为主；必要时做小实验或文档增补，**默认不大规模写新功能**。  
+> **载体：** 仍以本仓库为案例，对照 Day01~27 已实现能力做原理解读与方案深化。
+
+### 四个 Sprint 总览
+
+| Sprint | 主题 | 核心目标 | 天数 |
+|--------|------|----------|------|
+| Sprint 5 | LLM 基础与推理机制 | **补基础** — 从「会调 API」到「懂模型在干什么」 | Day31~38 |
+| Sprint 6 | 生产级 AI 架构 | **工程化升级** — 从「本地能跑」到「想象线上怎么扛」 | Day39~45 |
+| Sprint 7 | AI Solution 设计 | **架构与方案** — 从「有项目」到「能独立出方案、过评审」 | Day46~52 |
+| Sprint 8 | 面试与商业化表达 | **跳槽冲刺** — 从「会做」到「能讲、能卖、能过面」 | Day53~60 |
+
+### 第一个月 vs 第二个月
+
+| 维度 | 第一个月（Day01~30） | 第二个月（Day31~60） |
+|------|----------------------|----------------------|
+| 主线 | 实现 AI Project Assistant | 解读与升维同一项目 |
+| 产出 | 代码 · 部署 · Demo · README | 原理笔记 · 方案文档 · 面试材料 |
+| 角色 | Application Engineer | Technical PM / Solution Architect |
+| Day 文档 | `docs/DayXX.md` + 实现 | `docs/DayXX.md` 以学习笔记为主（待写） |
+| 思维导图 | [mindmap/Day01~27](../mindmap/README.md) | mindmap/Day31~60（待生成） |
+
+---
+
+## Sprint 5（Day31~38）— LLM 基础与推理机制
+
+> **核心目标：补基础** — 第二个月**最重要的一周（Day31~37）**；目标：**能和算法工程师正常沟通**。
+
+| Day | 主题 | 输出（设计） | 状态 |
+|-----|------|--------------|------|
+| Day31 | Transformer 主链路 | Token→Embedding→Attention→FFN→Next Token；口述工作流程 | 📋 — [Day31.md](Day31.md) |
+| Day32 | 预训练 / 微调 / Prompt / RAG 选型 | 对比表：何时 RAG、何时微调、何时纯 Prompt | 📋 |
+| Day33 | Tokenization 与上下文窗口 | 笔记：Token 计费、中文切分、上下文截断策略 | 📋 |
+| Day34 | 推理参数与生成控制 | 笔记：Temperature / Top-p / 停止条件 / 流式 | 📋 |
+| Day35 | 幻觉成因与缓解 | 对照本项目：RAG 引用、拒答、Workflow 边界 | 📋 |
+| Day36 | Embedding 与向量检索原理 | 升维 Day11~12：相似度、维度、召回与精度 | 📋 |
+| Day37 | Agent 原理（ReAct / Tool / Planning） | 对照 Day15~20：规则 Planner vs LLM 自主规划 | 📋 |
+| Day38 | Sprint 5 Review | 原理知识串联 + 自测 Q&A 清单 | 📋 |
+
+**Backlog：**
+
+- [ ] Day31 Transformer — [Day31.md](Day31.md)
+- [ ] Day32 选型对比（RAG vs 微调 vs Prompt）
+- [ ] Day33 Token 与上下文
+- [ ] Day34 推理参数
+- [ ] Day35 幻觉与缓解
+- [ ] Day36 Embedding 原理升维
+- [ ] Day37 Agent 原理
+- [ ] Day38 Sprint 5 Review
+
+---
+
+## Sprint 6（Day39~45）— 生产级 AI 架构
+
+> **核心目标：工程化升级** — 对照 v1.0 现状，补齐「若上生产还缺什么」的认知。
+
+| Day | 主题 | 输出（设计） | 状态 |
+|-----|------|--------------|------|
+| Day39 | 生产架构全景 | 分层图：入口 / 应用 / 向量库 / 模型 / 观测 | 📋 |
+| Day40 | 高可用与扩缩容 | 笔记：多实例、健康检查、Compose → K8s 想象 | 📋 |
+| Day41 | 缓存 / 限流 / 降级 | 笔记：Embedding 缓存、API 限流、LLM 降级策略 | 📋 |
+| Day42 | 向量库生产选型 | 对照：Chroma embedded / server / 托管服务 | 📋 |
+| Day43 | 观测体系 | 衔接 Day24：日志 / 指标 / Trace / 告警 | 📋 |
+| Day44 | 安全与合规 | 密钥、MCP 沙箱、Prompt 注入、上传校验 | 📋 |
+| Day45 | Sprint 6 Review | 「v1.0 → 生产 gap 清单」 | 📋 |
+
+**Backlog：**
+
+- [ ] Day39 生产架构全景
+- [ ] Day40 高可用与扩缩容
+- [ ] Day41 缓存 / 限流 / 降级
+- [ ] Day42 向量库生产选型
+- [ ] Day43 观测体系
+- [ ] Day44 安全与合规
+- [ ] Day45 Sprint 6 Review
+
+---
+
+## Sprint 7（Day46~52）— AI Solution 设计
+
+> **核心目标：架构与方案** — 深化 Day26，能独立交付 Solution 级文档。
+
+| Day | 主题 | 输出（设计） | 状态 |
+|-----|------|--------------|------|
+| Day46 | Solution 方法论 | 模板：背景 → 目标 → 方案 → 选型 → 风险 → 里程碑 | 📋 |
+| Day47 | 企业知识库方案（案例深拆） | 以 AI Project Assistant 写完整 Solution 叙事 | 📋 |
+| Day48 | 技术选型与对比表 | 文档：FastAPI / Chroma / Ollama / MCP 备选与权衡 | 📋 |
+| Day49 | 非功能需求 | 成本（Day25）、SLA、合规、可维护性 | 📋 |
+| Day50 | 架构图绘制 | C4 / 部署图 / 数据流（升级 architecture.md） | 📋 |
+| Day51 | 方案评审模拟 | 模拟 Q&A：为什么不用 X、风险怎么控 | 📋 |
+| Day52 | Sprint 7 Review | Solution 文档定稿 checklist | 📋 |
+
+**Backlog：**
+
+- [ ] Day46 Solution 方法论
+- [ ] Day47 企业知识库方案深拆
+- [ ] Day48 技术选型对比表
+- [ ] Day49 非功能需求
+- [ ] Day50 架构图升级
+- [ ] Day51 方案评审模拟
+- [ ] Day52 Sprint 7 Review
+
+**已有基础（第一个月）：** [Day26.md](Day26.md) · [architecture.md](architecture.md) · [solution-design.md](solution-design.md)
+
+---
+
+## Sprint 8（Day53~60）— 面试与商业化表达
+
+> **核心目标：跳槽冲刺** — 把 60 天学习打包成可投递、可面试的叙事。（承接原 Day28~30 可选内容）
+
+| Day | 主题 | 输出（设计） | 状态 |
+|-----|------|--------------|------|
+| Day53 | 简历项目描述 | 量化亮点：v1.0、Compose、RAG、Agent、成本可观测 | 📋 |
+| Day54 | STAR 与 Demo 脚本 | 30 秒 / 3 分钟 / 10 分钟三版演示稿 | 📋 |
+| Day55 | 技术深挖 Q&A（RAG / Agent / MCP） | 自测题 + 参考回答 | 📋 |
+| Day56 | PM / 架构类面试题 | 成本估算、选型、风险、迭代路线 | 📋 |
+| Day57 | 模拟面试（技术向） | 录音/自问自答一轮 | 📋 |
+| Day58 | 模拟面试（Solution / PM 向） | 方案讲解 + 白板架构 | 📋 |
+| Day59 | 投递与作品集收口 | GitHub / README / 链接清单 | 📋 |
+| Day60 | 60 天总复盘 | 能力对照表 + 下一步学习路线 | 📋 |
+
+**Backlog：**
+
+- [ ] Day53 简历项目描述
+- [ ] Day54 STAR 与 Demo 脚本
+- [ ] Day55 技术深挖 Q&A
+- [ ] Day56 PM / 架构面试题
+- [ ] Day57 模拟面试（技术）
+- [ ] Day58 模拟面试（Solution）
+- [ ] Day59 投递收口
+- [ ] Day60 60 天总复盘
+
+---
+
+## 工程化改进（全周期）
 
 | 项 | 说明 | 状态 |
 |----|------|------|
@@ -184,8 +347,10 @@ AI Project Assistant
 | 架构 / 方案文档 | Solution 交付 | ✅ Day26 |
 | README / GitHub 包装 | 作品集门面 | ✅ Day27 |
 | **v1.0.0 Release** | 30 天工程收官 | ✅ |
+| 学习思维导图 | [mindmap/Day01~27](../mindmap/README.md) | ✅ |
 | CI/CD | 自动化测试与镜像构建 | 可选 |
-| Day28~30 | 简历 / 面试 / 投递 | ⏸ 暂不设计 |
+| **第二个月 Day31~60** | 原理 / 生产 / 方案 / 面试 | 📋 规划中 |
+| mindmap Day31~60 | 第二个月思维导图 | 📋 待生成 |
 
 ---
 

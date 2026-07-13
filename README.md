@@ -1,9 +1,9 @@
 # AI Project Assistant
 
-[![Version](https://img.shields.io/badge/version-v1.0.0-blue)](docs/CHANGELOG.md)
-[![Python](https://img.shields.io/badge/python-3.10+-green)](requirements.txt)
-[![FastAPI](https://img.shields.io/badge/FastAPI-async-009688)](https://fastapi.tiangolo.com/)
-[![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
+[Version](docs/CHANGELOG.md)
+[Python](requirements.txt)
+[FastAPI](https://fastapi.tiangolo.com/)
+[License](LICENSE)
 
 **v1.0** · 30 天 AI 技术项目经理实战收官作品。
 
@@ -29,72 +29,96 @@
 
 ---
 
+
+
 ## 最终成果（30 天）
+
+
 
 ### 技术能力
 
-| 能力 | 本项目落点 |
-|------|------------|
-| **LLM** | OpenAI 兼容 · Ollama / 通义双模 |
-| **Prompt** | System / RAG / Agent 总结提示词 |
-| **FastAPI** | REST + SSE + Swagger |
-| **Docker** | Dockerfile + Compose 一键栈 |
-| **RAG** | 检索增强 + `sources` 溯源 |
-| **Embedding** | bge-small / 通义 Embedding |
-| **Vector DB** | Chroma（embedded / server） |
-| **Agent** | Workflow · Tool Registry · Memory |
-| **MCP** | Filesystem 等外部工具桥接 |
+
+| 能力            | 本项目落点                             |
+| ------------- | --------------------------------- |
+| **LLM**       | OpenAI 兼容 · Ollama / 通义双模         |
+| **Prompt**    | System / RAG / Agent 总结提示词        |
+| **FastAPI**   | REST + SSE + Swagger              |
+| **Docker**    | Dockerfile + Compose 一键栈          |
+| **RAG**       | 检索增强 + `sources` 溯源               |
+| **Embedding** | bge-small / 通义 Embedding          |
+| **Vector DB** | Chroma（embedded / server）         |
+| **Agent**     | Workflow · Tool Registry · Memory |
+| **MCP**       | Filesystem 等外部工具桥接                |
+
+
+
 
 ### 项目能力
 
-| 能力 | 本项目落点 |
-|------|------------|
+
+| 能力       | 本项目落点                                         |
+| -------- | --------------------------------------------- |
 | **方案设计** | [solution-design.md](docs/solution-design.md) |
-| **技术选型** | FastAPI / Chroma / Ollama / MCP 对比与边界 |
-| **成本评估** | Token usage + `/metrics/cost-estimate` |
-| **风险分析** | 幻觉 · Chunk · SSE · 密钥 · MCP 沙箱 |
-| **项目交付** | Compose · Nginx · 日志 · README · LICENSE |
+| **技术选型** | FastAPI / Chroma / Ollama / MCP 对比与边界         |
+| **成本评估** | Token usage + `/metrics/cost-estimate`        |
+| **风险分析** | 幻觉 · Chunk · SSE · 密钥 · MCP 沙箱                |
+| **项目交付** | Compose · Nginx · 日志 · README · LICENSE       |
+
+
+
 
 ### 输出成果
 
-| 产出 | 路径 |
-|------|------|
-| **GitHub 项目** | 本仓库 + MIT |
-| **架构图** | [architecture.md](docs/architecture.md)（README 内嵌摘要） |
-| **README** | 本文件（Quick Start · 结构 · Roadmap） |
+
+| 产出            | 路径                                                   |
+| ------------- | ---------------------------------------------------- |
+| **GitHub 项目** | 本仓库 + MIT                                            |
+| **架构图**       | [architecture.md](docs/architecture.md)（README 内嵌摘要） |
+| **README**    | 本文件（Quick Start · 结构 · Roadmap）                      |
+
 
 > Day28~30（简历 / 模拟面试 / 投递）暂不展开；工程与文档已按 **v1.0** 收官。
 
 ---
 
+
+
 ## 项目介绍
 
 把企业内部 PDF、项目文件与实时工具接到统一 Agent 入口：
 
-| 你问 | 系统做什么 |
-|------|------------|
-| 「总结 test.pdf」 | Workflow → RAG → 带 `sources` 的回答 |
-| 「README 写了什么」 | MCP Filesystem（可选） |
-| 「北京天气」 | 天气 Tool |
-| 「我是项目经理」→「我是谁」 | `session_id` Memory |
+
+| 你问             | 系统做什么                            |
+| -------------- | -------------------------------- |
+| 「总结 test.pdf」  | Workflow → RAG → 带 `sources` 的回答 |
+| 「README 写了什么」  | MCP Filesystem（可选）               |
+| 「北京天气」         | 天气 Tool                          |
+| 「我是项目经理」→「我是谁」 | `session_id` Memory              |
+
 
 **方案文档：** [为什么这样做](docs/solution-design.md) · [系统长什么样](docs/architecture.md)
 
 ---
 
+
+
 ## 功能亮点
 
-| 能力 | 说明 |
-|------|------|
-| **企业 RAG** | PDF → Chunk → Embedding → Chroma → 可溯源问答 |
+
+| 能力                 | 说明                                                      |
+| ------------------ | ------------------------------------------------------- |
+| **企业 RAG**         | PDF → Chunk → Embedding → Chroma → 可溯源问答                |
 | **Agent Workflow** | chat / rag / mcp / weather / news / sports / calculator |
-| **Memory** | 短记忆 + Long facts |
-| **MCP** | 标准协议接入外部工具 |
-| **Web + SSE** | React 聊天，流式输出 + Cost 展示 |
-| **一键部署** | Nginx + API + Chroma（可选 Ollama） |
-| **可观测** | Request ID · 日志落盘 · Token/Cost |
+| **Memory**         | 短记忆 + Long facts                                        |
+| **MCP**            | 标准协议接入外部工具                                              |
+| **Web + SSE**      | React 聊天，流式输出 + Cost 展示                                 |
+| **一键部署**           | Nginx + API + Chroma（可选 Ollama）                         |
+| **可观测**            | Request ID · 日志落盘 · Token/Cost                          |
+
 
 ---
+
+
 
 ## 架构
 
@@ -129,12 +153,18 @@ docker compose
 
 ---
 
+
+
 ## 快速开始
+
+
 
 ### 前置
 
 - Docker Desktop（推荐），或 Python 3.10+ / Node 20+
 - 通义 API Key（[百炼](https://bailian.console.aliyun.com/)）或本机 Ollama
+
+
 
 ### Docker Compose（推荐）
 
@@ -155,13 +185,14 @@ Invoke-RestMethod http://localhost/health
 ### 本地开发
 
 ```powershell
+.venv\Scripts\activate
 pip install -r requirements.txt
 copy .env.example .env
 python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-
-cd frontend && npm install && npm run dev
-# http://127.0.0.1:5173
+cd frontend && npm install && npm run dev # http://127.0.0.1:5173
 ```
+
+
 
 ### 验证
 
@@ -176,6 +207,8 @@ Invoke-RestMethod "http://localhost/metrics/cost-estimate?users=1000&queries_per
 ```
 
 ---
+
+
 
 ## 项目结构
 
@@ -197,6 +230,8 @@ ai-project-assistant/
 [docs/CODEMAP.md](docs/CODEMAP.md)
 
 ---
+
+
 
 ## 功能展示
 
@@ -221,50 +256,64 @@ python scripts/estimate_cost.py --users 1000 --qpu 20 --avg-tokens 3000
 
 ---
 
+
+
 ## API 文档
 
-| 接口 | 说明 |
-|------|------|
-| `GET /health` | 探活 + **v1.0.0** |
-| `POST /agent` · `/agent/stream` | Agent（含 usage） |
-| `POST /rag` · `/chat` · `/upload` | RAG / 闲聊 / 上传 |
-| `GET /metrics/cost-estimate` | 日成本估算 |
-| `GET /mcp/status` | MCP 状态 |
+
+| 接口                                | 说明              |
+| --------------------------------- | --------------- |
+| `GET /health`                     | 探活 + **v1.0.0** |
+| `POST /agent` · `/agent/stream`   | Agent（含 usage）  |
+| `POST /rag` · `/chat` · `/upload` | RAG / 闲聊 / 上传   |
+| `GET /metrics/cost-estimate`      | 日成本估算           |
+| `GET /mcp/status`                 | MCP 状态          |
+
 
 书面说明：[docs/api.md](docs/api.md) · 交互：`/docs`
 
 ---
 
+
+
 ## Roadmap
 
-| Sprint | 主题 | 状态 |
-|--------|------|------|
-| 1 · v0.1 | LLM · FastAPI · Docker | ✅ |
-| 2 · v0.2 | 企业 RAG | ✅ |
-| 3 · v0.3 | Agent · Memory · MCP · Web | ✅ |
-| 4 · v0.4 | Compose · Nginx · 日志 · Token · 方案 · README | ✅ |
-| **v1.0** | **工程与文档收官** | ✅ |
-| Day28~30 | 简历 / 面试 / 投递（可选，暂不设计） | ⏸ |
+
+| Sprint   | 主题                                         | 状态  |
+| -------- | ------------------------------------------ | --- |
+| 1 · v0.1 | LLM · FastAPI · Docker                     | ✅   |
+| 2 · v0.2 | 企业 RAG                                     | ✅   |
+| 3 · v0.3 | Agent · Memory · MCP · Web                 | ✅   |
+| 4 · v0.4 | Compose · Nginx · 日志 · Token · 方案 · README | ✅   |
+| **v1.0** | **工程与文档收官**                                | ✅   |
+| Day28~30 | 简历 / 面试 / 投递（可选，暂不设计）                      | ⏸   |
+
 
 详情：[docs/roadmap.md](docs/roadmap.md)
 
 ---
 
+
+
 ## 版本记录
 
 当前版本：**v1.0.0**
 
-| 版本 | 摘要 |
-|------|------|
+
+| 版本         | 摘要                                    |
+| ---------- | ------------------------------------- |
 | **v1.0.0** | 30 天能力收官：技术栈齐全 · 方案/架构/README · 可一键演示 |
-| v0.4.0 | Compose、Nginx、日志、Token、方案文档、GitHub 包装 |
-| v0.3.0 | Enterprise Agent |
-| v0.2.0 | Enterprise RAG |
-| v0.1.x | 基础链路 |
+| v0.4.0     | Compose、Nginx、日志、Token、方案文档、GitHub 包装 |
+| v0.3.0     | Enterprise Agent                      |
+| v0.2.0     | Enterprise RAG                        |
+| v0.1.x     | 基础链路                                  |
+
 
 [docs/CHANGELOG.md](docs/CHANGELOG.md)
 
 ---
+
+
 
 ## 技术栈
 
@@ -272,20 +321,26 @@ FastAPI · Uvicorn · OpenAI SDK · Ollama / 通义 · Chroma · PyMuPDF · Lang
 
 ---
 
+
+
 ## 相关文档
 
-| 文档 | 说明 |
-|------|------|
-| [solution-design.md](docs/solution-design.md) | 方案（Why） |
-| [architecture.md](docs/architecture.md) | 架构（How） |
-| [api.md](docs/api.md) | HTTP 接口 |
-| [roadmap.md](docs/roadmap.md) | 进度 |
-| [CHANGELOG.md](docs/CHANGELOG.md) | 版本 |
-| [RELEASE.md](docs/RELEASE.md) | v1.0.0 收官说明 |
-| [CODEMAP.md](docs/CODEMAP.md) | 代码地图 |
-| [mindmap/](mindmap/README.md) | Day01~27 学习思维导图 |
+
+| 文档                                            | 说明              |
+| --------------------------------------------- | --------------- |
+| [solution-design.md](docs/solution-design.md) | 方案（Why）         |
+| [architecture.md](docs/architecture.md)       | 架构（How）         |
+| [api.md](docs/api.md)                         | HTTP 接口         |
+| [roadmap.md](docs/roadmap.md)                 | 进度              |
+| [CHANGELOG.md](docs/CHANGELOG.md)             | 版本              |
+| [RELEASE.md](docs/RELEASE.md)                 | v1.0.0 收官说明     |
+| [CODEMAP.md](docs/CODEMAP.md)                 | 代码地图            |
+| [mindmap/](mindmap/README.md)                 | Day01~27 学习思维导图 |
+
 
 ---
+
+
 
 ## License
 

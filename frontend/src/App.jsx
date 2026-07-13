@@ -240,13 +240,10 @@ export default function App() {
     setError("");
     try {
       const data = await uploadPdf(file);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "system",
-          content: `已上传 PDF：${data.filename}（${data.size}）。请执行入库脚本后再提问总结。`,
-        },
-      ]);
+      const content = data.indexed
+        ? `已上传并完成入库：${data.filename}（${data.size}），共 ${data.indexed_chunks} 个片段。可直接提问总结。`
+        : `已上传 ${data.filename}（${data.size}），但入库失败：${data.index_error || "未知错误"}`;
+      setMessages((prev) => [...prev, { role: "system", content }]);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -284,7 +281,7 @@ export default function App() {
         <h2>上传文档</h2>
         <p className="hint">支持 PDF，保存至知识库 uploads/</p>
         <label className={`upload-btn ${uploading ? "disabled" : ""}`}>
-          {uploading ? "上传中…" : "选择 PDF 文件"}
+          {uploading ? "上传并入库中…" : "选择 PDF 文件"}
           <input
             type="file"
             accept="application/pdf,.pdf"
@@ -293,7 +290,7 @@ export default function App() {
             hidden
           />
         </label>
-        <p className="hint small">上传后需运行入库脚本，Agent 才能 RAG 总结该文档。</p>
+        <p className="hint small">上传后自动解析并写入知识库，可直接 RAG 总结。</p>
         <p className="hint small">会话 ID：{sessionId.slice(0, 8)}…</p>
       </aside>
 
@@ -316,7 +313,7 @@ export default function App() {
             <div key={i} className={`bubble-wrap ${msg.role}`}>
               <div className={`bubble ${msg.isError ? "error" : ""}`}>
                 <div className="bubble-label">
-                  {msg.role === "user" ? "你" : msg.role === "system" ? "系统" : "助手"}
+                  {msg.role === "user" ? "靓仔" : msg.role === "system" ? "系统" : "助手"}
                 </div>
                 <div className="bubble-content">
                   {msg.content}

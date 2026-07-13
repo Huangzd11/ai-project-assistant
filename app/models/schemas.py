@@ -67,11 +67,23 @@ class ModelInfo(BaseModel):
 # @brief: POST /upload 响应体（Day08）
 class UploadResponse(BaseModel):
     model_config = ConfigDict(
-        json_schema_extra={"examples": [{"filename": "linux.pdf", "size": "8MB"}]}
+        json_schema_extra={
+            "examples": [
+                {
+                    "filename": "linux.pdf",
+                    "size": "8MB",
+                    "indexed": True,
+                    "indexed_chunks": 42,
+                }
+            ]
+        }
     )
 
     filename: str = Field(..., description="保存后的文件名")
     size: str = Field(..., description="人类可读文件大小")
+    indexed: bool = Field(..., description="是否已成功写入向量库")
+    indexed_chunks: int = Field(0, description="入库 chunk 数量")
+    index_error: str | None = Field(None, description="入库失败时的错误信息")
 
 
 # @brief: RAG 来源条目（Day13）
